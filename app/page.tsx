@@ -1,69 +1,78 @@
-import Image from "next/image";
+import Link from "next/link";
+import { formatDate, getPosts } from "@/lib/posts";
+import { papers } from "@/content/papers";
 
-export default function Home() {
+export default async function HomePage() {
+  const posts = await getPosts();
+  const recent = posts.slice(0, 3);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div className="mx-auto max-w-3xl px-6 py-20">
+      <section>
+        <p className="text-xs font-medium tracking-wide text-accent uppercase">
+          Self-directed course · Interaction design
+        </p>
+        <h1 className="mt-4 max-w-2xl text-4xl leading-tight font-semibold tracking-tight text-balance text-foreground">
+          How might training live inside OpenBridge interfaces?
+        </h1>
+        <p className="mt-5 max-w-xl text-lg leading-8 text-muted">
+          A working hub for the project: design decisions, research notes and
+          the reasoning in between, published as I go rather than written up at
+          the end.
+        </p>
+
+        <div className="mt-8 flex flex-wrap gap-3">
+          <Link
+            href="/blog"
+            className="rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-background transition-opacity hover:opacity-90"
           >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            Read the process
+          </Link>
+          <Link
+            href="/research"
+            className="rounded-full border border-border px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:border-accent hover:text-accent"
           >
-            Documentation
-          </a>
+            {papers.length} sources
+          </Link>
         </div>
-      </main>
+      </section>
+
+      {recent.length > 0 ? (
+        <section className="mt-20 border-t border-border pt-10">
+          <div className="flex items-baseline justify-between gap-4">
+            <h2 className="text-sm font-semibold tracking-wide text-faint uppercase">
+              Latest entries
+            </h2>
+            <Link
+              href="/blog"
+              className="text-sm text-muted transition-colors hover:text-accent"
+            >
+              All entries →
+            </Link>
+          </div>
+
+          <ol className="mt-2 divide-y divide-border">
+            {recent.map((post) => (
+              <li key={post.slug}>
+                <Link href={`/blog/${post.slug}`} className="group block py-6">
+                  <time
+                    dateTime={post.date}
+                    className="text-xs tracking-wide text-faint"
+                  >
+                    {formatDate(post.date)}
+                  </time>
+                  <h3 className="mt-1.5 font-medium tracking-tight text-foreground group-hover:text-accent">
+                    {post.title}
+                  </h3>
+                  <p className="mt-1 text-[0.95rem] leading-7 text-muted">
+                    {post.summary}
+                  </p>
+                </Link>
+              </li>
+            ))}
+          </ol>
+        </section>
+      ) : null}
     </div>
   );
 }

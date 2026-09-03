@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Training in OpenBridge
 
-## Getting Started
-
-First, run the development server:
+Project hub for a self-directed interaction design course exploring how
+training can be integrated into [OpenBridge](https://www.openbridge.no/)
+interfaces. Built with Next.js 16 (App Router), MDX and Tailwind v4.
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Structure
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Path                      | What it is                                       |
+| ------------------------- | ------------------------------------------------ |
+| `content/posts/*.mdx`     | Process entries — one file per entry             |
+| `content/papers.ts`       | The research library data                        |
+| `lib/posts.ts`            | Loads posts + frontmatter from `content/posts`    |
+| `lib/papers.ts`           | Types, categories and helpers for the library    |
+| `mdx-components.tsx`      | How markdown elements are styled                 |
+| `app/globals.css`         | Colour tokens for light and dark                 |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Adding a process entry
 
-## Learn More
+Drop a new `.mdx` file into `content/posts/`. The filename becomes the URL, and
+the listing picks it up with no other wiring. Every post starts with a
+`metadata` export:
 
-To learn more about Next.js, take a look at the following resources:
+```mdx
+export const metadata = {
+  title: "Entry title",
+  date: "2026-09-02",
+  summary: "One or two sentences shown in the listing.",
+  stage: "research",
+  tags: ["OpenBridge", "prototype"],
+  draft: true,
+};
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Write the entry here as normal markdown.
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+`title`, `date` and `summary` are required; `stage`, `tags` and `draft` are
+optional. Fields are type-checked against `PostFrontmatter` in `lib/posts.ts`.
 
-## Deploy on Vercel
+**Drafts.** `draft: true` hides an entry from the listing in production builds
+while keeping it visible in `next dev`. The entry's own page is still built, so
+its URL stays shareable — unlisted, not private. Delete the field to publish.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+You can import and use React components inside any `.mdx` file, which is how
+interactive figures can go straight into an entry.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Adding a research source
+
+Append an entry to the array in `content/papers.ts`. Search, category filters
+and counts on `/research` all derive from the data, so nothing else to update.
+
+`category` must be one of the values in `CATEGORIES` (`lib/papers.ts`) —
+TypeScript will reject a typo. Add a new category there and it appears as a
+filter as soon as a source uses it. Write `keyFindings` as claims worth
+remembering, one per bullet, and use `relevance` for why the source changes
+what you will design.
+
+## Notes
+
+- Every route is statically prerendered; `npm run build` catches a bad date,
+  a missing field or a broken category before it ships.
+- Markdown images render as plain `<img>` because markdown carries no
+  dimensions. Import `next/image` inside an `.mdx` file when you want an
+  optimised image.

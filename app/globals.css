@@ -1,26 +1,51 @@
 @import "tailwindcss";
 
+/*
+  Palette nods at OpenBridge's day/night bridge themes without imitating them:
+  a paper-white reading surface by day, a low-glare ink surface by night.
+*/
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --background: #fbfbf9;
+  --surface: #ffffff;
+  --foreground: #16181d;
+  --muted: #5c626e;
+  --faint: #8b909b;
+  --border: #e3e3dd;
+  --accent: #1f5f8b;
+  --accent-soft: #eaf1f6;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0d0f12;
+    --surface: #14171c;
+    --foreground: #e8e9ec;
+    --muted: #a0a5b0;
+    --faint: #767c88;
+    --border: #262b33;
+    --accent: #7db4dc;
+    --accent-soft: #16222c;
   }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+::selection {
+  background: var(--accent-soft);
 }
