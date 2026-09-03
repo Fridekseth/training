@@ -3,29 +3,38 @@
 /*
   Palette nods at OpenBridge's day/night bridge themes without imitating them:
   a paper-white reading surface by day, a low-glare ink surface by night.
+
+  Each token is declared once with both values via `light-dark()`. Which one
+  resolves is decided purely by `color-scheme` below, so switching themes
+  means flipping a single property rather than restating the palette.
 */
 :root {
-  --background: #fbfbf9;
-  --surface: #ffffff;
-  --foreground: #16181d;
-  --muted: #5c626e;
-  --faint: #8b909b;
-  --border: #e3e3dd;
-  --accent: #1f5f8b;
-  --accent-soft: #eaf1f6;
+  color-scheme: light;
+
+  --background: light-dark(#fbfbf9, #0d0f12);
+  --surface: light-dark(#ffffff, #14171c);
+  --foreground: light-dark(#16181d, #e8e9ec);
+  --muted: light-dark(#5c626e, #a0a5b0);
+  --faint: light-dark(#8b909b, #767c88);
+  --border: light-dark(#e3e3dd, #262b33);
+  --accent: light-dark(#1f5f8b, #7db4dc);
+  --accent-soft: light-dark(#eaf1f6, #16222c);
 }
 
+/* Follow the system until the reader makes an explicit choice. */
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0d0f12;
-    --surface: #14171c;
-    --foreground: #e8e9ec;
-    --muted: #a0a5b0;
-    --faint: #767c88;
-    --border: #262b33;
-    --accent: #7db4dc;
-    --accent-soft: #16222c;
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
   }
+}
+
+/* An explicit choice wins in both directions. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
 }
 
 @theme inline {
@@ -48,4 +57,17 @@ body {
 
 ::selection {
   background: var(--accent-soft);
+}
+
+/*
+  The theme toggle swaps its icon and label from the attribute the inline
+  script sets, not from React state, so it is already correct on first paint
+  and cannot cause a hydration mismatch.
+*/
+:root[data-theme="dark"] .theme-toggle-to-dark {
+  display: none;
+}
+
+:root:not([data-theme="dark"]) .theme-toggle-to-light {
+  display: none;
 }

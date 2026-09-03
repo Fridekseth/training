@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const NAV = [
   { href: "/blog", label: "Process" },
@@ -14,7 +15,7 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-10 border-b border-border bg-background/85 backdrop-blur-sm">
-      <div className="mx-auto flex h-14 max-w-3xl items-center justify-between gap-2 px-4 sm:gap-6 sm:px-6">
+      <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-x-4 gap-y-1.5 px-4 py-3 sm:h-14 sm:flex-nowrap sm:gap-x-6 sm:px-6 sm:py-0">
         <Link href="/" className="group flex items-center gap-2.5">
           <span
             aria-hidden
@@ -43,6 +44,9 @@ export function SiteHeader() {
               </Link>
             );
           })}
+
+          <span aria-hidden className="h-4 w-px bg-border" />
+          <ThemeToggle />
         </nav>
       </div>
     </header>

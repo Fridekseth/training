@@ -59,6 +59,18 @@ filter as soon as a source uses it. Write `keyFindings` as claims worth
 remembering, one per bullet, and use `relevance` for why the source changes
 what you will design.
 
+## Light and dark
+
+The palette lives in `app/globals.css`, where each token is declared once with
+both values via CSS `light-dark()`. Switching theme flips a single
+`color-scheme` property rather than restating the palette, so adding a colour
+means editing one line.
+
+The toggle in the nav bar follows the system preference until you click it;
+after that your choice is stored in `localStorage` and wins in both directions.
+An inline script in `app/layout.tsx` applies the stored theme while the HTML is
+being parsed, so there is no flash of the wrong palette on load.
+
 ## Notes
 
 - Every route is statically prerendered; `npm run build` catches a bad date,
