@@ -1,21 +1,20 @@
 /**
- * Types for the research library. Categories and statuses are const arrays so
- * the filter UI can enumerate them and TypeScript flags typos in the data file.
+ * Types for the research library. Categories and types are const arrays so the
+ * filter UI can enumerate them and TypeScript flags a typo in the data file.
+ * Add a value here and it becomes usable — and filterable — straight away.
  */
 
 export const CATEGORIES = [
-  "Maritime HCI",
-  "Training & Learning",
-  "Design Systems",
-  "Onboarding & Guidance",
-  "Standards & Regulation",
-  "Methods",
+  "learning",
+  "neuroscience",
+  "ID",
+  "UX",
 ] as const;
 
-export const STATUSES = ["to read", "reading", "read"] as const;
+export const TYPES = ["lecture", "article", "book", "design"] as const;
 
 export type Category = (typeof CATEGORIES)[number];
-export type Status = (typeof STATUSES)[number];
+export type Type = (typeof TYPES)[number];
 
 export type Paper = {
   /** Stable slug, used as the anchor and React key. */
@@ -23,30 +22,24 @@ export type Paper = {
   title: string;
   authors: string[];
   year: number;
-  /** Journal, conference, publisher, or site — whatever names the source. */
-  venue?: string;
-  /** What kind of source this is, e.g. "Journal article", "Standard", "Website". */
-  kind?: string;
-  url: string;
-  doi?: string;
-  category: Category;
+  /** Journal, conference, course, publisher — whatever the source sits in. */
+  venue: string;
+  /** Omit when the source has no public link. */
+  url?: string;
+  /** The full reference, in whichever citation style the course uses. */
+  citation: string;
+  /** A source can sit in more than one category. */
+  category: Category[];
+  type: Type;
   keywords: string[];
   /** The takeaways worth remembering, one per bullet. */
   keyFindings: string[];
-  /** Why this matters for the training-in-OpenBridge question. */
-  relevance?: string;
-  status?: Status;
+  /** Why this matters for the training-in-OpenBridge question, one per bullet. */
+  relevance: string[];
 };
 
 export function sortPapers(papers: Paper[]): Paper[] {
   return [...papers].sort(
     (a, b) => b.year - a.year || a.title.localeCompare(b.title),
-  );
-}
-
-/** Every keyword across the library, deduped and alphabetised. */
-export function allKeywords(papers: Paper[]): string[] {
-  return [...new Set(papers.flatMap((p) => p.keywords))].sort((a, b) =>
-    a.localeCompare(b),
   );
 }

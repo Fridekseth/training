@@ -53,11 +53,34 @@ interactive figures can go straight into an entry.
 Append an entry to the array in `content/papers.ts`. Search, category filters
 and counts on `/research` all derive from the data, so nothing else to update.
 
-`category` must be one of the values in `CATEGORIES` (`lib/papers.ts`) —
-TypeScript will reject a typo. Add a new category there and it appears as a
-filter as soon as a source uses it. Write `keyFindings` as claims worth
-remembering, one per bullet, and use `relevance` for why the source changes
-what you will design.
+Every source carries these fields, all required:
+
+| Field         | Type       | Notes                                        |
+| ------------- | ---------- | -------------------------------------------- |
+| `id`          | `string`   | Slug, used as the anchor on `/research`       |
+| `title`       | `string`   |                                              |
+| `authors`     | `string[]` |                                              |
+| `year`        | `number`   |                                              |
+| `venue`       | `string`   | Journal, conference, course, publisher       |
+| `url`         | `string?`  | Omit when the source has no public link       |
+| `citation`    | `string`   | Full reference, in your citation style       |
+| `category`    | union[]    | One or more of `CATEGORIES` — `learning`, `neuroscience`, `ID`, `UX` |
+| `type`        | union      | One of `TYPES` — `lecture`, `article`, `book`, `design` |
+| `keywords`    | `string[]` | Rendered as chips; click one to search it    |
+| `keyFindings` | `string[]` | One claim per bullet, not a topic label      |
+| `relevance`   | `string[]` | One bullet per reason it changes your design |
+
+`category` and `type` draw on union types, so TypeScript rejects a typo rather
+than letting the source drop silently out of the filters. Add a value to
+`CATEGORIES` or `TYPES` in `lib/papers.ts` and it becomes usable immediately —
+a new category appears as a filter as soon as a source uses it. A source can
+sit in several categories and shows up under each.
+
+Every field except `url` is required, which keeps records complete. A source
+you have logged but not yet worked through can carry empty `keyFindings` and
+`relevance` arrays — those sections are hidden on the card until you fill them
+in. If a required field genuinely does not apply to some source, mark it
+optional with `?` in `lib/papers.ts`.
 
 ## Light and dark
 

@@ -3,71 +3,56 @@ import type { Paper } from "@/lib/papers";
 /**
  * The research library. Add an entry per source; the page picks up filters,
  * keyword chips and counts automatically.
- *
- * Entries prefixed "Example —" are placeholders showing the shape of a full
- * record. Replace them with sources you have actually read.
  */
 export const papers: Paper[] = [
   {
-    id: "openbridge-design-system",
-    title: "OpenBridge Design System",
-    authors: ["OpenBridge (University of South-Eastern Norway)"],
-    year: 2024,
-    venue: "openbridge.no",
-    kind: "Design system / documentation",
-    url: "https://www.openbridge.no/",
-    category: "Design Systems",
+    id: "vervaeke-memory",
+    title: "All you need to know about memory",
+    authors: ["Koen Vervaeke"],
+    year: 2026,
+    venue: "The Oslo School of Architecture and Design",
+    citation:
+      "Vervaeke, K. (2026). All you need to know about memory [Lecture]. The Oslo School of Architecture and Design.",
+    category: ["learning", "neuroscience"],
+    type: "lecture",
+    keywords: ["neuroscience", "memory", "learning", "neuromodulation"],
+    keyFindings: [
+      "Neurons connect into large networks, and repetition strengthens those connections — learning is a physical change in the brain, not just an accumulation of information.",
+      "Stimulating the brain can elicit memories directly, and smell is the strongest and most direct trigger of human memory.",
+      "The brain prefers multisensory experience: context helps memorisation, and context can be added artificially rather than only found.",
+      "In-person learning is often more effective than digital learning because it supplies that multisensory context by default.",
+      "Neuromodulators — adrenaline, serotonin and dopamine — promote learning by strengthening connections in the brain.",
+      "They are released by attention and arousal, stress and threat response, reward and motivation, and curiosity and exploration; physical activity often activates them too.",
+      "Familiar learning principles work by recruiting these mechanisms: reward systems, gamification, salience and cues, and emotional tagging.",
+    ],
+    relevance: [
+      "A neuroscientist’s account of how memory emerges from changing connections between neurons, how the hippocampus organises experience, and what helps learning become durable.",
+    ],
+  },
+  {
+    id: "roediger-karpicke-testing",
+    title:
+      "The Power of Testing Memory: Basic Research and Implications for Educational Practice",
+    authors: ["Henry L. Roediger III", "Jeffrey D. Karpicke"],
+    year: 2006,
+    venue: "Perspectives on Psychological Science, 1(3), 181–210",
+    url: "https://www.researchgate.net/publication/237268918_The_Power_of_Testing_Memory_Basic_Research_and_Implications_for_Educational_Practice",
+    citation:
+      "Roediger, H. L., III, & Karpicke, J. D. (2006). The power of testing memory: Basic research and implications for educational practice. Perspectives on Psychological Science, 1(3), 181–210. https://doi.org/10.1111/j.1745-6916.2006.00012.x",
+    category: ["learning"],
+    type: "article",
     keywords: [
-      "OpenBridge",
-      "maritime",
-      "design system",
-      "components",
-      "bridge design",
+      "testing effect",
+      "retrieval practice",
+      "retention",
+      "education",
     ],
     keyFindings: [
-      "Defines a shared component library, palette and layout grid so equipment from different vendors reads as one coherent bridge.",
-      "Ships day, dusk and night colour themes as first-class modes rather than an afterthought, driven by the light conditions on a real bridge.",
-      "Documentation is aimed at both designers and vendors — the primary artefact is the guideline, not a running product.",
+      "The “testing effect”: being tested on material has a greater positive effect on retention than spending the same time studying or re-reading it.",
+      "In the comparison, one group studied the material twice while another studied it once and then took a test.",
+      "Retention was then measured at three intervals — five minutes, two days and one week — rather than immediately after studying alone.",
+      "After five minutes, repeated studying produced better recall than testing; but after two days and one week, the tested group retained substantially more — even though repeated studying had left students more confident they would remember.",
     ],
-    relevance:
-      "The system my course is built around. Its documentation covers components thoroughly but says comparatively little about how an operator learns them — the gap I want to work in.",
-    status: "reading",
-  },
-  {
-    id: "example-journal-article",
-    title: "Example — a journal article, showing the full record shape",
-    authors: ["Lastname, A.", "Lastname, B."],
-    year: 2023,
-    venue: "Journal Name, 12(3), 45–67",
-    kind: "Journal article",
-    url: "https://example.com/paper",
-    doi: "10.0000/example.doi",
-    category: "Training & Learning",
-    keywords: ["training", "skill acquisition", "simulation"],
-    keyFindings: [
-      "One finding per bullet — write it as a claim you could defend, not a topic label.",
-      "Note the evidence: how many participants, what task, what was measured.",
-      "Record what the study does not settle; those gaps become your research questions.",
-    ],
-    relevance:
-      "Say in one or two sentences why this source changes what you will design.",
-    status: "to read",
-  },
-  {
-    id: "example-standard",
-    title: "Example — a standard or regulation",
-    authors: ["Issuing Body"],
-    year: 2019,
-    venue: "Standard reference number",
-    kind: "Standard",
-    url: "https://example.com/standard",
-    category: "Standards & Regulation",
-    keywords: ["regulation", "type approval", "human-centred design"],
-    keyFindings: [
-      "Standards constrain what a training layer is allowed to do to a bridge interface — capture the specific clause, not the gist.",
-    ],
-    relevance:
-      "Constraints worth knowing early, so the concept does not need retrofitting later.",
-    status: "to read",
+    relevance: [],
   },
 ];
