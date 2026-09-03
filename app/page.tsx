@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowForward } from "@/components/icons";
 import { formatDate, getPosts } from "@/lib/posts";
 import { papers } from "@/content/papers";
 
@@ -9,7 +10,7 @@ export default async function HomePage() {
   return (
     <div className="mx-auto max-w-3xl px-6 py-20">
       <section>
-        <p className="text-xs font-medium tracking-wide text-accent uppercase">
+        <p className="text-xs font-medium tracking-wide text-accent">
           Self-directed course · Interaction design
         </p>
         <h1 className="mt-4 max-w-2xl text-4xl leading-tight font-semibold tracking-tight text-balance text-foreground">
@@ -40,14 +41,15 @@ export default async function HomePage() {
       {recent.length > 0 ? (
         <section className="mt-20 border-t border-border pt-10">
           <div className="flex items-baseline justify-between gap-4">
-            <h2 className="text-sm font-semibold tracking-wide text-faint uppercase">
+            <h2 className="text-sm font-semibold text-faint">
               Latest entries
             </h2>
             <Link
               href="/blog"
-              className="text-sm text-muted transition-colors hover:text-accent"
+              className="inline-flex items-center gap-1 text-sm text-muted transition-colors hover:text-accent"
             >
-              All entries →
+              All entries
+              <ArrowForward className="size-3.5" />
             </Link>
           </div>
 

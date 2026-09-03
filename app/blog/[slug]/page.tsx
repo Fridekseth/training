@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ArrowBack } from "@/components/icons";
 import { Pill } from "@/components/pill";
 import { formatDate, getPost, getPostParams } from "@/lib/posts";
 
@@ -26,9 +27,10 @@ export default async function BlogPostPage(props: PageProps<"/blog/[slug]">) {
     <article className="mx-auto max-w-3xl px-6 py-16">
       <Link
         href="/blog"
-        className="text-sm text-muted transition-colors hover:text-accent"
+        className="inline-flex items-center gap-1.5 text-sm text-muted transition-colors hover:text-accent"
       >
-        ← Process
+        <ArrowBack className="size-3.5" />
+        Process
       </Link>
 
       <header className="mt-8 border-b border-border pb-8">
