@@ -44,3 +44,16 @@ export function ArrowForward({ className = "size-4" }: IconProps) {
     </svg>
   );
 }
+
+export function ExpandMore({ className = "size-4" }: IconProps) {
+  return (
+    <svg
+      viewBox="0 -960 960 960"
+      fill="currentColor"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M480-345 240-585l56-56 184 184 184-184 56 56-240 240Z" />
+    </svg>
+  );
+}

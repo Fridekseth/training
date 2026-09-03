@@ -1,7 +1,7 @@
 "use client";
 
 import { Fragment, useMemo, useState } from "react";
-import { ArrowOutward } from "@/components/icons";
+import { ArrowOutward, ExpandMore } from "@/components/icons";
 import { Pill } from "@/components/pill";
 import { CATEGORIES, type Category, type Paper } from "@/lib/papers";
 
@@ -23,6 +23,137 @@ function matches(paper: Paper, query: string): boolean {
     .join(" ")
     .toLowerCase();
   return haystack.includes(query.toLowerCase());
+}
+
+/**
+ * One source. Relevance and key findings stay collapsed so a long library
+ * still scans quickly; the card keeps its own open state, which React
+ * preserves across filtering because the list is keyed by paper id.
+ */
+function PaperCard({
+  paper,
+  onKeywordClick,
+}: {
+  paper: Paper;
+  onKeywordClick: (keyword: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+
+  const detailCount = paper.relevance.length + paper.keyFindings.length;
+  const detailsId = `${paper.id}-details`;
+
+  return (
+    <li
+      id={paper.id}
+      className="rounded-xl border border-border bg-surface p-6"
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-2">
+          {paper.category.map((category) => (
+            <Pill key={category} tone="solid">
+              {category}
+            </Pill>
+          ))}
+        </div>
+        <Pill>{paper.type}</Pill>
+      </div>
+
+      <h2 className="mt-3 text-base font-semibold tracking-tight text-foreground">
+        {paper.url ? (
+          <a
+            href={paper.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline decoration-transparent underline-offset-2 transition-colors hover:text-accent hover:decoration-accent/40"
+          >
+            {paper.title}
+          </a>
+        ) : (
+          paper.title
+        )}
+      </h2>
+
+      <p className="mt-1 text-sm leading-6 text-muted">
+        {paper.authors.join(", ")} · {paper.year} · {paper.venue}
+      </p>
+
+      {detailCount > 0 ? (
+        <>
+          <button
+            type="button"
+            onClick={() => setOpen((wasOpen) => !wasOpen)}
+            aria-expanded={open}
+            aria-controls={detailsId}
+            className="mt-4 inline-flex cursor-pointer items-center gap-1 text-xs font-medium text-accent hover:underline"
+          >
+            {open ? "Hide details" : "Show details"}
+            <ExpandMore
+              className={`size-4 transition-transform ${open ? "rotate-180" : ""}`}
+            />
+          </button>
+
+          <div id={detailsId} hidden={!open}>
+            {paper.relevance.length > 0 ? (
+              <>
+                <h3 className="mt-5 text-xs font-semibold text-faint">
+                  Relevance
+                </h3>
+                <ul className="mt-2 space-y-1.5 text-[0.925rem] leading-6 text-muted">
+                  {paper.relevance.map((reason) => (
+                    <li key={reason}>{reason}</li>
+                  ))}
+                </ul>
+              </>
+            ) : null}
+
+            {paper.keyFindings.length > 0 ? (
+              <>
+                <h3 className="mt-5 text-xs font-semibold text-faint">
+                  Key findings
+                </h3>
+                <ul className="mt-2 list-disc space-y-1.5 pl-5 text-[0.925rem] leading-6 text-muted marker:text-faint">
+                  {paper.keyFindings.map((finding) => (
+                    <li key={finding}>{finding}</li>
+                  ))}
+                </ul>
+              </>
+            ) : null}
+          </div>
+        </>
+      ) : null}
+
+      <p className="mt-5 text-xs leading-6 text-faint">
+        {paper.keywords.map((keyword, index) => (
+          <Fragment key={keyword}>
+            {index > 0 ? <span aria-hidden> · </span> : null}
+            <button
+              type="button"
+              onClick={() => onKeywordClick(keyword)}
+              title={`Search for “${keyword}”`}
+              className="cursor-pointer transition-colors hover:text-accent hover:underline"
+            >
+              {keyword}
+            </button>
+          </Fragment>
+        ))}
+      </p>
+
+      <div className="mt-5 border-t border-border pt-4">
+        <p className="text-xs leading-5 text-faint">{paper.citation}</p>
+        {paper.url ? (
+          <a
+            href={paper.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline"
+          >
+            Open source
+            <ArrowOutward className="size-3.5" />
+          </a>
+        ) : null}
+      </div>
+    </li>
+  );
 }
 
 export function ResearchLibrary({ papers }: { papers: Paper[] }) {
@@ -100,98 +231,7 @@ export function ResearchLibrary({ papers }: { papers: Paper[] }) {
       ) : (
         <ul className="mt-4 space-y-4">
           {visible.map((paper) => (
-            <li
-              key={paper.id}
-              id={paper.id}
-              className="rounded-xl border border-border bg-surface p-6"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex flex-wrap items-center gap-2">
-                  {paper.category.map((category) => (
-                    <Pill key={category} tone="solid">
-                      {category}
-                    </Pill>
-                  ))}
-                </div>
-                <Pill>{paper.type}</Pill>
-              </div>
-
-              <h2 className="mt-3 text-base font-semibold tracking-tight text-foreground">
-                {paper.url ? (
-                  <a
-                    href={paper.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline decoration-transparent underline-offset-2 transition-colors hover:text-accent hover:decoration-accent/40"
-                  >
-                    {paper.title}
-                  </a>
-                ) : (
-                  paper.title
-                )}
-              </h2>
-
-              <p className="mt-1 text-sm leading-6 text-muted">
-                {paper.authors.join(", ")} · {paper.year} · {paper.venue}
-              </p>
-
-              {paper.relevance.length > 0 ? (
-                <>
-                  <h3 className="mt-5 text-xs font-semibold text-faint">
-                    Relevance
-                  </h3>
-                  <ul className="mt-2 space-y-1.5 text-[0.925rem] leading-6 text-muted">
-                    {paper.relevance.map((reason) => (
-                      <li key={reason}>{reason}</li>
-                    ))}
-                  </ul>
-                </>
-              ) : null}
-
-              {paper.keyFindings.length > 0 ? (
-                <>
-                  <h3 className="mt-5 text-xs font-semibold text-faint">
-                    Key findings
-                  </h3>
-                  <ul className="mt-2 list-disc space-y-1.5 pl-5 text-[0.925rem] leading-6 text-muted marker:text-faint">
-                    {paper.keyFindings.map((finding) => (
-                      <li key={finding}>{finding}</li>
-                    ))}
-                  </ul>
-                </>
-              ) : null}
-
-              <p className="mt-5 text-xs leading-6 text-faint">
-                {paper.keywords.map((keyword, index) => (
-                  <Fragment key={keyword}>
-                    {index > 0 ? <span aria-hidden> · </span> : null}
-                    <button
-                      type="button"
-                      onClick={() => setQuery(keyword)}
-                      title={`Search for “${keyword}”`}
-                      className="cursor-pointer transition-colors hover:text-accent hover:underline"
-                    >
-                      {keyword}
-                    </button>
-                  </Fragment>
-                ))}
-              </p>
-
-              <div className="mt-5 border-t border-border pt-4">
-                <p className="text-xs leading-5 text-faint">{paper.citation}</p>
-                {paper.url ? (
-                  <a
-                    href={paper.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline"
-                  >
-                    Open source
-                    <ArrowOutward className="size-3.5" />
-                  </a>
-                ) : null}
-              </div>
-            </li>
+            <PaperCard key={paper.id} paper={paper} onKeywordClick={setQuery} />
           ))}
         </ul>
       )}

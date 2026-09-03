@@ -65,7 +65,7 @@ Every source carries these fields, all required:
 | `url`         | `string?`  | Omit when the source has no public link       |
 | `citation`    | `string`   | Full reference, in your citation style       |
 | `category`    | union[]    | One or more of `CATEGORIES` — `learning`, `neuroscience`, `ID`, `UX` |
-| `type`        | union      | One of `TYPES` — `lecture`, `article`, `book`, `design` |
+| `type`        | union      | One of `TYPES` — `lecture`, `article`, `book`, `chapter`, `design` |
 | `keywords`    | `string[]` | Rendered as chips; click one to search it    |
 | `keyFindings` | `string[]` | One claim per bullet, not a topic label      |
 | `relevance`   | `string[]` | One bullet per reason it changes your design |

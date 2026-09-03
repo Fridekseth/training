@@ -11,7 +11,13 @@ export const CATEGORIES = [
   "UX",
 ] as const;
 
-export const TYPES = ["lecture", "article", "book", "design"] as const;
+export const TYPES = [
+  "lecture",
+  "article",
+  "book",
+  "chapter",
+  "design",
+] as const;
 
 export type Category = (typeof CATEGORIES)[number];
 export type Type = (typeof TYPES)[number];
