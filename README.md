@@ -12,7 +12,7 @@ npm run dev
 
 | Path                      | What it is                                       |
 | ------------------------- | ------------------------------------------------ |
-| `content/posts/*.mdx`     | Process entries — one file per entry             |
+| `content/posts/*.mdx`     | Process entries, one file per entry              |
 | `content/papers.ts`       | The research library data                        |
 | `lib/posts.ts`            | Loads posts + frontmatter from `content/posts`    |
 | `lib/papers.ts`           | Types, categories and helpers for the library    |
@@ -43,7 +43,7 @@ optional. Fields are type-checked against `PostFrontmatter` in `lib/posts.ts`.
 
 **Drafts.** `draft: true` hides an entry from the listing in production builds
 while keeping it visible in `next dev`. The entry's own page is still built, so
-its URL stays shareable — unlisted, not private. Delete the field to publish.
+its URL stays shareable: unlisted, not private. Delete the field to publish.
 
 You can import and use React components inside any `.mdx` file, which is how
 interactive figures can go straight into an entry.
@@ -64,21 +64,21 @@ Every source carries these fields, all required:
 | `venue`       | `string`   | Journal, conference, course, publisher       |
 | `url`         | `string?`  | Omit when the source has no public link       |
 | `citation`    | `string`   | Full reference, in your citation style       |
-| `category`    | union[]    | One or more of `CATEGORIES` — `learning`, `neuroscience`, `ID`, `UX` |
-| `type`        | union      | One of `TYPES` — `lecture`, `article`, `book`, `chapter`, `design` |
+| `category`    | union[]    | One or more of `CATEGORIES`: `learning`, `neuroscience`, `ID`, `UX` |
+| `type`        | union      | One of `TYPES`: `lecture`, `article`, `book`, `chapter`, `design` |
 | `keywords`    | `string[]` | Rendered as chips; click one to search it    |
 | `keyFindings` | `string[]` | One claim per bullet, not a topic label      |
 | `relevance`   | `string[]` | One bullet per reason it changes your design |
 
 `category` and `type` draw on union types, so TypeScript rejects a typo rather
 than letting the source drop silently out of the filters. Add a value to
-`CATEGORIES` or `TYPES` in `lib/papers.ts` and it becomes usable immediately —
+`CATEGORIES` or `TYPES` in `lib/papers.ts` and it becomes usable immediately:
 a new category appears as a filter as soon as a source uses it. A source can
 sit in several categories and shows up under each.
 
 Every field except `url` is required, which keeps records complete. A source
 you have logged but not yet worked through can carry empty `keyFindings` and
-`relevance` arrays — those sections are hidden on the card until you fill them
+`relevance` arrays; those sections are hidden on the card until you fill them
 in. If a required field genuinely does not apply to some source, mark it
 optional with `?` in `lib/papers.ts`.
 

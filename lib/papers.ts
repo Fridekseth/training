@@ -1,7 +1,7 @@
 /**
  * Types for the research library. Categories and types are const arrays so the
  * filter UI can enumerate them and TypeScript flags a typo in the data file.
- * Add a value here and it becomes usable — and filterable — straight away.
+ * Add a value here and it becomes usable, and filterable, straight away.
  */
 
 export const CATEGORIES = [
@@ -28,7 +28,7 @@ export type Paper = {
   title: string;
   authors: string[];
   year: number;
-  /** Journal, conference, course, publisher — whatever the source sits in. */
+  /** Journal, conference, course, publisher: whatever the source sits in. */
   venue: string;
   /** Omit when the source has no public link. */
   url?: string;

@@ -53,7 +53,7 @@ export async function getPosts(): Promise<Post[]> {
     .sort((a, b) => b.date.localeCompare(a.date));
 }
 
-/** Params for `generateStaticParams` — every post, drafts included. */
+/** Params for `generateStaticParams`: every post, drafts included. */
 export async function getPostParams(): Promise<{ slug: string }[]> {
   const slugs = await readSlugs();
   return slugs.map((slug) => ({ slug }));
