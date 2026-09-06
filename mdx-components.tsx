@@ -1,5 +1,6 @@
 import type { MDXComponents } from "mdx/types";
 import Link from "next/link";
+import { SourcePill } from "@/components/source-pill";
 
 /*
   Styles for elements produced by markdown. Applied here rather than via a
@@ -7,6 +8,7 @@ import Link from "next/link";
   so components imported into MDX inherit nothing unexpected.
 */
 const components: MDXComponents = {
+  SourcePill,
   h1: (props) => (
     <h1
       className="mt-12 mb-4 text-3xl font-semibold tracking-tight text-foreground first:mt-0"

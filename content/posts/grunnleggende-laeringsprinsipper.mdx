@@ -7,18 +7,41 @@ export const metadata = {
   tags: ["litteraturgjennomgang", "læring", "prosess"],
 };
 
-Dette prosjektet handler til slutt om å forstå læring i kontekst av interaksjonsdesign,
-men jeg måtte starte et sted mer grunnleggende: *Hva vet vi egentlig om hvordan mennesker lærer?*
-Med begrenset tid denne første runden har jeg valgt å avgrense skarpt, til fem prinsipper som stort sett
-alt annet i moderne læringsvitenskap bygger videre på.
+I dette prosjektet vil jeg se på læring i kontekst av interaksjonsdesign, og første steg i den prosessen har
+vært å sette seg inn i grunnleggende teori om hvordan vi mennesker lærer. Med begrenset tid i denne første
+runden med litteraturkartlegging har jeg valgt å avgrense skarpt, til fem prinsipper som legger grunnlaget for
+moderne læringsvitenskap.
 
 Her er hva jeg har funnet så langt.
 
-## 1. Retrieval practice (testeffekten)
+## 1. The spacing effect (spredt repetisjon)
 
-**Kilde:** [Roediger & Karpicke (2006), *Perspectives on Psychological Science*](/research#roediger-karpicke-testing)
+<SourcePill href="/research#carpenter-spacing">Carpenter et al. (2012)</SourcePill>{" "}
+<SourcePill href="/research#ebbinghaus-memory">Ebbinghaus (1885)</SourcePill>
 
-Kjernefunnet er kontraintuitivt: å *hente frem* informasjon fra hukommelsen (altså teste seg selv)
+Dette er ett av de eldste prinsippene innenfor menneskelig læring. Sprer man læringen ut over tid hjelper det
+oss å lagre informasjonen.
+
+En av de første som snakket om dette var Ebbinghaus, som i 1885 beskrev "the forgetting curve": hvordan vi gradvis
+glemmer ting over tid, og hvordan repetisjon kan motvirke denne effekten.
+
+Carpenter, Cepeda, Rohrer, Kang & Pashler utforsket hvordan man kan ta i bruk disse prinsippene på best mulig måte.
+De testet seg frem til hva som var det optimale gapet mellom studieøkter.
+
+![Design av en typisk studie på spacing effect](/posts/grunnleggende-laeringsprinsipper/fig2-spacing-effect-design.png)
+*Figur 1: Design av en typisk studie på spacing effect. Deltakerne opplever to læringsøkter separert av et
+tidsintervall kalt spacing-gap. Etter et nytt tidsintervall kalt test-delay, blir deltakerne gitt en
+avsluttende test på informasjonen fra de to læringsøktene. Fra Carpenter et al. (2012).*
+
+Denne modellen, spacing gap og test delay som to uavhengige variabler, er nyttig å ha i bakhodet.
+Det er ikke bare å spre studieøktene som påvirker læringsutbyttet, men et samspill mellom *hvor lenge du venter mellom studieøktene*
+og *hvor lenge det er til materialet skal testes* som avgjør hva som er optimalt.
+
+## 2. Retrieval practice (testeffekten)
+
+<SourcePill href="/research#roediger-karpicke-testing">Roediger & Karpicke (2006)</SourcePill>
+
+Roediger & Karpicke forsket på verdien av testing for læring. Kjernefunnet er kontraintuitivt: å *hente frem* informasjon fra hukommelsen (altså teste seg selv)
 styrker læring mer enn å lese stoffet på nytt, spesielt hvis målet er å holde på kunnskapen over tid.
 
 ![Testeffekten - resultater fra Roediger & Karpicke](/posts/grunnleggende-laeringsprinsipper/fig1-testing-effect-roediger-karpicke.png)
@@ -28,52 +51,39 @@ en innledende test. Fra Roediger og Karpicke (2006).*
 
 Når materialet skal gjengis etter 5 minutter vinner "Study, Study"-gruppen klart, men allerede etter
 to dager har "Study, Test"-gruppen tatt igjen og gått forbi, og forspranget øker ved en uke.
-Et annet interressant funn var at studentene som bare pugget ved gjenlesing, hadde høyest selvtillit til
+Et annet interessant funn var at studentene som bare pugget ved gjenlesing, hadde høyest selvtillit til
 egen mestring, men presterte faktisk dårligst over tid.
-
-## 2. Spacing effect (spredt repetisjon)
-
-**Kilde:** [Carpenter, Cepeda, Rohrer, Kang & Pashler (2012), *Educational Psychology Review*](/research#carpenter-spacing)
-
-Et av de eldste prinsippene innenfor menneskelig læring er "the spacing effect". En av de første som snakket om
-dette var Ebbinghaus, som i 1885 beskrev "the forgetting curve", hvordan man gravis glemmer ting over tid, og hvordan repitisjon kan motvirke denne effekten.
-Prinsippet er enkelt å formulere: prestasjon på avsluttende tester forbedres når flere studieøkter fordeles over
-tid, fremfor å presses sammen (massing/pugging). Det som er mer interessant er *hvordan* dette studeres:
-
-![Design av en typisk studie på spacing effect](/posts/grunnleggende-laeringsprinsipper/fig2-spacing-effect-design.png)
-*Figur 1: Design av en typisk studie på spacing effect. Deltakerne opplever to læringsøkter separert av et
-tidsintervall kalt spacing-gap. Etter et nytt tidsintervall kalt test-delay, blir deltakerne gitt en
-avsluttende test på informasjonen fra de to læringsøktene.*
-
-Denne modellen, spacing gap og test delay som to uavhengige variabler, er nyttig å ha i bakhodet.
-Det er ikke bare "spre studiet ditt," men et samspill mellom *hvor lenge du venter mellom studieøktene*
-og *hvor lenge det er til testen* som avgjør hva som er optimalt.
 
 ## 3. Cognitive load theory
 
-**Kilde:** [Sweller (1994), *Learning and Instruction*](/research#sweller-cognitive-load)
+<SourcePill href="/research#sweller-cognitive-load">Sweller (1994)</SourcePill>
 
-Kjerneideen her er hvordan man designer informasjon for å ikke overbelaste arbeidsminnet. Læring handler om å bygge
-"skjema": mentale pakker av kunnskap vi etter hvert kan bruke automatisk uten å tenke bevisst gjennom hvert element.
-Vanskelighetsgraden i noe vi skal lære avhenger av *element interactivity*: hvor mange deler av stoffet som må forstås
-samtidig fordi de henger sammen. Det er begrenset hvor mange nye konsepter hjernen kan holde i på en gang.
+Kjerneideen her er hvordan man designer informasjon for å ikke overbelaste arbeidsminnet.
+
+Læring handler om å bygge "skjema": mentale pakker av kunnskap vi etter hvert kan bruke automatisk uten å
+tenke bevisst gjennom hvert element. Før vi har bygget disse "skjemaene" for ny informasjon, har den stor
+kognitiv belastning på hjernen. Vanskelighetsgraden (og dermed belastningen) på noe vi skal lære avhenger
+av *element interactivity*: hvor mange deler av stoffet som må forstås samtidig fordi de henger sammen.
+
+Belastningen på arbeidsminnet begrenser hvor mange nye konsepter hjernen kan holde i på en gang.
 
 Sweller skiller mellom to typer kognitiv belastning:
-- **Intrinsic load** (iboende): ligger i selve stoffets natur, kan ikke fjernes med bedre undervisning
+- **Intrinsic load** (iboende): ligger i selve stoffets natur og kan ikke fjernes med bedre undervisning
 - **Extraneous load** (unødvendig/kunstig): skapt av dårlig undervisningsdesign, *kan* reduseres
 
-Det litt overraskende poenget: å forbedre undervisningsdesign hjelper bare når stoffet i utgangspunktet er komplekst.
-Er stoffet enkelt fra før, spiller dårlig design mindre rolle.
+Godt undervisningsdesign kan dermed redusere belastningen på arbeidsminnet, og legge til rette for bedre læring.
+Samtidig påpeker Sweller at å forbedre undervisningsdesign kun hjelper når stoffet i utgangspunktet er komplekst.
+Er stoffet enkelt fra før, har ikke designet på undervisningen så mye å si for læringsutbyttet.
 
 ## 4. Desirable difficulties
 
-**Kilde:** [Bjork & Bjork (2011), "Making Things Hard on Yourself, But in a Good Way," i *Psychology and the Real World*](/research#bjork-bjork-desirable-difficulties)
+<SourcePill href="/research#bjork-bjork-desirable-difficulties">Bjork & Bjork (2011)</SourcePill>
 
-Dette er kanskje det mest samlende prinsippet av de fem, da det binder sammen de tre foregående. Bjork og Bjork sitt
-kjernepoeng: forhold som gjør læring *vanskeligere i øyeblikket* (variasjon, spredt repetisjon, interleaving,
-testing fremfor gjenlesing) gir ofte sterkere og mer varig læring enn forhold som føles lette.
+Dette prinsippet binder sammen de tre foregående i ett kjernepoeng: forhold som gjør læring *vanskeligere i øyeblikket*
+(variasjon, spredt repetisjon, interleaving, testing fremfor gjenlesing) gir ofte sterkere og mer varig læring enn forhold
+som føles lette.
 
-Det slående eksempelet deres er fra Kornell & Bjork (2008), hvor deltakere lærte 12 kunstneres malestiler
+Dette demonstreres med et eksempel fra Kornell & Bjork (2008), hvor deltakere lærte 12 kunstneres malestiler
 enten blokkvis (én kunstner om gangen) eller "interleaved" (blandet mellom kunstnerne):
 
 ![Judged vs actual performance ved interleaving](/posts/grunnleggende-laeringsprinsipper/fig3-interleaving-kornell-bjork.png)
@@ -83,21 +93,24 @@ faktisk presterte bedre under blokkvis eller interleaved øving, eller presterte
 
 Noe som er fascinerende her, er at 63 % av deltakerne *trodde* blokkvis øving fungerte best, men i virkeligheten
 presterte nesten 80 % bedre etter interleaved øving. Dette viser at vi er systematisk dårlige til å vurdere vår egen læring i
-øyeblikket. Dette kaller Bjork og Bjork forvekslingen mellom *retrieval strength* (hvor lett noe kommer til bevisstheten *nå*)
-og *storage strength* (hvor godt det faktisk sitter over tid).
+øyeblikket.
 
-## 5. Deliberate practice, og et kritisk korrektiv
+Bjork og Bjork skiller mellom *retrieval strength* (hvor lett noe kommer til bevisstheten *nå*)
+og *storage strength* (hvor godt det faktisk sitter over tid). Forsøket viser at disse to ikke nødvendigvis henger sammen.
 
-**Kilde:** [Macnamara & Maitra (2019), *Royal Society Open Science*](/research#macnamara-maitra-deliberate-practice)
+## 5. Deliberate practice, med et kritisk blikk
 
-Den opprinnelige studien av Ericsson, Krampe & Tesch-Römer's er kjent for å ligge til grunn for "10 000-timersregelen"
-(popularisert av Malcolm Gladwell): forskjeller i akkumulert bevisst øving blant fiolinstudenter i Berlin samsvarte
-fullstendig med deres ferdighetsnivå.
+<SourcePill href="/research#macnamara-maitra-deliberate-practice">Macnamara & Maitra (2019)</SourcePill>
 
-I Macnamara & Maitraet's nyere studie har **ikke dette latt seg gjenskape**. De utførte en solid replikasjonsstudie i 2019, hvor de
-fant en effekt av øving, men vesentlig svakere enn original studien. Lærerstyrt øving var ikke mer avgjørende enn øving alene,
-i strid med en vanlig antakelse. Effektstørrelsen i original-studien (0,70) var også påfallende høy sammenlignet med en senere
-metaanalyse på tvers av musikkfeltet (0,48).
+I sin opprinnelige studie av deliberate practice, studerte Ericsson, Krampe & Tesch-Römer fiolinstudenter i
+Berlin, og fant at antall timer med bevisst øving samsvarte fullstendig med ferdighetsnivå. Denne forskningen
+er kjent for å ligge til grunn for Malcolm Gladwell's "10 000-timersregelen", som lenge har vært en populær
+"oppskrift" på hvordan bli god i noe.
+
+I Macnamara & Maitras nyere studie har ikke dette funnet latt seg gjenskape. De utførte en solid
+replikasjonsstudie i 2019, hvor de fant en effekt av øving, men vesentlig svakere enn original studien.
+Lærerstyrt øving var ikke mer avgjørende enn øving alene, i strid med en vanlig antakelse. Effektstørrelsen
+i original-studien (0,70) var også påfallende høy sammenlignet med en senere metaanalyse på tvers av musikkfeltet (0,48).
 
 Dette viser at ikke alle mye siterte "sannheter" om læring holder like godt ved nærmere ettersyn.
 
@@ -106,8 +119,7 @@ Dette viser at ikke alle mye siterte "sannheter" om læring holder like godt ved
 På tvers av disse fem studiene og prinsippene ser jeg en tydelig rød tråd: **aktiv anstrengelse slår passiv eksponering**.
 Enten det er å hente frem informasjon fremfor å lese den på nytt, å blande temaer fremfor å blokke dem, eller å spre
 studiet fremfor å presse det sammen, er det dette grep som medfører både økt friksjon og økt læring.
-Samtidig har jeg også skjønt at vi ofte er dårlige til å merke dette selv, fordi det som *føles* mest
+Samtidig har jeg også skjønt at vi ofte er dårlige til å merke denne effekten selv, fordi det som *føles* mest
 effektivt sjelden er det som faktisk fester seg best.
 
-Neste steg blir å se disse prinsippene i sammenheng med interaksjonsdesign-litteratur. Alle kildene over,
-med fulle nøkkelfunn og relevans, ligger i [forskningsbiblioteket](/research).
+Neste steg blir å se disse prinsippene i sammenheng med interaksjonsdesign-litteratur.
