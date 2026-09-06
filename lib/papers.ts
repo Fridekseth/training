@@ -22,6 +22,12 @@ export const TYPES = [
 export type Category = (typeof CATEGORIES)[number];
 export type Type = (typeof TYPES)[number];
 
+/**
+ * A key finding is usually a single claim. Give it `subPoints` when a source
+ * itself breaks that claim into parts, e.g. the two sides of a distinction.
+ */
+export type Finding = string | { text: string; subPoints: string[] };
+
 export type Paper = {
   /** Stable slug, used as the anchor and React key. */
   id: string;
@@ -32,6 +38,8 @@ export type Paper = {
   venue: string;
   /** Omit when the source has no public link. */
   url?: string;
+  /** ISO date the link was last checked to resolve. Omit alongside `url`. */
+  accessed?: string;
   /** The full reference, in whichever citation style the course uses. */
   citation: string;
   /** A source can sit in more than one category. */
@@ -39,7 +47,7 @@ export type Paper = {
   type: Type;
   keywords: string[];
   /** The takeaways worth remembering, one per bullet. */
-  keyFindings: string[];
+  keyFindings: Finding[];
   /** Why this matters for the training-in-OpenBridge question, one per bullet. */
   relevance: string[];
 };
@@ -48,4 +56,12 @@ export function sortPapers(papers: Paper[]): Paper[] {
   return [...papers].sort(
     (a, b) => b.year - a.year || a.title.localeCompare(b.title),
   );
+}
+
+export function formatDate(iso: string): string {
+  return new Date(iso).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
 }

@@ -63,6 +63,7 @@ Every source carries these fields, all required:
 | `year`        | `number`   |                                              |
 | `venue`       | `string`   | Journal, conference, course, publisher       |
 | `url`         | `string?`  | Omit when the source has no public link       |
+| `accessed`    | `string?`  | ISO date the link was last checked; omit alongside `url` |
 | `citation`    | `string`   | Full reference, in your citation style       |
 | `category`    | union[]    | One or more of `CATEGORIES`: `learning`, `neuroscience`, `ID`, `UX` |
 | `type`        | union      | One of `TYPES`: `lecture`, `article`, `book`, `chapter`, `design` |
@@ -76,11 +77,11 @@ than letting the source drop silently out of the filters. Add a value to
 a new category appears as a filter as soon as a source uses it. A source can
 sit in several categories and shows up under each.
 
-Every field except `url` is required, which keeps records complete. A source
-you have logged but not yet worked through can carry empty `keyFindings` and
-`relevance` arrays; those sections are hidden on the card until you fill them
-in. If a required field genuinely does not apply to some source, mark it
-optional with `?` in `lib/papers.ts`.
+Every field except `url` and `accessed` is required, which keeps records
+complete. A source you have logged but not yet worked through can carry empty
+`keyFindings` and `relevance` arrays; those sections are hidden on the card
+until you fill them in. If a required field genuinely does not apply to some
+source, mark it optional with `?` in `lib/papers.ts`.
 
 ## Light and dark
 

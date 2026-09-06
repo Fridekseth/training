@@ -3,9 +3,23 @@
 import { Fragment, useMemo, useState } from "react";
 import { ArrowOutward, ExpandMore } from "@/components/icons";
 import { Pill } from "@/components/pill";
-import { CATEGORIES, type Category, type Paper } from "@/lib/papers";
+import {
+  CATEGORIES,
+  formatDate,
+  type Category,
+  type Finding,
+  type Paper,
+} from "@/lib/papers";
 
 type Filter = Category | "All";
+
+// A finding is a plain string, or an object with sub-points when a source
+// itself splits a claim into parts. Flatten to plain text for search.
+function findingText(finding: Finding): string {
+  return typeof finding === "string"
+    ? finding
+    : [finding.text, ...finding.subPoints].join(" ");
+}
 
 function matches(paper: Paper, query: string): boolean {
   if (!query) return true;
@@ -17,7 +31,7 @@ function matches(paper: Paper, query: string): boolean {
     ...paper.authors,
     ...paper.category,
     ...paper.keywords,
-    ...paper.keyFindings,
+    ...paper.keyFindings.map(findingText),
     ...paper.relevance,
   ]
     .join(" ")
@@ -112,9 +126,20 @@ function PaperCard({
                   Key findings
                 </h3>
                 <ul className="mt-2 list-disc space-y-1.5 pl-5 text-[0.925rem] leading-6 text-muted marker:text-faint">
-                  {paper.keyFindings.map((finding) => (
-                    <li key={finding}>{finding}</li>
-                  ))}
+                  {paper.keyFindings.map((finding) =>
+                    typeof finding === "string" ? (
+                      <li key={finding}>{finding}</li>
+                    ) : (
+                      <li key={finding.text}>
+                        {finding.text}
+                        <ul className="mt-1.5 list-disc space-y-1.5 pl-5 marker:text-faint">
+                          {finding.subPoints.map((subPoint) => (
+                            <li key={subPoint}>{subPoint}</li>
+                          ))}
+                        </ul>
+                      </li>
+                    ),
+                  )}
                 </ul>
               </>
             ) : null}
@@ -141,15 +166,22 @@ function PaperCard({
       <div className="mt-5 border-t border-border pt-4">
         <p className="text-xs leading-5 text-faint">{paper.citation}</p>
         {paper.url ? (
-          <a
-            href={paper.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline"
-          >
-            Open source
-            <ArrowOutward className="size-3.5" />
-          </a>
+          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+            <a
+              href={paper.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline"
+            >
+              Open source
+              <ArrowOutward className="size-3.5" />
+            </a>
+            {paper.accessed ? (
+              <span className="text-xs text-faint">
+                Accessed {formatDate(paper.accessed)}
+              </span>
+            ) : null}
+          </div>
         ) : null}
       </div>
     </li>
