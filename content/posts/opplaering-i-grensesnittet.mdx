@@ -1,0 +1,66 @@
+export const metadata = {
+  title: "Opplæring i grensesnittet: hvordan andre har gjort det før",
+  date: "2026-09-06",
+  summary:
+    "En kort reise gjennom fire tiår med forskning på å bygge opplæring inn i grensesnitt, fra Carroll & Rossons paradoks i 1987 til TaskLens i år, med situation awareness som målestokk for hva opplæringen faktisk skal oppnå.",
+  stage: "research",
+  tags: ["litteraturgjennomgang", "UX", "prosess"],
+};
+
+Med litt bedre bakgrunnskunnskap fra lærevitenskapen, har jeg nå sett på hvordan dette tar form i
+interaksjonsdesign. Hva slags forskning finnes på trening og opplæring i grensesnitt fra før, hva har allerede
+vært testet, og hva var resultatene?
+
+For å kunne si noe om hva som faktisk fungerer, trenger jeg et mål å vurdere løsningene opp mot.
+<SourcePill href="/research#endsley-situation-awareness">Endsley (1995)</SourcePill> sitt begrep situation
+awareness, evnen til å oppfatte, forstå og forutse det som skjer rundt seg, synes jeg gir et godt svar på dette.
+Uansett hvilke designgrep man gjør, er det dette man egentlig prøver å bygge mot, ikke bare hvor raskt en
+nybegynner kommer gjennom en oppgave.
+
+Med dette som utgangspunkt forsøkte jeg å følge utviklingen fra da man først begynte å se på brukeropplevelse
+innenfor HMI, og historien strekker seg lenger tilbake enn jeg trodde, til flere banebrytende studier på
+80-tallet.
+
+En av disse studiene, fra Carroll & Rosson <SourcePill href="/research#carroll-rosson-active-user">1987</SourcePill> beskriver
+et interessant funn om hvordan brukere møter onboarding og annen opplæring i grensesnitt. De oppdaget at nye
+brukere ofte hopper over manualen i møte med nye systemer, og at dette ikke skyldes mangel på motivasjon, men
+heller et ønske om å komme i gang med oppgave de skal løse. Dette fenomenet kaller de produksjonsskjevhet, en
+grunnleggende egenskap ved hvordan folk lærer, som en må ta hensyn til når man designer opplæring.
+
+Deres eget svar på dette problemet var å bygge opplæringen inn i selve interaksjonen i stedet. Konseptet
+"Training wheels" sperrer av de mest avanserte og feilutsatte funksjonene tidlig i læringen, slik at man unngår
+at nye brukere går seg bort i funksjoner og feilmeldinger de ikke enda kan å håndtere. Noen år tidligere, i
+<SourcePill href="/research#carroll-carrithers-training-wheels">Carroll & Carrithers (1984)</SourcePill> ble
+denne ideen empirisk testet, ved å fjerne de delene av et tekstbehandlingsprogram som ofte utløste feiltilstander
+hos nybegynnere. Resultatet var tydelig: treningsgruppen lærte det viktigste betydelig raskere, mens
+kontrollgruppen brukte nesten en fjerdedel av tiden sin på å komme seg ut av feil det forenklede grensesnittet
+ville ha unngått.
+
+Fyrti år etter Carroll & Carrithers sin studie, dukker den samme ideen opp igjen i mer moderne former.
+<SourcePill href="/research#forsey-et-al-designing-for-learnability">Forsey et al. (2024)</SourcePill> testet
+et lagdelt grensesnitt på et militært planleggingsverktøy, der avanserte funksjoner var grået ut for
+nybegynnere. Her var resultatene mer nyansert: de fant ingen statistisk signifikant forskjell i selve
+oppgaveløsningen, fordi individuelle forskjeller mellom brukerne overskygget effekten av grensesnittet. Samtidig
+ga det lagdelte grensesnittet jevnere prestasjon på tvers av brukere, og var et effektivt verktøy for å gi rask
+innføring i systemet. I tillegg kunne forfatterne konkluderte med at generiske grensesnitt og retningslinjer på
+tvers av systemer støtter læring og reduserer treningsbehovet, noe som ligner nettopp det OpenBridge allerede
+legger et grunnlag for.
+
+Jeg har også sett på et helt ferskt prosjekt <SourcePill href="/research#liu-sra-tasklens">Liu & Sra sitt TaskLens</SourcePill>,
+publisert i sommer. Her har de tatt konseptet ett skitt videre, ved å bruke en LLM til å automatisk bygge et
+forenklet grensesnitt for én spesifikk oppgave. Slik samler de instruksjon og verktøy på ett sted, og gir
+brukeren tilgang til de funksjonene nivået og oppgaven krever. Blant nybegynnere var dette betydelig mer
+effektivt for læring, men blant erfarne brukere var responsen delt: flere satte pris på mindre rot, men andre
+følte seg låst av de faste stegene og gikk rett til tastatursnarveier når grensesnittet ikke ga dem det de
+trengte.
+
+Dette funnet går igjen i mange av studiene jeg har sett på: ingen løsninger fungerer for alle, og flere peker på
+at tilpasning til den enkelte brukeren er noe som bør løses. Mange har vist at forenkling er et effektivt
+designgrep, men det er vanskelig å finne et nivå av forenkling som fungerer for alle.
+
+Kanskje er ikke spørsmålet bare hvor mye av grensesnittet man skal skjule for en nybegynner, men hva man
+egentlig prøver å oppnå ved å skjule det. Her synes jeg Endsley sitt begrep situation awareness, kanksje gir et
+bedre mål å designe mot enn "riktig mengde kompleksitet." Et opplæringsgrep som får en nybegynner raskt gjennom
+en oppgave, men som ikke bygger denne forståelsen, har kanskje ikke løst noe som helst. Det er spørsmålet jeg
+tar med meg videre: ikke bare hvordan man bygger opplæring inn i et grensesnitt som OpenBridge, men hvordan man
+vet om den opplæringen faktisk bygger denne forståelsen.
