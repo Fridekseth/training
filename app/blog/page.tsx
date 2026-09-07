@@ -7,7 +7,7 @@ import { formatDate, getPosts } from "@/lib/posts";
 export const metadata: Metadata = {
   title: "Process",
   description:
-    "Entries from a self-directed course on integrating training into OpenBridge interfaces.",
+    "Project documentation for OpenTraining",
 };
 
 export default async function BlogIndexPage() {

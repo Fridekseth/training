@@ -11,15 +11,14 @@ export default async function HomePage() {
     <div className="mx-auto max-w-3xl px-6 py-20">
       <section>
         <p className="text-xs font-medium tracking-wide text-accent">
-          Self-directed course · Interaction design
+          Interaction design · AHO
         </p>
         <h1 className="mt-4 max-w-2xl text-4xl leading-tight font-semibold tracking-tight text-balance text-foreground">
           How might training live inside OpenBridge interfaces?
         </h1>
         <p className="mt-5 max-w-xl text-lg leading-8 text-muted">
-          A working hub for the project: design decisions, research notes and
-          the reasoning in between, published as I go rather than written up at
-          the end.
+          This page documents the project, with design decisions, research notes and
+          the reasoning in between published continuously.
         </p>
 
         <div className="mt-8 flex flex-wrap gap-3">
