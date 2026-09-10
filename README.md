@@ -65,9 +65,10 @@ Every source carries these fields, all required:
 | `url`         | `string?`  | Omit when the source has no public link       |
 | `accessed`    | `string?`  | ISO date the link was last checked; omit alongside `url` |
 | `citation`    | `string`   | Full reference, in your citation style       |
-| `category`    | union[]    | One or more of `CATEGORIES`: `learning`, `neuroscience`, `ID`, `UX` |
+| `category`    | union[]    | One or more of `CATEGORIES`: `learning`, `neuroscience`, `ID`, `UX`, `design precedent` |
 | `type`        | union      | One of `TYPES`: `lecture`, `article`, `book`, `chapter`, `design` |
 | `keywords`    | `string[]` | Rendered as chips; click one to search it    |
+| `images`      | `Screenshot[]?` | Screenshots or figures, shown on the card without expanding; borrowed ones carry a `credit` |
 | `keyFindings` | `string[]` | One claim per bullet, not a topic label      |
 | `relevance`   | `string[]` | One bullet per reason it changes your design |
 
@@ -77,7 +78,21 @@ than letting the source drop silently out of the filters. Add a value to
 a new category appears as a filter as soon as a source uses it. A source can
 sit in several categories and shows up under each.
 
-Every field except `url` and `accessed` is required, which keeps records
+Design precedents (a product or service whose interface is itself the
+evidence) carry `images`: put the files under `public/precedents/<name>/`
+and give each one a `src`, `alt`, `caption` and its real pixel `width` and
+`height`. Filtering to the `design precedent` category then gives a visual
+library, since the thumbnails show without expanding a card.
+
+Any source can carry `images`, not only precedents. When an image is
+reproduced from someone else's work, such as a figure from a paper, give it
+a `credit` with the `source` and, where it applies, the `license` and
+`licenseUrl`. The card then prints "Reproduced from …" under the caption.
+Check the licence first: a CC BY figure may be reused with attribution,
+but an all-rights-reserved one needs permission. Leave `credit` out for
+screenshots you took yourself.
+
+Every field except `url`, `accessed` and `images` is required, which keeps records
 complete. A source you have logged but not yet worked through can carry empty
 `keyFindings` and `relevance` arrays; those sections are hidden on the card
 until you fill them in. If a required field genuinely does not apply to some

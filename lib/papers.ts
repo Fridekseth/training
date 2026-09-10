@@ -9,6 +9,7 @@ export const CATEGORIES = [
   "neuroscience",
   "ID",
   "UX",
+  "design precedent",
 ] as const;
 
 export const TYPES = [
@@ -28,6 +29,33 @@ export type Type = (typeof TYPES)[number];
  */
 export type Finding = string | { text: string; subPoints: string[] };
 
+/**
+ * A screenshot or image belonging to a source, for design precedents where the
+ * interface itself is the evidence. `width` and `height` are the file's real
+ * pixel dimensions, which `next/image` needs to reserve space before loading.
+ */
+export type Screenshot = {
+  src: string;
+  /** Describes the screen for anyone who cannot see it. */
+  alt: string;
+  /** Short line printed under the thumbnail. */
+  caption: string;
+  width: number;
+  height: number;
+  /**
+   * Attribution for an image reproduced from someone else's work, e.g. a
+   * figure from a paper. Printed as "Reproduced from …" under the caption.
+   * Leave it out for screenshots you captured yourself.
+   */
+  credit?: {
+    /** Where it comes from, e.g. "Liu & Sra (2026), Figure 6". */
+    source: string;
+    /** Licence it is reused under, e.g. "CC BY 4.0". */
+    license?: string;
+    licenseUrl?: string;
+  };
+};
+
 export type Paper = {
   /** Stable slug, used as the anchor and React key. */
   id: string;
@@ -46,6 +74,8 @@ export type Paper = {
   category: Category[];
   type: Type;
   keywords: string[];
+  /** Screenshots, for design precedents. Shown on the card without expanding. */
+  images?: Screenshot[];
   /** The takeaways worth remembering, one per bullet. */
   keyFindings: Finding[];
   /** Why this matters for the training-in-OpenBridge question, one per bullet. */
