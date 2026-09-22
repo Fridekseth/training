@@ -1,0 +1,103 @@
+/*
+  A custom version of the OpenBridge rich button: same proportions and tokens,
+  with an illustration in place of the icon and an optional badge. Values come
+  from the library's own custom properties, with the design's numbers as the
+  fallback for anything the library does not publish as a token.
+*/
+
+.button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: var(--ui-components-rich-button-margin-horizontal, 16px);
+  border: 1px solid var(--normal-enabled-border-color, transparent);
+  border-radius: var(--ui-components-rich-button-bording-radius, 6px);
+  background: var(--container-background-color, #f7f7f7);
+  box-shadow: var(--shadow-flat-x, 0px) var(--shadow-flat-y, 1px)
+    calc(var(--shadow-flat-blur, 2px) / 2) var(--shadow-flat-color, rgba(0, 0, 0, 0.23));
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.button:hover {
+  background: var(--normal-hover-background-color, #f0f0f0);
+}
+
+.button:active {
+  background: var(--normal-pressed-background-color, #e0e0e0);
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--border-focus-color, #1d3c67);
+  outline-offset: 2px;
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  color: var(--on-normal-disabled-color, #a0a0a0);
+}
+
+/* The teal plate the isometric drawing sits on. */
+.illustration {
+  position: relative;
+  flex-shrink: 0;
+  width: 90px;
+  height: 90px;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--base-teal-050, #e2f2f3);
+}
+
+.text {
+  display: flex;
+  flex: 1 0 0;
+  min-width: 0;
+  flex-direction: column;
+  padding: 0 var(--ui-components-rich-button-padding-horizontal, 8px);
+  word-break: break-word;
+}
+
+.label {
+  font-size: var(--font-size-100, 16px);
+  font-weight: 600;
+  line-height: var(--line-height-100, 24px);
+  color: var(--on-normal-active-color, #1f1f1f);
+}
+
+.description {
+  font-size: var(--font-size-075, 12px);
+  line-height: var(--line-height-075, 16px);
+  color: var(--on-normal-neutral-color, #535353);
+}
+
+.chevron {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  color: var(--on-normal-neutral-color, #535353);
+}
+
+/* Sits over the top right corner, as in the design. */
+.badge {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--instrument-enhanced-primary-color, #1d3c67);
+  color: var(--container-background-color, #f7f7f7);
+}
+
+/* The icon is a web component, so it is sized from the outside. */
+.badge > * {
+  display: block;
+  width: 12px;
+  height: 12px;
+}
