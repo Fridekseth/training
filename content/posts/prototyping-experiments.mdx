@@ -1,0 +1,87 @@
+export const metadata = {
+  title: "First prototyping Experiments",
+  date: "2026-09-22",
+  summary:
+    "I have experimented with Claude Code and Figma MCP to find a quick and precise way to make clickable prototypes in code from my design files.",
+  stage: "prototype",
+  tags: ["prototyping", "Claude Code", "Figma MCP", "prosess"],
+};
+
+I wanted to see how far a single prompt could get me, using different methods of
+translating design in to code. I did several quick experiments, which was an effective
+way of testing out new tools, and finding a workflow that worked for my needs.
+
+## First test: Figma MCP in Claude
+
+In my first experiment I connected Claude to my design file the Figma MCP, and used this
+prompt in the regular Claude chat.
+
+<PromptBox>
+{`implement this figma design file in to an HTML interactive file: https://www.figma.com/design/AO1IML8adicwZKtcn8za0s/Oppl%C3%A6ringsystem?node-id=469-57675`}
+</PromptBox>
+
+The result was a surprisingly accurate structure, but loss in the details. Even though it
+looks similar to OpenBridge, it is clear that it has not used the real components and
+icons. I also think I gave Claude too many frames in one go, that might have made the
+intended flow unclear.
+
+<PrototypeEmbed
+  title="First test: built from the Figma file in the Claude chat"
+  src="/prototypes/figma-mcp-first-test.html"
+  poster="/posts/prototyping-experiments/poster-first-test.png"
+  width={1200}
+  height={800}
+/>
+
+## Second test: Claude Code with the code library installed
+
+This time I asked Claude Code to build a prototype inside my existing documentation
+website. This gave it a proper framework to build in. In addition I installed the
+OpenBridge component library before prompting, so that Claude had access to the official
+OpenBridge components. I still used the Figma MCP to allow it to access my design file,
+but this time I pointed it at the training menu rather than the whole application. I used
+this prompt:
+
+<PromptBox>
+{`Make an interaktive prototype from this figma design file: https://www.figma.com/design/wtiTkELWhsKULC69463BkK/Prototyping?node-id=46-14474
+
+this is the menu to navigate between different training modes. Use openbridge components for everything possible. For icons that are not on the OpenBridge library, you can probably find them in googles material icons.`}
+</PromptBox>
+
+The result was a lot better than the first attempt. It used the actual OpenBridge
+components and icons, and downloaded the icons and illustrations from my Figma file as
+SVG. The biggest area of improval is the custom components I have built for training.
+These need some more work.
+
+<PrototypeEmbed
+  title="Second test: built with Claude Code and the OpenBridge components"
+  app="training-menu"
+  variant="second-test"
+  poster="/posts/prototyping-experiments/poster-openbridge-prototype.png"
+  href="/prototype"
+  width={1080}
+  height={608}
+/>
+
+## Third test: Building custom components
+
+To improve the custom components I tried feeding Claude only the new component, to see if
+it would be able to implement it in code when given only that task.
+
+<PromptBox>
+{`This is a custom version of the rich button from OpenBrigde. Translate the design to a clickable button in Code: https://www.figma.com/design/wtiTkELWhsKULC69463BkK/Prototyping?node-id=54-26283 Use OpenBridge tokens wherever possible.`}
+</PromptBox>
+
+It did so very smoothly, and even added it in to the flow, even though I only asked for
+the button itself.
+
+<PrototypeEmbed
+  title="Third test: the custom rich button, in place on the overview screen"
+  app="training-menu"
+  variant="third-test"
+  initialPage="overview"
+  poster="/posts/prototyping-experiments/poster-custom-button.png"
+  href="/prototype#overview"
+  width={1080}
+  height={608}
+/>

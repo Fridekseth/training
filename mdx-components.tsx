@@ -1,5 +1,7 @@
 import type { MDXComponents } from "mdx/types";
 import Link from "next/link";
+import { PromptBox } from "@/components/prompt-box";
+import { PrototypeEmbed } from "@/components/prototype-embed";
 import { SourcePill } from "@/components/source-pill";
 
 /*
@@ -9,6 +11,8 @@ import { SourcePill } from "@/components/source-pill";
 */
 const components: MDXComponents = {
   SourcePill,
+  PromptBox,
+  PrototypeEmbed,
   h1: (props) => (
     <h1
       className="mt-12 mb-4 text-3xl font-semibold tracking-tight text-foreground first:mt-0"

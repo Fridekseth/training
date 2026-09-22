@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orkla monitorering — Training</title>
+<style>
+  :root{
+    --bg-app:#e4e4e4;
+    --bg-section:#f0f0f0;
+    --bg-card:#f7f7f7;
+    --bg-white:#ffffff;
+    --border-divider:#dddddd;
+    --text-active:#1f1f1f;
+    --text-secondary:#3d3d3d;
+    --text-neutral:#535353;
+    --teal-500:#005d61;
+    --teal-050:#e2f2f3;
+    --blue-active-bg:#e1ebf9;
+    --blue-active-bg-strong:#e4eefd;
+    --blue-active-border:#b2cff9;
+    --blue-active-text:#1d3c67;
+    --blue-btn-bg:#1d3c67;
+    --blue-btn-border:#152f53;
+    --blue-btn-text:#e4eefd;
+    --tag-green-bg:#bfe5d5;--tag-green-border:#85cdb0;--tag-green-text:#00452f;
+    --tag-yellow-bg:#e4dcb9;--tag-yellow-border:#cabb79;--tag-yellow-text:#483a00;
+    --tag-blue-bg:#cadefc;--tag-blue-border:#9cc1f5;--tag-blue-text:#1d3c67;
+    --radius-base:6px;
+    --shadow-flat:0 1px 2px rgba(0,0,0,.18);
+    --shadow-floating:0 4px 16px rgba(0,0,0,.32);
+    --danger-bg:#f6d7d3; --danger-border:#e3a89e; --danger-text:#7a2a1c; --danger-solid:#b3311d;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg-app:#1b1c1e;
+      --bg-section:#242527;
+      --bg-card:#2c2d30;
+      --bg-white:#2c2d30;
+      --border-divider:#3d3e41;
+      --text-active:#f1f1f1;
+      --text-secondary:#d5d5d5;
+      --text-neutral:#a9a9a9;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg-app:#1b1c1e;
+    --bg-section:#242527;
+    --bg-card:#2c2d30;
+    --bg-white:#2c2d30;
+    --border-divider:#3d3e41;
+    --text-active:#f1f1f1;
+    --text-secondary:#d5d5d5;
+    --text-neutral:#a9a9a9;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;background:var(--bg-app);}
+  body{
+    font-family:'Noto Sans','Segoe UI',Helvetica,Arial,sans-serif;
+    color:var(--text-active);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:100vh;
+    padding:24px;
+  }
+  .app{
+    width:100%;
+    max-width:1200px;
+    height:min(84vh,760px);
+    min-height:520px;
+    background:var(--bg-section);
+    border-radius:8px;
+    box-shadow:var(--shadow-floating);
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    position:relative;
+  }
+  button{font-family:inherit;}
+  /* ---------- topbar ---------- */
+  .topbar{
+    height:48px;flex:0 0 48px;
+    background:var(--bg-white);
+    box-shadow:var(--shadow-flat);
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 4px;position:relative;z-index:5;
+  }
+  .topbar .left, .topbar .right{display:flex;align-items:center;gap:0;}
+  .icon-btn{
+    width:48px;height:48px;border:none;background:transparent;border-radius:6px;
+    display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-neutral);
+    position:relative;
+  }
+  .icon-btn:hover{background:rgba(0,0,0,.06)}
+  .icon-btn svg{width:24px;height:24px;}
+  .app-name{font-size:16px;color:var(--text-active);padding-right:8px;white-space:nowrap;}
+  .page-badge{font-size:16px;font-weight:700;color:var(--text-active);white-space:nowrap;}
+  .clock{
+    display:flex;align-items:center;gap:4px;height:32px;padding:0 8px;border-radius:6px;
+    font-variant-numeric:tabular-nums;font-size:16px;color:var(--text-secondary);margin:0 4px;
+  }
+  .alert-dot{
+    position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;
+    background:var(--danger-solid);border:1px solid var(--bg-white);
+  }
+  /* ---------- app body ---------- */
+  .app-body{flex:1;display:flex;min-height:0;}
+  .sidebar{
+    width:211px;flex:0 0 211px;border-right:1px solid var(--border-divider);
+    display:flex;flex-direction:column;align-items:center;padding:0 16px;
+  }
+  .sidebar-toprow{display:flex;justify-content:space-between;width:100%;padding:16px 0;}
+  .nav-list{width:100%;display:flex;flex-direction:column;gap:2px;}
+  .nav-section{width:100%;padding:16px 0;display:flex;flex-direction:column;gap:2px;}
+  .nav-section + .nav-section{border-top:1px solid var(--border-divider);}
+  .nav-item{
+    height:48px;border-radius:6px;border:1px solid transparent;background:transparent;
+    display:flex;align-items:center;gap:8px;padding:0 12px;width:100%;cursor:pointer;
+    color:var(--text-neutral);font-size:16px;text-align:left;position:relative;
+  }
+  .nav-item svg{width:24px;height:24px;flex:0 0 24px;}
+  .nav-item:hover{background:rgba(0,0,0,.05);}
+  .nav-item.active{
+    background:var(--blue-active-bg-strong);border-color:var(--blue-active-border);
+    color:var(--blue-active-text);font-weight:700;
+  }
+  .nav-dot{position:absolute;left:2px;top:2px;width:8px;height:8px;border-radius:50%;background:var(--teal-500);}
+  /* ---------- main ---------- */
+  .main{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden;}
+  .toolbar{
+    height:48px;flex:0 0 48px;display:flex;align-items:center;padding:0 4px;gap:8px;
+  }
+  .nav-arrows{display:flex;align-items:center;}
+  .breadcrumb{
+    display:flex;align-items:center;gap:4px;height:32px;padding:4px;border-radius:6px;color:var(--text-secondary);font-size:16px;
+  }
+  .breadcrumb svg{width:24px;height:24px;}
+  .content{flex:1;overflow:auto;padding:48px;display:none;flex-direction:column;gap:32px;}
+  .content.active{display:flex;}
+  h1.page-title{font-size:24px;font-weight:700;margin:0;color:var(--text-active);}
+  p.page-desc{font-size:16px;line-height:24px;color:var(--text-neutral);margin:0;max-width:640px;}
+
+  /* home hero */
+  .hero{display:flex;justify-content:space-between;gap:24px;align-items:flex-start;}
+  .hero-text{max-width:400px;display:flex;flex-direction:column;gap:8px;}
+  .hero-art{
+    width:384px;height:201px;flex:0 0 384px;background:var(--teal-050);border-radius:6px;
+    box-shadow:0 4px 4px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;color:var(--teal-500);overflow:hidden;
+  }
+  .hero-art svg{width:100%;height:100%;}
+  .card-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .elevated-card{
+    background:var(--bg-card);border:1px solid transparent;border-radius:6px;box-shadow:var(--shadow-flat);
+    display:flex;align-items:center;gap:8px;padding:8px 16px;min-height:64px;cursor:pointer;text-align:left;width:100%;
+    color:inherit;
+  }
+  .elevated-card:hover{border-color:var(--blue-active-border);}
+  .elevated-card svg{width:24px;height:24px;flex:0 0 24px;color:var(--teal-500);}
+  .elevated-card .txt{flex:1;min-width:0;}
+  .elevated-card .txt .t1{font-size:16px;color:var(--text-secondary);}
+  .elevated-card .txt .t2{font-size:12px;color:var(--text-neutral);}
+  .elevated-card .chev{color:var(--text-neutral);}
+
+  /* rich buttons row (overview) */
+  .rich-row{display:flex;gap:24px;}
+  .rich-btn{
+    flex:1;background:var(--bg-card);border:none;border-radius:6px;box-shadow:0 1px 2px rgba(0,0,0,.23);
+    display:flex;align-items:center;gap:8px;padding:16px;cursor:pointer;text-align:left;color:inherit;position:relative;
+  }
+  .rich-btn .icon-box{width:90px;height:90px;flex:0 0 90px;border-radius:6px;background:var(--teal-050);display:flex;align-items:center;justify-content:center;color:var(--teal-500);}
+  .rich-btn .icon-box svg{width:56px;height:56px;}
+  .rich-btn .txt{flex:1;min-width:0;}
+  .rich-btn .txt .t1{font-size:16px;font-weight:600;color:var(--text-active);}
+  .rich-btn .txt .t2{font-size:12px;color:var(--text-neutral);margin-top:2px;}
+  .rich-btn .badge{position:absolute;top:8px;right:44px;width:16px;height:16px;background:var(--blue-btn-bg);border-radius:2px;display:flex;align-items:center;justify-content:center;}
+  .rich-btn .badge svg{width:12px;height:12px;color:#fff;}
+
+  /* table */
+  table.log-table{width:100%;border-collapse:collapse;background:var(--bg-card);border-radius:6px;overflow:hidden;box-shadow:var(--shadow-flat);}
+  table.log-table th{
+    text-align:left;font-size:16px;font-weight:700;color:var(--text-neutral);padding:12px;
+    border-bottom:1px solid var(--border-divider);white-space:nowrap;
+  }
+  table.log-table td{padding:8px 12px;font-size:16px;color:var(--text-active);border-bottom:1px solid var(--border-divider);}
+  table.log-table tr:last-child td{border-bottom:none;}
+  table.log-table tr:hover td{background:rgba(0,0,0,.03);}
+  .tname{font-weight:700;}
+  .tsub{color:var(--text-neutral);margin-left:6px;}
+  .ring{display:inline-flex;align-items:center;gap:8px;}
+  .ring svg{width:28px;height:28px;}
+  .tag{display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 6px;border-radius:4px;font-size:12px;border:1px solid;}
+  .tag.green{background:var(--tag-green-bg);border-color:var(--tag-green-border);color:var(--tag-green-text);}
+  .tag.yellow{background:var(--tag-yellow-bg);border-color:var(--tag-yellow-border);color:var(--tag-yellow-text);}
+  .tag.blue{background:var(--tag-blue-bg);border-color:var(--tag-blue-border);color:var(--tag-blue-text);}
+  .start-btn{
+    height:32px;padding:0 8px;background:var(--blue-btn-bg);border:1px solid var(--blue-btn-border);color:var(--blue-btn-text);
+    border-radius:6px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:16px;font-weight:600;
+  }
+  .start-btn:hover{filter:brightness(1.1);}
+  .start-btn svg{width:20px;height:20px;}
+  .row-icon{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;color:var(--text-neutral);margin-right:6px;vertical-align:middle;}
+  .row-icon svg{width:24px;height:24px;}
+
+  /* scenario tags row */
+  .scenario-note{display:flex;gap:12px;align-items:center;background:var(--bg-card);border-radius:6px;padding:16px;box-shadow:var(--shadow-flat);}
+  .scenario-note svg{width:32px;height:32px;color:var(--teal-500);flex:0 0 32px;}
+
+  /* ---------- SIMULATION ---------- */
+  .simulation{
+    position:absolute;inset:0;background:#eef1f3;display:flex;flex-direction:column;z-index:20;
+    opacity:0;pointer-events:none;transition:opacity .15s ease;
+  }
+  .simulation.show{opacity:1;pointer-events:auto;}
+  .sim-topbar{
+    height:48px;flex:0 0 48px;background:var(--bg-white);box-shadow:var(--shadow-flat);display:flex;align-items:center;justify-content:space-between;padding:0 8px;position:relative;z-index:6;
+  }
+  .sim-topbar .left{display:flex;align-items:center;gap:8px;}
+  .sim-title{font-size:16px;font-weight:700;}
+  .sim-sub{font-size:12px;color:var(--text-neutral);}
+  .sim-body{flex:1;display:flex;min-height:0;position:relative;}
+  .sim-datapanel{
+    width:270px;flex:0 0 270px;background:var(--bg-white);border-right:1px solid var(--border-divider);
+    display:flex;flex-direction:column;overflow-y:auto;
+  }
+  .dp-header{padding:20px 16px;border-bottom:1px solid var(--border-divider);}
+  .dp-header .line-name{font-size:16px;font-weight:700;}
+  .dp-header .line-sub{font-size:12px;color:var(--text-neutral);margin-top:2px;}
+  .dp-card{padding:14px 16px;border-bottom:1px solid var(--border-divider);}
+  .dp-card .lbl{font-size:12px;color:var(--text-neutral);text-transform:uppercase;letter-spacing:.4px;}
+  .dp-card .val{font-size:22px;font-weight:700;margin-top:4px;}
+  .dp-card .val.ok{color:var(--teal-500);}
+  .dp-card .val.warn{color:#8a6a10;}
+  .dp-card .val.danger{color:var(--danger-solid);}
+  .sim-graphic{flex:1;background:#f4f6f7;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+  .line-svg{width:92%;max-width:760px;}
+  .station{cursor:pointer;}
+  .station rect{transition:filter .15s;}
+  .station:hover rect{filter:brightness(1.06);}
+  .station.highlight rect{stroke:var(--teal-500);stroke-width:3;}
+  .station.alarm rect{fill:var(--danger-bg);stroke:var(--danger-solid);stroke-width:3;}
+  .alert-banner{
+    position:absolute;top:12px;left:50%;transform:translateX(-50%);background:var(--danger-solid);color:#fff;
+    padding:8px 20px;border-radius:6px;font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;
+    box-shadow:var(--shadow-flat);animation:pulse 1.6s infinite;
+  }
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.75;}}
+
+  .sim-flyout{
+    position:absolute;left:0;top:0;bottom:0;width:269px;background:var(--bg-white);box-shadow:var(--shadow-floating);
+    display:flex;flex-direction:column;padding:8px;gap:2px;transform:translateX(-100%);transition:transform .18s ease;z-index:8;
+  }
+  .sim-flyout.show{transform:translateX(0);}
+  .sim-flyout .footer{margin-top:auto;border-top:1px solid var(--border-divider);padding-top:8px;display:flex;flex-direction:column;gap:2px;}
+
+  .sim-context{
+    position:absolute;width:270px;background:var(--bg-white);border-radius:6px;box-shadow:var(--shadow-floating);
+    padding:8px;display:none;flex-direction:column;gap:8px;z-index:9;
+  }
+  .sim-context.show{display:flex;}
+  .ctx-btn{
+    background:var(--bg-card);border:none;border-radius:6px;padding:12px;display:flex;flex-direction:column;gap:2px;text-align:left;cursor:pointer;
+  }
+  .ctx-btn:hover{background:var(--blue-active-bg);}
+  .ctx-btn .t1{font-weight:600;font-size:14px;}
+  .ctx-btn .t2{font-size:12px;color:var(--text-neutral);}
+
+  .sim-overlay-panel{
+    position:absolute;top:64px;right:24px;width:280px;background:var(--bg-white);border-radius:6px;box-shadow:var(--shadow-floating);
+    display:none;flex-direction:column;z-index:9;overflow:hidden;
+  }
+  .sim-overlay-panel.show{display:flex;}
+  .sop-header{padding:12px 16px;border-bottom:1px solid var(--border-divider);display:flex;justify-content:space-between;align-items:center;}
+  .sop-header .t{font-weight:700;}
+  .sop-close{background:none;border:none;cursor:pointer;color:var(--text-neutral);}
+
+  .sim-chat{
+    position:absolute;right:16px;bottom:16px;width:340px;max-height:420px;background:var(--bg-white);border-radius:10px;
+    box-shadow:var(--shadow-floating);display:none;flex-direction:column;overflow:hidden;z-index:9;
+  }
+  .sim-chat.show{display:flex;}
+  .chat-header{padding:10px 14px;border-bottom:1px solid var(--border-divider);display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:14px;}
+  .chat-body{padding:12px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;max-height:260px;}
+  .chat-msg{display:flex;gap:8px;}
+  .chat-avatar{width:32px;height:32px;border-radius:50%;background:var(--blue-active-bg);color:var(--blue-active-text);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex:0 0 32px;}
+  .chat-bubble{background:var(--bg-card);border-radius:8px;padding:8px 10px;font-size:13px;line-height:18px;color:var(--text-active);}
+  .chat-input-row{border-top:1px solid var(--border-divider);padding:8px;display:flex;gap:6px;}
+  .chat-input-row input{flex:1;border:1px solid var(--border-divider);border-radius:6px;padding:8px;font-size:13px;font-family:inherit;background:var(--bg-section);color:var(--text-active);}
+  .chat-input-row button{border:none;background:var(--blue-btn-bg);color:var(--blue-btn-text);border-radius:6px;padding:0 12px;cursor:pointer;font-weight:600;}
+
+  .sim-toolrow{position:absolute;right:16px;top:64px;display:flex;flex-direction:column;gap:8px;z-index:7;}
+  .sim-fab{
+    width:48px;height:48px;border-radius:50%;background:var(--bg-white);box-shadow:var(--shadow-floating);border:none;
+    display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-neutral);
+  }
+  .sim-fab.primary{background:var(--blue-btn-bg);color:var(--blue-btn-text);}
+  .sim-fab svg{width:24px;height:24px;}
+
+  @media (max-width:760px){
+    .app{max-width:100%;height:100vh;border-radius:0;}
+    .sidebar{position:absolute;left:0;top:48px;bottom:0;background:var(--bg-section);z-index:6;transform:translateX(-100%);transition:transform .18s;box-shadow:var(--shadow-floating);}
+    .sidebar.open{transform:translateX(0);}
+    .content{padding:20px;}
+    .hero{flex-direction:column;}
+    .hero-art{width:100%;flex:none;}
+    .card-grid{grid-template-columns:1fr;}
+    .rich-row{flex-direction:column;}
+    table.log-table{display:block;overflow-x:auto;white-space:nowrap;}
+    .sim-datapanel{position:absolute;left:0;top:0;bottom:0;z-index:7;transform:translateX(-100%);transition:transform .18s;}
+    .sim-datapanel.open{transform:translateX(0);}
+  }
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+
+  <!-- ================= TOPBAR ================= -->
+  <div class="topbar">
+    <div class="left">
+      <button class="icon-btn" id="sidebarToggle" title="Menu" aria-label="Toggle menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <span class="app-name">Orkla monitorering</span>
+      <span class="page-badge" id="pageBadge">Training</span>
+    </div>
+    <div class="right">
+      <button class="icon-btn" title="Alerts" aria-label="Alerts">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </button>
+      <button class="icon-btn" id="themeToggle" title="Dimming" aria-label="Toggle dimming">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+      <span class="clock" id="clock">--:--:--</span>
+    </div>
+  </div>
+
+  <!-- ================= BODY ================= -->
+  <div class="app-body">
+    <nav class="sidebar" id="sidebar">
+      <div class="sidebar-toprow">
+        <button class="icon-btn" title="Collapse panel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+        <button class="icon-btn" title="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
+      </div>
+
+      <div class="nav-section">
+        <button class="nav-item" data-page="home">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+          Home
+        </button>
+      </div>
+
+      <div class="nav-section">
+        <button class="nav-item" data-page="overview" style="position:relative;">
+          <span class="nav-dot"></span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="20" x2="4" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="20" y1="20" x2="20" y2="14"/></svg>
+          Overview
+        </button>
+        <button class="nav-item" data-page="getting-started">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v18H6.5A2.5 2.5 0 0 0 4 22.5v-18z"/><line x1="4" y1="19.5" x2="20" y2="19.5"/></svg>
+          Getting started
+        </button>
+        <button class="nav-item" data-page="explore">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M16.65 16.65 21 21"/><path d="M9.5 9.5l4 1.5-1.5 4-4-1.5z"/></svg>
+          Explore
+        </button>
+        <button class="nav-item" data-page="scenarios">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Scenarios
+        </button>
+      </div>
+    </nav>
+
+    <main class="main">
+      <div class="toolbar">
+        <div class="nav-arrows">
+          <button class="icon-btn" id="navBack" title="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+          <button class="icon-btn" id="navFwd" title="Forward"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+        </div>
+        <div class="breadcrumb" id="breadcrumb">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/></svg>
+          <span id="breadcrumbLabel">Home</span>
+        </div>
+      </div>
+
+      <!-- ============ HOME ============ -->
+      <section class="content active" id="page-home" data-title="Home">
+        <div class="hero">
+          <div class="hero-text">
+            <h1 class="page-title">Training</h1>
+            <p class="page-desc">Training lets you explore the system in a safe environment. Actions taken while training is active never affect live production. Keep training consistent to build safe, correct routines.</p>
+          </div>
+          <div class="hero-art">
+            <svg viewBox="0 0 200 110" fill="none" stroke="currentColor" stroke-width="2.2">
+              <rect x="18" y="60" width="34" height="34" rx="2"/><path d="M18 60l17-16 17 16"/>
+              <circle cx="150" cy="30" r="14"/><path d="M150 16v-6M150 50v-6M136 30h-6M170 30h-6"/>
+              <rect x="98" y="66" width="30" height="22" rx="3"/><path d="M100 66l13-9 13 9"/>
+              <circle cx="60" cy="24" r="8"/><circle cx="76" cy="24" r="8"/>
+              <rect x="150" y="66" width="28" height="22" rx="2"/><line x1="150" y1="77" x2="178" y2="77"/>
+            </svg>
+          </div>
+        </div>
+        <div class="card-grid">
+          <button class="elevated-card" data-page="overview">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="20" x2="4" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="20" y1="20" x2="20" y2="14"/></svg>
+            <div class="txt"><div class="t1">Overview</div><div class="t2">Training log with personal advice for better learning.</div></div>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 6 15 12 9 18"/></svg>
+          </button>
+          <button class="elevated-card" data-page="getting-started">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v18H6.5A2.5 2.5 0 0 0 4 22.5v-18z"/><line x1="4" y1="19.5" x2="20" y2="19.5"/></svg>
+            <div class="txt"><div class="t1">Getting started</div><div class="t2">Learn the basics, and get familiar with the system.</div></div>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 6 15 12 9 18"/></svg>
+          </button>
+          <button class="elevated-card" data-page="explore">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M16.65 16.65 21 21"/></svg>
+            <div class="txt"><div class="t1">Explore</div><div class="t2">Explore the application freely.</div></div>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 6 15 12 9 18"/></svg>
+          </button>
+          <button class="elevated-card" data-page="scenarios">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg>
+            <div class="txt"><div class="t1">Scenarios</div><div class="t2">Practice critical situations in simulated scenarios.</div></div>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 6 15 12 9 18"/></svg>
+          </button>
+        </div>
+      </section>
+
+      <!-- ============ OVERVIEW ============ -->
+      <section class="content" id="page-overview" data-title="Overview">
+        <h1 class="page-title">Welcome back!</h1>
+        <div class="rich-row">
+          <button class="rich-btn" data-page="getting-started">
+            <div class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><line x1="12" y1="8" x2="12" y2="13"/><circle cx="12" cy="16.5" r=".6" fill="#fff"/></svg></div>
+            <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg></div>
+            <div class="txt"><div class="t1">Recurrent training</div><div class="t2">Complete the recurrent training course before 31.08 to keep your certification.</div></div>
+          </button>
+          <button class="rich-btn" data-page="scenarios">
+            <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="12" r="3"/><circle cx="17" cy="12" r="3"/><line x1="10" y1="12" x2="14" y2="12"/></svg></div>
+            <div class="txt"><div class="t1">Recommended practice</div><div class="t2">No critical alarm in 4 months — run a scenario to keep routines sharp.</div></div>
+          </button>
+        </div>
+        <div>
+          <p class="page-desc" style="font-weight:600;color:var(--text-active);margin-bottom:12px;">Training log:</p>
+          <table class="log-table">
+            <thead><tr><th>Date</th><th>Title</th><th>Result</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>18.08.2026</td><td><span class="tname">Getting started</span><span class="tsub">Onboarding refresh</span></td><td><span class="ring">92% correct</span></td><td><span class="tag yellow">In progress</span></td></tr>
+              <tr><td>15.04.2026</td><td><span class="tname">Scenario</span><span class="tsub">Alarm</span></td><td><span class="ring">80% correct</span></td><td><span class="tag green">Completed</span></td></tr>
+              <tr><td>02.01.2026</td><td><span class="tname">Scenario</span><span class="tsub">Critical alarm</span></td><td><span class="ring">98% correct</span></td><td><span class="tag green">Completed</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ============ GETTING STARTED ============ -->
+      <section class="content" id="page-getting-started" data-title="Getting started">
+        <div class="hero">
+          <div class="hero-text">
+            <h1 class="page-title">Getting started</h1>
+            <p class="page-desc">This onboarding sequence introduces the system and its features. It takes about 30 minutes in total — complete it in one go or take breaks. You can leave at any time; your progress is saved.</p>
+          </div>
+          <div class="hero-art">
+            <svg viewBox="0 0 200 110" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M30 30h60v60H30z"/><path d="M30 30l30 14 30-14"/><path d="M60 44v46"/>
+              <path d="M110 70h60v20h-60z"/><path d="M120 70v-8h40v8"/>
+            </svg>
+          </div>
+        </div>
+        <table class="log-table">
+          <thead><tr><th>Chapters</th><th>Result</th><th>Status</th><th>Start</th></tr></thead>
+          <tbody id="chaptersTable"></tbody>
+        </table>
+      </section>
+
+      <!-- ============ EXPLORE ============ -->
+      <section class="content" id="page-explore" data-title="Explore">
+        <h1 class="page-title">Explore</h1>
+        <p class="page-desc">Move freely through the monitoring interface. Nothing you do here touches live data — click any station on the line to inspect it.</p>
+        <button class="elevated-card" style="max-width:420px;" id="launchFreeExplore">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <div class="txt"><div class="t1">Launch free exploration</div><div class="t2">Opens the live monitoring interface, unguided.</div></div>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 6 15 12 9 18"/></svg>
+        </button>
+        <table class="log-table">
+          <thead><tr><th>Area</th><th>Result</th><th>Status</th><th>Start</th></tr></thead>
+          <tbody id="exploreTable"></tbody>
+        </table>
+      </section>
+
+      <!-- ============ SCENARIOS ============ -->
+      <section class="content" id="page-scenarios" data-title="Scenarios">
+        <h1 class="page-title">Scenarios</h1>
+        <p class="page-desc">Practice critical situations in a fully simulated version of the interface — no risk to live production.</p>
+        <table class="log-table">
+          <thead><tr><th>Scenario</th><th>Result</th><th>Status</th><th>Start</th></tr></thead>
+          <tbody id="scenarioTable"></tbody>
+        </table>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ================= SIMULATION OVERLAY ================= -->
+  <div class="simulation" id="simulation">
+    <div class="sim-topbar">
+      <div class="left">
+        <button class="icon-btn" id="simExit" title="Exit simulation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+        <div>
+          <div class="sim-title" id="simTitle">Free exploration</div>
+          <div class="sim-sub" id="simSub">Training mode — changes are never saved</div>
+        </div>
+      </div>
+      <button class="icon-btn" id="simMenuToggle" title="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+    </div>
+    <div class="sim-body">
+      <aside class="sim-datapanel" id="simDatapanel">
+        <div class="dp-header">
+          <div class="line-name">Production line 3</div>
+          <div class="line-sub">Bakery — Orkla monitorering</div>
+        </div>
+        <div class="dp-card"><div class="lbl">Performance</div><div class="val ok" id="dpPerformance">94%</div></div>
+        <div class="dp-card"><div class="lbl">Production</div><div class="val" id="dpProduction">1 240 units / h</div></div>
+        <div class="dp-card"><div class="lbl">Stop last hour</div><div class="val" id="dpStops">2 min 10 s</div></div>
+      </aside>
+      <div class="sim-graphic">
+        <div class="alert-banner" id="alertBanner" style="display:none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span id="alertText">Critical alarm — Line 3</span>
+        </div>
+        <svg class="line-svg" id="lineSvg" viewBox="0 0 700 220">
+          <line x1="80" y1="110" x2="620" y2="110" stroke="#c7cdd1" stroke-width="4"/>
+          <g class="station" data-station="topping" transform="translate(40,70)">
+            <rect width="120" height="80" rx="8" fill="#fff" stroke="#c7cdd1" stroke-width="2"/>
+            <text x="60" y="45" text-anchor="middle" font-size="14" font-family="Noto Sans, sans-serif" fill="#1f1f1f">Topping</text>
+          </g>
+          <g class="station" data-station="bakeri" transform="translate(210,70)">
+            <rect width="120" height="80" rx="8" fill="#fff" stroke="#c7cdd1" stroke-width="2"/>
+            <text x="60" y="45" text-anchor="middle" font-size="14" font-family="Noto Sans, sans-serif" fill="#1f1f1f">Bakeri</text>
+          </g>
+          <g class="station" data-station="folie" transform="translate(380,70)">
+            <rect width="120" height="80" rx="8" fill="#fff" stroke="#c7cdd1" stroke-width="2"/>
+            <text x="60" y="45" text-anchor="middle" font-size="14" font-family="Noto Sans, sans-serif" fill="#1f1f1f">Folie</text>
+          </g>
+          <g class="station" data-station="pakking" transform="translate(550,70)">
+            <rect width="110" height="80" rx="8" fill="#fff" stroke="#c7cdd1" stroke-width="2"/>
+            <text x="55" y="45" text-anchor="middle" font-size="14" font-family="Noto Sans, sans-serif" fill="#1f1f1f">Pakking</text>
+          </g>
+        </svg>
+
+        <div class="sim-toolrow">
+          <button class="sim-fab" id="simChatToggle" title="Open chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-8.4 8.4 8.5 8.5 0 0 1-3.9-.9L3 21l1.9-5.7A8.4 8.4 0 1 1 21 11.5z"/></svg></button>
+        </div>
+
+        <!-- context menu on station click -->
+        <div class="sim-context" id="simContext">
+          <button class="ctx-btn" id="ctxViewPerf"><span class="t1">View performance</span><span class="t2">Live figures for this station</span></button>
+          <button class="ctx-btn" id="ctxReport"><span class="t1">Report issue</span><span class="t2">Log a note for the shift team</span></button>
+        </div>
+
+        <!-- overlay data panel for a station -->
+        <div class="sim-overlay-panel" id="simOverlayPanel">
+          <div class="sop-header"><span class="t" id="sopTitle">Station</span><button class="sop-close" id="sopClose">✕</button></div>
+          <div class="dp-card"><div class="lbl">Performance</div><div class="val ok" id="sopPerf">88%</div></div>
+          <div class="dp-card"><div class="lbl">Production</div><div class="val" id="sopProd">310 units / h</div></div>
+          <div class="dp-card"><div class="lbl">Stop last hour</div><div class="val" id="sopStop">0 min</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- flyout nav -->
+    <div class="sim-flyout" id="simFlyout">
+      <button class="nav-item" data-page="home" data-sim-exit="1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+        Back to training home
+      </button>
+      <button class="nav-item" data-page="overview" data-sim-exit="1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="20" x2="4" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="20" y1="20" x2="20" y2="14"/></svg>
+        Overview
+      </button>
+      <button class="nav-item" data-page="scenarios" data-sim-exit="1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg>
+        Scenarios
+      </button>
+      <div class="footer">
+        <button class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Settings</button>
+        <button class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 1 1 5.8 1c0 2-3 2-3 4"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help</button>
+      </div>
+    </div>
+
+    <!-- chat panel -->
+    <div class="sim-chat" id="simChat">
+      <div class="chat-header"><span>Line 3 chat</span><button class="sop-close" id="chatClose">✕</button></div>
+      <div class="chat-body" id="chatBody">
+        <div class="chat-msg"><div class="chat-avatar">SH</div><div class="chat-bubble">I recommend everyone study all the machines in the component overview, and get familiar with where they are on the line.</div></div>
+        <div class="chat-msg"><div class="chat-avatar">You</div><div class="chat-bubble">Where can I find the component overview?</div></div>
+      </div>
+      <div class="chat-input-row">
+        <input type="text" id="chatInput" placeholder="Write a message…">
+        <button id="chatSend">Send</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var stationData = {
+    topping:{label:"Topping", perf:"62%", prod:"180 units / h", stop:"6 min", cls:"warn"},
+    bakeri:{label:"Bakeri", perf:"88%", prod:"310 units / h", stop:"0 min", cls:"ok"},
+    folie:{label:"Folie", perf:"71%", prod:"260 units / h", stop:"1 min", cls:"ok"},
+    pakking:{label:"Pakking", perf:"95%", prod:"400 units / h", stop:"0 min", cls:"ok"}
+  };
+
+  var chapters = [
+    {name:"Application patterns", icon:"grid", pct:92, status:"green", statusText:"Completed"},
+    {name:"Topping", icon:"topping", pct:20, status:"yellow", statusText:"In progress", station:"topping"},
+    {name:"Bakeri", icon:"bakeri", pct:0, status:"blue", statusText:"Not started", station:"bakeri"},
+    {name:"Folie", icon:"folie", pct:0, status:"blue", statusText:"Not started", station:"folie"},
+    {name:"Pakking", icon:"pakking", pct:0, status:"blue", statusText:"Not started", station:"pakking"}
+  ];
+  var exploreAreas = [
+    {name:"Topping station", pct:null, status:"blue", statusText:"Free roam", station:"topping"},
+    {name:"Bakeri station", pct:null, status:"blue", statusText:"Free roam", station:"bakeri"},
+    {name:"Folie station", pct:null, status:"blue", statusText:"Free roam", station:"folie"},
+    {name:"Pakking station", pct:null, status:"blue", statusText:"Free roam", station:"pakking"}
+  ];
+  var scenarios = [
+    {name:"Alarm", pct:80, status:"green", statusText:"Completed", mode:"alarm"},
+    {name:"Critical alarm", pct:98, status:"green", statusText:"Completed", mode:"critical"},
+    {name:"Line stoppage", pct:0, status:"blue", statusText:"Not started", mode:"stoppage"}
+  ];
+
+  function ringSvg(){
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="#535353" stroke-width="2.5"><circle cx="12" cy="12" r="9" stroke-opacity=".25"/><path d="M12 3a9 9 0 0 1 6 15.7"/></svg>';
+  }
+  function startIcon(){
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="6 3 20 12 6 21 6 3"/></svg>';
+  }
+  function rowIcon(kind){
+    var paths = {
+      grid:'<rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/>',
+      topping:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="9" r="1.4" fill="currentColor"/><circle cx="9" cy="13" r="1.4" fill="currentColor"/><circle cx="15" cy="13" r="1.4" fill="currentColor"/>',
+      bakeri:'<path d="M4 12a8 8 0 0 1 16 0"/><path d="M4 12h16v6H4z"/>',
+      folie:'<rect x="4" y="6" width="16" height="12" rx="2"/><line x1="4" y1="12" x2="20" y2="12"/>',
+      pakking:'<rect x="4" y="7" width="16" height="13" rx="1"/><path d="M4 11h16"/><path d="M12 7v13"/>'
+    };
+    return '<span class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+(paths[kind]||paths.grid)+'</svg></span>';
+  }
+
+  function tag(status, text){
+    return '<span class="tag '+status+'">'+text+'</span>';
+  }
+
+  function buildRow(item, launchFn, iconKind){
+    var tr = document.createElement('tr');
+    var resultCell = item.pct===null ? '<span style="color:var(--text-neutral)">—</span>' : '<span class="ring">'+ringSvg()+' '+item.pct+'% correct</span>';
+    tr.innerHTML =
+      '<td>'+ rowIcon(iconKind||'grid') + item.name +'</td>'+
+      '<td>'+resultCell+'</td>'+
+      '<td>'+tag(item.status, item.statusText)+'</td>'+
+      '<td><button class="start-btn">'+startIcon()+' Start</button></td>';
+    tr.querySelector('.start-btn').addEventListener('click', launchFn);
+    return tr;
+  }
+
+  var chaptersTable = document.getElementById('chaptersTable');
+  chapters.forEach(function(c){
+    chaptersTable.appendChild(buildRow(c, function(){
+      openSimulation({mode:'guided', station:c.station, title:'Getting started — '+c.name});
+    }, c.icon));
+  });
+
+  var exploreTable = document.getElementById('exploreTable');
+  exploreAreas.forEach(function(a){
+    exploreTable.appendChild(buildRow(a, function(){
+      openSimulation({mode:'free', station:a.station, title:'Explore — '+a.name});
+    }, a.station));
+  });
+
+  var scenarioTable = document.getElementById('scenarioTable');
+  scenarios.forEach(function(s){
+    scenarioTable.appendChild(buildRow(s, function(){
+      openSimulation({mode:s.mode, title:'Scenario — '+s.name});
+    }, 'grid'));
+  });
+
+  document.getElementById('launchFreeExplore').addEventListener('click', function(){
+    openSimulation({mode:'free', title:'Free exploration'});
+  });
+
+  /* ---------------- navigation ---------------- */
+  var history = ['home'];
+  var historyIndex = 0;
+  var pageMeta = {
+    home:{label:'Home', icon:'M3 11l9-8 9 8" /><path d="M5 10v10h14V10'},
+  };
+
+  function pageIcon(page){
+    var icons = {
+      home:'<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>',
+      overview:'<line x1="4" y1="20" x2="4" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="20" y1="20" x2="20" y2="14"/>',
+      'getting-started':'<path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v18H6.5A2.5 2.5 0 0 0 4 22.5v-18z"/><line x1="4" y1="19.5" x2="20" y2="19.5"/>',
+      explore:'<circle cx="11" cy="11" r="8"/><path d="M16.65 16.65 21 21"/>',
+      scenarios:'<path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/>'
+    };
+    return icons[page]||icons.home;
+  }
+
+  function renderPage(page, pushHistory){
+    document.querySelectorAll('.content').forEach(function(s){s.classList.remove('active');});
+    var target = document.getElementById('page-'+page);
+    if(!target) return;
+    target.classList.add('active');
+    document.querySelectorAll('.nav-item[data-page]').forEach(function(b){
+      b.classList.toggle('active', b.getAttribute('data-page')===page && !b.hasAttribute('data-sim-exit'));
+    });
+    var title = target.getAttribute('data-title');
+    document.getElementById('pageBadge').textContent = page==='home' ? 'Training' : title;
+    document.getElementById('breadcrumbLabel').textContent = title;
+    document.getElementById('breadcrumb').querySelector('svg').innerHTML = pageIcon(page);
+    if(pushHistory!==false){
+      history = history.slice(0, historyIndex+1);
+      history.push(page);
+      historyIndex = history.length-1;
+    }
+    closeSidebarMobile();
+  }
+
+  document.querySelectorAll('[data-page]').forEach(function(btn){
+    if(btn.hasAttribute('data-sim-exit')) return;
+    btn.addEventListener('click', function(){ renderPage(btn.getAttribute('data-page')); });
+  });
+
+  document.getElementById('navBack').addEventListener('click', function(){
+    if(historyIndex>0){ historyIndex--; renderPage(history[historyIndex], false); }
+  });
+  document.getElementById('navFwd').addEventListener('click', function(){
+    if(historyIndex<history.length-1){ historyIndex++; renderPage(history[historyIndex], false); }
+  });
+
+  /* mobile sidebar */
+  document.getElementById('sidebarToggle').addEventListener('click', function(){
+    document.getElementById('sidebar').classList.toggle('open');
+  });
+  function closeSidebarMobile(){
+    if(window.innerWidth<=760) document.getElementById('sidebar').classList.remove('open');
+  }
+
+  /* theme toggle (dimming) */
+  document.getElementById('themeToggle').addEventListener('click', function(){
+    var root=document.documentElement;
+    root.setAttribute('data-theme', root.getAttribute('data-theme')==='dark'?'light':'dark');
+  });
+
+  /* clock */
+  function tick(){
+    var d=new Date();
+    function p(n){return n<10?'0'+n:n;}
+    document.getElementById('clock').textContent = p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
+  }
+  tick(); setInterval(tick,1000);
+
+  /* ---------------- simulation ---------------- */
+  var sim = document.getElementById('simulation');
+  var simFlyout = document.getElementById('simFlyout');
+  var simChat = document.getElementById('simChat');
+  var simContext = document.getElementById('simContext');
+  var simOverlay = document.getElementById('simOverlayPanel');
+  var currentStationEl = null;
+
+  function openSimulation(opts){
+    opts = opts||{};
+    document.getElementById('simTitle').textContent = opts.title||'Free exploration';
+    document.getElementById('simSub').textContent = opts.mode==='free' ? 'Training mode — changes are never saved' : (opts.mode==='guided' ? 'Guided chapter — follow the highlighted station' : 'Scenario simulation — changes are never saved');
+    document.querySelectorAll('.station').forEach(function(s){ s.classList.remove('highlight','alarm'); });
+    document.getElementById('alertBanner').style.display='none';
+    simContext.classList.remove('show');
+    simOverlay.classList.remove('show');
+    simFlyout.classList.remove('show');
+    simChat.classList.remove('show');
+
+    if(opts.station){
+      var el = document.querySelector('.station[data-station="'+opts.station+'"]');
+      if(el) el.classList.add('highlight');
+    }
+    if(opts.mode==='alarm'){
+      var t=document.querySelector('.station[data-station="topping"]'); if(t) t.classList.add('alarm');
+      showBanner('Alarm — Topping running below target');
+    }
+    if(opts.mode==='critical'){
+      var b=document.querySelector('.station[data-station="bakeri"]'); if(b) b.classList.add('alarm');
+      showBanner('Critical alarm — Bakeri oven temperature');
+    }
+    if(opts.mode==='stoppage'){
+      var p=document.querySelector('.station[data-station="pakking"]'); if(p) p.classList.add('alarm');
+      showBanner('Line stoppage — Pakking station');
+    }
+    sim.classList.add('show');
+  }
+  function showBanner(text){
+    document.getElementById('alertText').textContent = text;
+    document.getElementById('alertBanner').style.display='flex';
+  }
+  function closeSimulation(){
+    sim.classList.remove('show');
+  }
+  document.getElementById('simExit').addEventListener('click', closeSimulation);
+
+  document.getElementById('simMenuToggle').addEventListener('click', function(){
+    simFlyout.classList.toggle('show');
+  });
+  simFlyout.querySelectorAll('[data-sim-exit]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      closeSimulation();
+      renderPage(btn.getAttribute('data-page'));
+    });
+  });
+
+  document.querySelectorAll('.station').forEach(function(st){
+    st.addEventListener('click', function(e){
+      currentStationEl = st;
+      var rect = st.getBoundingClientRect();
+      var bodyRect = document.querySelector('.sim-graphic').getBoundingClientRect();
+      simContext.style.left = Math.min(rect.left-bodyRect.left, bodyRect.width-286)+'px';
+      simContext.style.top = (rect.top-bodyRect.top+90)+'px';
+      simContext.classList.add('show');
+      simOverlay.classList.remove('show');
+    });
+  });
+
+  document.getElementById('ctxViewPerf').addEventListener('click', function(){
+    var key = currentStationEl ? currentStationEl.getAttribute('data-station') : 'bakeri';
+    var d = stationData[key] || stationData.bakeri;
+    document.getElementById('sopTitle').textContent = d.label;
+    var perfEl = document.getElementById('sopPerf');
+    perfEl.textContent = d.perf;
+    perfEl.className = 'val '+d.cls;
+    document.getElementById('sopProd').textContent = d.prod;
+    document.getElementById('sopStop').textContent = d.stop;
+    simOverlay.classList.add('show');
+    simContext.classList.remove('show');
+  });
+  document.getElementById('ctxReport').addEventListener('click', function(){
+    simContext.classList.remove('show');
+    simChat.classList.add('show');
+    appendChat('You', 'Reporting an issue at '+(currentStationEl?currentStationEl.getAttribute('data-station'):'the line')+' — please check.');
+  });
+  document.getElementById('sopClose').addEventListener('click', function(){ simOverlay.classList.remove('show'); });
+
+  document.getElementById('simChatToggle').addEventListener('click', function(){ simChat.classList.toggle('show'); });
+  document.getElementById('chatClose').addEventListener('click', function(){ simChat.classList.remove('show'); });
+
+  function appendChat(who, text){
+    var body = document.getElementById('chatBody');
+    var row = document.createElement('div');
+    row.className='chat-msg';
+    row.innerHTML = '<div class="chat-avatar">'+(who==='You'?'You':who.slice(0,2).toUpperCase())+'</div><div class="chat-bubble"></div>';
+    row.querySelector('.chat-bubble').textContent = text;
+    body.appendChild(row);
+    body.scrollTop = body.scrollHeight;
+  }
+  document.getElementById('chatSend').addEventListener('click', sendChat);
+  document.getElementById('chatInput').addEventListener('keydown', function(e){ if(e.key==='Enter') sendChat(); });
+  function sendChat(){
+    var input = document.getElementById('chatInput');
+    if(!input.value.trim()) return;
+    appendChat('You', input.value.trim());
+    input.value='';
+  }
+
+  document.querySelector('.sim-graphic').addEventListener('click', function(e){
+    if(!e.target.closest('.station') && !e.target.closest('.sim-context')){
+      simContext.classList.remove('show');
+    }
+  });
+
+  renderPage('home', false);
+})();
+</script>
+</body>
+</html>
