@@ -3,13 +3,19 @@ export const metadata = {
   date: "2026-09-22",
   summary:
     "I have experimented with Claude Code and Figma MCP to find a quick and precise way to make clickable prototypes in code from my design files.",
+  image: "/posts/prototyping-experiments/poster-main-interface.png",
+  imageAlt:
+    "The monitoring screen from the prototype, with the data panel and the production line",
   stage: "prototype",
-  tags: ["prototyping", "Claude Code", "Figma MCP", "prosess"],
+  tags: ["prototyping", "Claude Code", "Figma MCP", "process"],
 };
 
 I wanted to see how far a single prompt could get me, using different methods of
 translating design in to code. I did several quick experiments, which was an effective
 way of testing out new tools, and finding a workflow that worked for my needs.
+
+All sketches shown here were built on an interface from Orkla Foods Norway. See the
+original case [here](https://www.figma.com/community/file/1549727597127372848).
 
 ## First test: Figma MCP in Claude
 
@@ -82,6 +88,36 @@ the button itself.
   initialPage="overview"
   poster="/posts/prototyping-experiments/poster-custom-button.png"
   href="/prototype#overview"
+  width={1080}
+  height={608}
+/>
+
+## Fourth test: How big can the prompt be?
+
+To challenge Claude further, I gave it another prompt, where I asked it to add both the
+main interface and one of the training sequences:
+
+<PromptBox>
+{`Make a new iteration of the prototype, adding the main interface and the getting started - topping run-through of the application. here is the figma design file: https://www.figma.com/design/wtiTkELWhsKULC69463BkK/Prototyping?node-id=60-17150
+
+The app menu should have an autohide behavior, only appearing when the cursor is moved to a screen edge.
+The stepper menu in the topping run through should only show when the training menu is clicked.
+When in the topping run-through the cursor should have the teal 300 as fill color.`}
+</PromptBox>
+
+This task was a lot heavier than the previous ones, taking Claude about 20 minutes to
+build. The result was okay, but had more issues than the previous ones, something that
+tells me it would probably be more effective to give it less tasks at a time. I also see
+that frames with several custom components should probably be built even slower, in order
+to give enough description for the things that need building from scratch. Still, it is a
+great improvement from the first test!
+
+<PrototypeEmbed
+  title="Fourth test: the monitoring screen with the Topping run-through"
+  app="training-menu"
+  variant="fourth-test"
+  poster="/posts/prototyping-experiments/poster-main-interface.png"
+  href="/prototype"
   width={1080}
   height={608}
 />

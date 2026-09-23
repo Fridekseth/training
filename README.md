@@ -38,8 +38,9 @@ export const metadata = {
 Write the entry here as normal markdown.
 ```
 
-`title`, `date` and `summary` are required; `stage`, `tags` and `draft` are
-optional. Fields are type-checked against `PostFrontmatter` in `lib/posts.ts`.
+`title`, `date` and `summary` are required; `stage`, `tags`, `draft`, `image`
+and `imageAlt` are optional. An entry with an `image` shows it as a thumbnail
+in the listings; point it at a file under `public/`. Fields are type-checked against `PostFrontmatter` in `lib/posts.ts`.
 
 **Drafts.** `draft: true` hides an entry from the listing in production builds
 while keeping it visible in `next dev`. The entry's own page is still built, so

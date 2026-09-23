@@ -8,8 +8,12 @@ export type PostFrontmatter = {
   /** ISO date, e.g. "2026-02-14". */
   date: string;
   summary: string;
-  /** Where this entry sits in the course: research, concept, prototype... */
+  /** Where this entry sits in the course: research, sketching, prototype... */
   stage?: string;
+  /** Thumbnail for the listings, from `public/`. Omit when the entry has none. */
+  image?: string;
+  /** What the thumbnail shows, for anyone who cannot see it. */
+  imageAlt?: string;
   tags?: string[];
   /** Drafts are listed while developing and hidden from production builds. */
   draft?: boolean;
