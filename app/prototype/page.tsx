@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { PrototypeStage } from "@/components/prototype/prototype-stage";
+import { ScaledFrame } from "@/components/prototype/scaled-frame";
+import { PAGE_CONTAINER } from "@/lib/layout";
 
 export const metadata: Metadata = {
   title: "Prototype",
@@ -9,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function PrototypePage() {
   return (
-    <div className="mx-auto max-w-[1176px] px-6 py-16">
+    <div className={`${PAGE_CONTAINER} py-16`}>
       <h1 className="text-3xl font-semibold tracking-tight text-foreground">
         Prototype
       </h1>
@@ -19,9 +21,14 @@ export default function PrototypePage() {
         rather than a picture of it.
       </p>
 
-      <div className="mt-8 aspect-[1080/608] w-full max-w-[1080px] overflow-hidden rounded-lg border border-border shadow-sm">
+      {/* Drawn at the size it was designed at, then scaled to fit the column. */}
+      <ScaledFrame
+        width={1080}
+        height={608}
+        className="mt-8 rounded-lg border border-border shadow-sm"
+      >
         <PrototypeStage syncHash />
-      </div>
+      </ScaledFrame>
     </div>
   );
 }

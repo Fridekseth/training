@@ -2,7 +2,8 @@
 
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
+import { ScaledFrame } from "./prototype/scaled-frame";
 
 /**
  * A prototype shown inside a post: a still image until it is started, then the
@@ -31,6 +32,7 @@ export function PrototypeEmbed({
   app,
   variant,
   initialPage,
+  initialLayer,
   src,
   poster,
   width,
@@ -44,7 +46,10 @@ export function PrototypeEmbed({
   /** Which experiment's version of the prototype to run. */
   variant?: "second-test" | "third-test";
   /** The screen it opens on. */
-  initialPage?: "home" | "overview" | "getting-started" | "explore" | "scenarios";
+  initialPage?:
+    "home" | "overview" | "getting-started" | "explore" | "scenarios";
+  /** Which layer it opens on: the app itself, or the training section. */
+  initialLayer?: "app" | "training" | "run-through";
   /** A standalone HTML prototype under /public, shown in its own frame. */
   src?: string;
   poster: string;
@@ -55,36 +60,17 @@ export function PrototypeEmbed({
   href?: string;
 }) {
   const [started, setStarted] = useState(false);
-  const [scale, setScale] = useState(1);
-  const frame = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const element = frame.current;
-    if (!element) return;
-
-    const observer = new ResizeObserver(([entry]) => {
-      setScale(Math.min(1, entry.contentRect.width / width));
-    });
-    observer.observe(element);
-    return () => observer.disconnect();
-  }, [width]);
 
   const fullSize = href ?? src;
 
   return (
     <figure className="my-8">
-      <div
-        ref={frame}
-        className="relative overflow-hidden rounded-lg border border-border bg-surface"
-        style={{ height: Math.round(height * scale) }}
-      >
-        <div
-          style={{
-            width,
-            height,
-            transform: `scale(${scale})`,
-            transformOrigin: "top left",
-          }}
+      {/* The poster covers the frame until the reader starts the prototype. */}
+      <div className="relative">
+        <ScaledFrame
+          width={width}
+          height={height}
+          className="rounded-lg border border-border bg-surface"
         >
           {started ? (
             src ? (
@@ -96,16 +82,20 @@ export function PrototypeEmbed({
                 className="block border-0"
               />
             ) : app === "training-menu" ? (
-              <TrainingPrototype variant={variant} initialPage={initialPage} />
+              <TrainingPrototype
+                variant={variant}
+                initialPage={initialPage}
+                initialLayer={initialLayer}
+              />
             ) : null
           ) : null}
-        </div>
+        </ScaledFrame>
 
         {started ? null : (
           <button
             type="button"
             onClick={() => setStarted(true)}
-            className="group absolute inset-0 flex items-center justify-center"
+            className="group absolute inset-0 flex items-center justify-center overflow-hidden rounded-lg"
             aria-label={`Start the prototype: ${title}`}
           >
             <Image

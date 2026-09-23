@@ -3,6 +3,7 @@ import { PageHeader } from "@/components/page-header";
 import { ResearchLibrary } from "@/components/research-library";
 import { papers } from "@/content/papers";
 import { sortPapers } from "@/lib/papers";
+import { PAGE_CONTAINER } from "@/lib/layout";
 
 export const metadata: Metadata = {
   title: "Research",
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function ResearchPage() {
   return (
-    <div className="mx-auto max-w-3xl px-6 py-16">
+    <div className={`${PAGE_CONTAINER} py-16`}>
       <PageHeader
         title="Research"
         lead="Papers, standards and references behind the project, each with the findings I want to keep and a note on why it matters here."

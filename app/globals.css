@@ -17,8 +17,9 @@
   --muted: light-dark(#5c626e, #a0a5b0);
   --faint: light-dark(#8b909b, #767c88);
   --border: light-dark(#e3e3dd, #262b33);
-  --accent: light-dark(#1f5f8b, #7db4dc);
-  --accent-soft: light-dark(#eaf1f6, #16222c);
+  /* The teal the training layer is drawn in, from the OpenBridge ramp. */
+  --accent: light-dark(#007d81, #51c0c0);
+  --accent-soft: light-dark(#e2f2f3, #193131);
 }
 
 /* Follow the system until the reader makes an explicit choice. */
