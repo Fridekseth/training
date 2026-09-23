@@ -8,7 +8,7 @@ import { PAGE_CONTAINER, PROSE_WIDTH } from "@/lib/layout";
 
 export const metadata: Metadata = {
   title: "Process",
-  description: "Project documentation for OpenTraining",
+  description: "Process documentation for the OpenBridge training project",
 };
 
 export default async function BlogIndexPage() {
