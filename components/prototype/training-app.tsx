@@ -22,6 +22,10 @@ import { ObiChevronRightGoogle } from "@oicl/openbridge-webcomponents-react/icon
 import { IconButtonVariant } from "@oicl/openbridge-webcomponents/dist/components/icon-button/icon-button";
 import { RichButtonDirection } from "@oicl/openbridge-webcomponents/dist/components/rich-button/rich-button";
 import { ObcAlertButtonType } from "@oicl/openbridge-webcomponents/dist/components/alert-button/alert-button";
+import { useRef } from "react";
+import { AppMenu } from "./app-menu";
+import { MainInterface } from "./main-interface";
+import { RunThrough, TrainingSplash } from "./run-through";
 import { MaskIcon, PageIntro, Piece, SymbolCard } from "./pieces";
 import { TrainingRichButton } from "./training-rich-button";
 import { ChapterTable, TrainingLogTable } from "./training-table";
@@ -35,8 +39,11 @@ import {
   TRAINING_LOG,
 } from "./training-data";
 
+/** Which layer of the prototype is on top. */
+export type Layer = "app" | "training" | "splash" | "run-through";
+
 /** Which experiment's version of the screens to show. */
-export type Variant = "second-test" | "third-test";
+export type Variant = "second-test" | "third-test" | "fourth-test";
 
 const ACTIVE_COLOR = "var(--on-amplified-active-color, #1d3c67)";
 const NEUTRAL_COLOR = "var(--on-flat-neutral-color, #535353)";
@@ -259,7 +266,7 @@ function OverviewPage({
   );
 }
 
-function GettingStartedPage({ onStart }: { onStart: (title: string) => void }) {
+function GettingStartedPage({ onStart }: { onStart: (chapter: string) => void }) {
   return (
     <>
       <div
@@ -376,20 +383,32 @@ function pageFromHash(): PageId {
 }
 
 export function TrainingApp({
-  variant = "third-test",
+  variant = "fourth-test",
   initialPage,
   /** Only the standalone page writes the screen into the address bar. */
   syncHash = false,
+  initialLayer,
 }: {
   variant?: Variant;
   initialPage?: PageId;
   syncHash?: boolean;
+  /** Which layer an embedded copy opens on. */
+  initialLayer?: Layer;
 } = {}) {
   const start = initialPage ?? (syncHash ? pageFromHash() : "home");
   const [page, setPage] = useState<PageId>(start);
   const [history, setHistory] = useState<PageId[]>(() => [start]);
   const [step, setStep] = useState(0);
   const [message, setMessage] = useState<string | null>(null);
+  /** Which layer is on top: the app itself, the training section, or a run-through. */
+  const [layer, setLayer] = useState<Layer>(() => {
+    if (variant !== "fourth-test") return "training";
+    if (!syncHash) return initialLayer ?? "app";
+    const fromHash = window.location.hash.replace("#", "");
+    if (fromHash === "run-through" || fromHash === "training") return fromHash;
+    return initialLayer ?? "app";
+  });
+  const frame = useRef<HTMLDivElement>(null);
 
   const go = (id: PageId) => {
     const next = [...history.slice(0, step + 1), id];
@@ -411,7 +430,7 @@ export function TrainingApp({
 
   const current: PageDef = page === "home" ? HOME : PAGES.find((p) => p.id === page)!;
 
-  return (
+  const trainingSection = (
     <div
       style={{
         display: "flex",
@@ -528,7 +547,16 @@ export function TrainingApp({
             {page === "home" ? <HomePage onOpen={go} /> : null}
             {page === "overview" ? <OverviewPage onOpen={go} variant={variant} /> : null}
             {page === "getting-started" ? (
-              <GettingStartedPage onStart={(title) => setMessage(`Starting: ${title}`)} />
+              <GettingStartedPage
+                onStart={(chapter) => {
+                  if (variant === "fourth-test" && chapter === "Topping") {
+                    setLayer("splash");
+                    setMessage(null);
+                  } else {
+                    setMessage(`Starting: ${chapter}`);
+                  }
+                }}
+              />
             ) : null}
             {page === "explore" ? (
               <ExplorePage onEnter={() => setMessage("Explore mode would open here")} />
@@ -551,6 +579,30 @@ export function TrainingApp({
           </div>
         </div>
       </div>
+    </div>
+  );
+
+  // Older variants are the training section on its own, as those experiments were.
+  if (variant !== "fourth-test") return trainingSection;
+
+  return (
+    <div ref={frame} style={{ position: "relative", height: "100%", overflow: "hidden" }}>
+      {layer === "training" ? (
+        trainingSection
+      ) : (
+        <>
+          <MainInterface />
+          <AppMenu containerRef={frame} onOpenTraining={() => setLayer("training")} />
+        </>
+      )}
+
+      {layer === "splash" ? (
+        <TrainingSplash onDone={() => setLayer("run-through")} />
+      ) : null}
+
+      {layer === "run-through" ? (
+        <RunThrough frame={frame} onExit={() => setLayer("app")} />
+      ) : null}
     </div>
   );
 }

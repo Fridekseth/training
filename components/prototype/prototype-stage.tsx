@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { useEffect } from "react";
 import { Noto_Sans } from "next/font/google";
-import type { Variant } from "./training-app";
+import type { Layer, Variant } from "./training-app";
 import type { PageId } from "./training-data";
 
 /** OpenBridge draws in Noto Sans; shadow DOM inherits it from the stage. */
@@ -32,12 +32,14 @@ export function PrototypeStage({
   className = "",
   variant,
   initialPage,
+  initialLayer,
   syncHash = false,
 }: {
   theme?: string;
   className?: string;
   variant?: Variant;
   initialPage?: PageId;
+  initialLayer?: Layer;
   /** The standalone page keeps the screen in the address bar; embeds do not. */
   syncHash?: boolean;
 }) {
@@ -61,6 +63,7 @@ export function PrototypeStage({
       <PrototypeScreen
         variant={variant}
         initialPage={initialPage}
+        initialLayer={initialLayer}
         syncHash={syncHash}
       />
     </div>

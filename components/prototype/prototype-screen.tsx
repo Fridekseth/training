@@ -9,19 +9,26 @@
  * those 600 kB of design tokens on this route instead of the whole site.
  */
 import "@oicl/openbridge-webcomponents/dist/openbridge.css";
-import { TrainingApp, type Variant } from "./training-app";
+import { TrainingApp, type Layer, type Variant } from "./training-app";
 import type { PageId } from "./training-data";
 
 export default function PrototypeScreen({
   variant,
   initialPage,
+  initialLayer,
   syncHash,
 }: {
   variant?: Variant;
   initialPage?: PageId;
+  initialLayer?: Layer;
   syncHash?: boolean;
 }) {
   return (
-    <TrainingApp variant={variant} initialPage={initialPage} syncHash={syncHash} />
+    <TrainingApp
+      variant={variant}
+      initialPage={initialPage}
+      initialLayer={initialLayer}
+      syncHash={syncHash}
+    />
   );
 }

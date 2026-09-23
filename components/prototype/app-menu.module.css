@@ -1,0 +1,50 @@
+/* Slides in from the left edge, over the running screen. */
+
+.layer {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.topbar {
+  transform: translateY(-100%);
+  transition: transform 160ms ease;
+  pointer-events: auto;
+}
+
+.menu {
+  position: absolute;
+  top: 48px;
+  bottom: 0;
+  left: 0;
+  width: 270px;
+  display: flex;
+  flex-direction: column;
+  padding: 4px;
+  background: var(--container-background-color, #f7f7f7);
+  border-right: 1px solid var(--border-divider-color, #ddd);
+  box-shadow: var(--shadow-floating-x, 0px) var(--shadow-floating-y, 4px)
+    var(--shadow-floating-blur, 16px) var(--shadow-floating-color, rgba(0, 0, 0, 0.32));
+  transform: translateX(-100%);
+  transition: transform 160ms ease;
+  pointer-events: auto;
+}
+
+.layer.open .topbar,
+.layer.open .menu {
+  transform: none;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer {
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-divider-color, #ddd);
+  display: flex;
+  flex-direction: column;
+}

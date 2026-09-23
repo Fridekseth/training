@@ -1,0 +1,317 @@
+/*
+  The training layer over the running screen: a teal frame, a wash over
+  everything except the component being explained, the toggletip, the step menu
+  and the button that opens it.
+*/
+
+.layer {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  /* The pointer is teal while training, so the mode is visible in the cursor. */
+  cursor: url("/prototype/cursor-teal.svg") 2 2, auto;
+}
+
+/* The frame that says the whole screen is in training mode. */
+.frame {
+  position: absolute;
+  inset: 0;
+  border: 4px solid var(--base-teal-200, #80cacd);
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+/* Four bands around the highlighted element, so it stays at full strength. */
+.wash {
+  position: absolute;
+  background: color-mix(in srgb, var(--base-teal-200, #80cacd) 20%, transparent);
+  pointer-events: auto;
+}
+
+.highlight {
+  position: absolute;
+  border: 2px solid var(--base-teal-300, #1d9da1);
+  border-radius: 6px;
+  pointer-events: none;
+}
+
+/* ---- toggletip ---- */
+
+.tip {
+  position: absolute;
+  width: 400px;
+  max-width: calc(100% - 32px);
+  border-radius: var(--ui-components-toggletip-border-radius, 6px);
+  background: var(--base-teal-400, #007d81);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  pointer-events: auto;
+}
+
+.tipHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 8px 8px 16px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.15px;
+}
+
+.tipBody {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  border: 2px solid var(--base-teal-400, #007d81);
+  border-radius: var(--ui-components-toggletip-border-radius, 6px);
+  background: var(--container-background-color, #f7f7f7);
+  color: var(--element-active-color, #3d3d3d);
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.tipActions {
+  display: flex;
+  gap: 8px;
+}
+
+.tipButton {
+  display: flex;
+  flex: 1 0 0;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: 1px solid var(--normal-enabled-border-color, #bebebe);
+  border-radius: var(--ui-components-button-border-radius-top-left, 6px);
+  background: var(--normal-enabled-background-color, #fff);
+  color: var(--on-normal-active-color, #1f1f1f);
+  font: inherit;
+  font-size: 16px;
+  cursor: inherit;
+}
+
+.tipButton:disabled {
+  color: var(--on-normal-disabled-color, #a0a0a0);
+  cursor: not-allowed;
+}
+
+.tipPrimary {
+  border-color: var(--base-teal-600, #004346);
+  background: var(--base-teal-500, #005d61);
+  color: var(--base-teal-050, #e2f2f3);
+}
+
+.tipPrimary:disabled {
+  opacity: 0.5;
+  color: var(--base-teal-050, #e2f2f3);
+}
+
+/* The pointer towards the component being explained. */
+.tipArrow {
+  position: absolute;
+  top: 56px;
+  left: -10px;
+  width: 0;
+  height: 0;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-right: 10px solid var(--base-teal-400, #007d81);
+}
+
+/* ---- the button that opens the step menu ---- */
+
+.fab {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: var(--container-background-color, #f7f7f7);
+  color: var(--base-teal-400, #007d81);
+  box-shadow: var(--shadow-floating-x, 0px) var(--shadow-floating-y, 4px)
+    var(--shadow-floating-blur, 16px) var(--shadow-floating-color, rgba(0, 0, 0, 0.32));
+  cursor: inherit;
+  pointer-events: auto;
+}
+
+/* ---- step menu ---- */
+
+.stepper {
+  position: absolute;
+  right: 12px;
+  bottom: 76px;
+  width: 270px;
+  padding: 4px;
+  border-radius: 6px;
+  background: var(--container-background-color, #f7f7f7);
+  box-shadow: var(--shadow-floating-x, 0px) var(--shadow-floating-y, 4px)
+    var(--shadow-floating-blur, 16px) var(--shadow-floating-color, rgba(0, 0, 0, 0.32));
+  pointer-events: auto;
+}
+
+.stepperHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--element-active-color, #1f1f1f);
+}
+
+.stepList {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stepRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stepIndex {
+  width: 12px;
+  font-size: 12px;
+  text-align: right;
+  color: var(--element-neutral-color, #535353);
+}
+
+/* The line with the dot, drawn per row so it joins up down the list. */
+.stepTrack {
+  position: relative;
+  width: 16px;
+  align-self: stretch;
+  flex-shrink: 0;
+}
+
+.stepTrack::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  transform: translateX(-50%);
+  background: var(--border-divider-color, #ddd);
+}
+
+.stepTrackDone::before {
+  background: var(--base-teal-400, #007d81);
+}
+
+.stepDot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  transform: translate(-50%, -50%);
+  border: 2px solid var(--base-teal-400, #007d81);
+  border-radius: 50%;
+  background: var(--container-background-color, #f7f7f7);
+}
+
+.stepDotDone {
+  background: var(--base-teal-400, #007d81);
+}
+
+.stepDotUpcoming {
+  border-color: var(--element-neutral-color, #a0a0a0);
+}
+
+.stepCard {
+  flex: 1;
+  margin: 2px 0;
+  padding: 8px 12px;
+  border: 1px solid var(--border-divider-color, #ddd);
+  border-radius: 6px;
+  background: var(--normal-enabled-background-color, #fff);
+  color: var(--element-active-color, #1f1f1f);
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+  cursor: inherit;
+}
+
+.stepCardCurrent {
+  border-color: var(--base-teal-300, #1d9da1);
+  background: var(--base-teal-050, #e2f2f3);
+  font-weight: 600;
+}
+
+.stepCard:disabled {
+  color: var(--element-neutral-color, #a0a0a0);
+  background: var(--container-section-color, #f0f0f0);
+}
+
+.stepGap {
+  height: 18px;
+}
+
+.exit {
+  display: flex;
+  width: 100%;
+  height: 40px;
+  margin-top: 8px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid var(--base-teal-600, #004346);
+  border-radius: 6px;
+  background: var(--base-teal-500, #005d61);
+  color: var(--base-teal-050, #e2f2f3);
+  font: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: inherit;
+}
+
+/* ---- training mode splash ---- */
+
+.splashLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--base-teal-200, #80cacd) 20%, transparent);
+  cursor: url("/prototype/cursor-teal.svg") 2 2, auto;
+}
+
+.splash {
+  width: 344px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--container-background-color, #f7f7f7);
+  box-shadow: var(--shadow-floating-x, 0px) var(--shadow-floating-y, 4px)
+    var(--shadow-floating-blur, 16px) var(--shadow-floating-color, rgba(0, 0, 0, 0.32));
+  text-align: center;
+}
+
+.splashHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.splashArt {
+  position: relative;
+  height: 236px;
+  background: var(--base-teal-100, #bee4e5);
+}
