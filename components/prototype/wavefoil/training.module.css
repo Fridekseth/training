@@ -1,0 +1,242 @@
+/*
+  The Wavefoil training section and the application menu that leads to it.
+  Sizes are the design's own, measured off the Figma file at the 786 x 590
+  screen; colours and type come from OpenBridge tokens.
+*/
+
+/* ---- application menu ---- */
+
+.menuLayer {
+  position: absolute;
+  z-index: 20;
+  inset: 48px 0 0;
+}
+
+.scrim {
+  position: absolute;
+  inset: 0;
+}
+
+.menu {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  width: 195px;
+  flex-direction: column;
+  justify-content: space-between;
+  background: var(--container-global-color, #fcfcfc);
+  box-shadow: var(--shadow-flat-x, 0px) var(--shadow-flat-y, 1px)
+    calc(var(--shadow-flat-blur, 2px) / 2) var(--shadow-flat-color, rgba(0, 0, 0, 0.23));
+}
+
+.menuGroup {
+  display: flex;
+  flex-direction: column;
+  padding: 4px;
+}
+
+.menuFooter {
+  border-top: 1px solid var(--border-divider-color, #ddd);
+  border-bottom: 1px solid var(--border-divider-color, #ddd);
+}
+
+/* ---- the section ---- */
+
+.training {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  background: var(--container-section-color, #f0f0f0);
+  color: var(--element-active-color, #1f1f1f);
+  font-size: 16px;
+}
+
+.subNav {
+  display: flex;
+  width: 197px;
+  flex-shrink: 0;
+  flex-direction: column;
+  /* the design draws 16px; 12 keeps "Getting started" from being cut off */
+  padding: 0 12px;
+  border-right: 1px solid var(--border-divider-color, #ddd);
+}
+
+.subNavFolded {
+  width: 57px;
+  padding: 0 4px;
+}
+
+/* Two 56px-tall icon buttons, 16px in from the top, as the design has them. */
+.subNavHeader {
+  display: flex;
+  height: 88px;
+  flex-shrink: 0;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding-top: 16px;
+}
+
+.subNavHome {
+  padding-bottom: 16px;
+}
+
+.subNavDivider {
+  height: 1px;
+  margin: 1px 0;
+  background: var(--border-divider-color, #ddd);
+}
+
+.subNavList {
+  display: flex;
+  flex-direction: column;
+  padding-top: 16px;
+}
+
+.trainingColumn {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+}
+
+.toolbar {
+  display: flex;
+  height: 48px;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 16px;
+  padding: 0 4px;
+}
+
+.history {
+  display: flex;
+  align-items: center;
+}
+
+.toolbarDivider {
+  width: 1px;
+  height: 16px;
+  background: var(--border-divider-color, #ddd);
+}
+
+.crumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--on-flat-active-color, #3d3d3d);
+}
+
+.scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+.message {
+  margin: 0 48px 24px;
+  font-size: 14px;
+  color: var(--element-neutral-color, #535353);
+}
+
+/* ---- pages ---- */
+
+.page {
+  padding-top: 48px;
+  padding-bottom: 48px;
+}
+
+.introRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+/* Home and Explore leave room under the intro, as the design does. */
+.introRowTall {
+  height: 152px;
+  margin-bottom: 41px;
+}
+
+.intro {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* The design trims the heading to its cap height, so it sits a little higher. */
+.introTitle {
+  margin: -4px 0 4px;
+  font-size: var(--global-typography-generic-s-font-size, 16.5px);
+  font-weight: 600;
+  line-height: 20px;
+}
+
+.introText {
+  margin: 0;
+  font-size: var(--global-typography-generic-xs-font-size, 11.5px);
+  line-height: 16px;
+  color: var(--element-neutral-color, #535353);
+}
+
+/*
+  The library's card is 16px shorter than the design's and centres its icon;
+  the design pads the text 16px top and bottom and pins the icon to the title.
+*/
+.homeCard::part(content-container) {
+  padding-block: 16px;
+}
+
+.homeCard::part(leading-icon) {
+  align-self: flex-start;
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.heading {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+}
+
+.overviewCards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  margin-top: 20px;
+}
+
+.tableBlock {
+  margin-top: 20px;
+}
+
+/* ---- tables ---- */
+
+.table {
+  display: block;
+  border-radius: 6px;
+  background: var(--container-background-color, #f7f7f7);
+  box-shadow: var(--shadow-flat-x, 0px) var(--shadow-flat-y, 1px)
+    calc(var(--shadow-flat-blur, 2px) / 2) var(--shadow-flat-color, rgba(0, 0, 0, 0.23));
+}
+
+/* Column widths as the design sets them; the library sizes columns by content. */
+.logTable::part(grid) {
+  grid-template-columns:
+    minmax(0, 107fr) minmax(0, 269fr) minmax(0, 107fr) minmax(0, 150fr);
+}
+
+/* The Start column gives up a little to the others: the library's button is
+   wider than the design's 89px and would run past the row otherwise. */
+.chapterTable::part(grid) {
+  grid-template-columns:
+    minmax(0, 268fr) minmax(0, 107fr) minmax(0, 136fr) minmax(0, 120fr);
+}

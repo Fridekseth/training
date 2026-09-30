@@ -1,0 +1,466 @@
+/*
+  The Wavefoil overview screen. Panels, type and colour come from OpenBridge
+  tokens; the vessel and the foils are the drawings from the design file.
+*/
+
+.screen {
+  position: relative;
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  background: var(--container-section-color, #f0f0f0);
+  color: var(--element-active-color, #1f1f1f);
+  font-size: 16px;
+}
+
+/* Two columns, each with its own split, as the design divides the screen. */
+.body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  gap: 4px;
+  padding: 4px;
+}
+
+.column {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.left {
+  width: 356px;
+  flex-shrink: 0;
+}
+
+.right {
+  flex: 1;
+}
+
+.panel {
+  position: relative;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--container-background-color, #f7f7f7);
+  box-shadow: var(--shadow-flat-x, 0px) var(--shadow-flat-y, 1px)
+    var(--shadow-flat-blur, 2px) var(--shadow-flat-color, rgba(0, 0, 0, 0.23));
+}
+
+.panelHeading {
+  margin: 0;
+  display: flex;
+  height: 26px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 1px;
+  color: var(--element-neutral-color, #535353);
+}
+
+.panelLink {
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ---- foil overview ---- */
+
+/* The drawing is placed the way the design places it, inside a fixed stage. */
+.overview {
+  position: relative;
+  flex: 1;
+}
+
+/*
+  The sea lies over the hull rather than behind it, so the part of the vessel
+  below the waterline shows through the water. Its tint says which state the
+  foils are in.
+*/
+.sea {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/*
+  The drawing carries both the wave and the water: a filled shape at five per
+  cent, with the wave as its edge. The design flips it, so the crest sits at
+  the waterline and the fill runs to the bottom of the card.
+*/
+.seaLine {
+  position: absolute;
+  left: -126px;
+  top: 188px;
+  width: 621px;
+  height: 243.5px;
+  transform: scaleY(-1);
+}
+
+.seaLineRetracted {
+  top: 202px;
+  transform: scaleX(-1);
+}
+
+.vessel {
+  position: absolute;
+  left: 86px;
+  top: 52px;
+  width: 182px;
+  height: 241px;
+}
+
+.foils {
+  position: absolute;
+  left: 84px;
+  top: 225px;
+  display: flex;
+  width: 185px;
+  justify-content: space-between;
+}
+
+.foilsRetracted {
+  left: 133px;
+  top: 229px;
+  width: 89px;
+}
+
+.stateLabel {
+  position: absolute;
+  z-index: 3;
+  top: 319px;
+  right: 0;
+  left: 0;
+  margin: 0;
+  text-align: center;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.stateLabelDeployed {
+  font-weight: 570;
+}
+
+/* ---- foil controls ---- */
+
+.controls {
+  display: flex;
+  height: 155px;
+  flex-shrink: 0;
+  flex-direction: column;
+}
+
+/*
+  The enhanced icon button from the design: one box around the icon and the
+  label together. The component draws its frame around the icon alone, so the
+  frame is moved out to the whole button through its exposed parts.
+*/
+.foilButton::part(wrapper) {
+  box-sizing: border-box;
+  min-width: 82px;
+  /* the design's button is 56 tall; the component spaces icon and label wider */
+  height: 56px;
+  justify-content: center;
+  gap: 0;
+  padding: 0 12px;
+  border: 1px solid var(--normal-enabled-border-color, #bebebe);
+  border-radius: var(--ui-components-icon-button-border-radius-top-left, 6px);
+  background: var(--normal-enabled-background-color, #fff);
+  box-shadow: var(--shadow-flat-x, 0px) var(--shadow-flat-y, 1px)
+    var(--shadow-flat-blur, 2px) var(--shadow-flat-color, rgba(0, 0, 0, 0.23));
+  color: var(--on-normal-active-color, #1f1f1f);
+}
+
+.foilButton::part(visible-wrapper) {
+  border: 0;
+  background: transparent;
+}
+
+.foilButtonDisabled::part(wrapper) {
+  border-color: var(--raised-disabled-border-color, #ddd);
+  background: transparent;
+  box-shadow: none;
+  color: var(--on-raised-disabled-color, #bebebe);
+}
+
+.controlRow {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 8px 0 24px;
+}
+
+/* ---- chart ---- */
+
+/*
+  The offsets through both right-hand cards are the design's own, measured off
+  the file: the graph block starts 55px down the card and runs to 24px short of
+  its bottom, and the readouts sit 177px down theirs.
+*/
+.chart {
+  display: flex;
+  height: 266px;
+  flex-shrink: 0;
+  flex-direction: column;
+}
+
+.chartArea {
+  display: flex;
+  padding-top: 29px;
+}
+
+.chartStack {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  padding: 0 18px;
+}
+
+.plotRow {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  align-items: flex-start;
+  /* room on the right for the window mark */
+  padding-right: 13px;
+}
+
+.hsLabel {
+  margin: 0 0 8px;
+  height: 20px;
+  padding-left: 4px;
+  font-size: 11px;
+  line-height: 20px;
+  color: var(--element-neutral-color, #535353);
+}
+
+.plot {
+  position: relative;
+  /* the plot's own size, borders included, so the canvas fills it exactly */
+  height: 89px;
+  width: 323px;
+  flex: none;
+  border: 1px solid var(--border-divider-color, #dadada);
+}
+
+/* The layers stack in source order inside the plot box. */
+.plotLayer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+}
+
+.gridLine {
+  position: absolute;
+  right: 0;
+  left: 0;
+  z-index: 1;
+  height: 1px;
+  background: var(--instrument-frame-tertiary-color, #bebebe);
+}
+
+.nowLine {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+  width: 1px;
+  background: #b3b3b3;
+}
+
+/* One label per grid line, set against the plot's own height. */
+.yLabels {
+  position: relative;
+  height: 89px;
+  width: 26px;
+  flex-shrink: 0;
+  font-size: 11px;
+  line-height: 11px;
+  color: var(--element-neutral-color, #535353);
+}
+
+.yLabels span {
+  position: absolute;
+  right: 4px;
+  transform: translateY(-50%);
+}
+
+/* The window marked beside the plot, on the same height axis. */
+.windowMark {
+  position: absolute;
+  right: -11px;
+  width: 4px;
+  border: 1px solid;
+  border-radius: 2px;
+}
+
+.xLabels {
+  display: flex;
+  height: 24px;
+  margin-top: 6px;
+  align-items: center;
+  justify-content: space-between;
+  /* lined up with the plot, clear of the height labels and the window mark */
+  padding: 0 14px 0 26px;
+  font-size: 11px;
+  color: var(--element-neutral-color, #535353);
+}
+
+/*
+  The graph's own legend sits beside it; the design puts it underneath. Same
+  markup and tokens as the library's legend, one step smaller.
+*/
+.legend {
+  display: flex;
+  height: 24px;
+  margin-top: 16px;
+  align-items: center;
+  gap: 8px;
+  padding-left: 24px;
+  font-family: var(--font-family-main);
+}
+
+.legendItem {
+  display: flex;
+  height: 24px;
+  align-items: center;
+  padding: 0 8px;
+}
+
+.legendColor {
+  display: inline-flex;
+  width: 12px;
+  height: 12px;
+  margin-right: 8px;
+  flex-shrink: 0;
+  border: 1px solid;
+  border-radius: var(--infographic-components-legend-item-indicator-border-radius, 0);
+}
+
+.legendLabel {
+  display: inline-flex;
+  white-space: nowrap;
+  font-size: 12px;
+  color: var(--element-neutral-color, #535353);
+}
+
+/* ---- engine power ---- */
+
+.power {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 0 24px;
+}
+
+.powerLabel {
+  margin: 36px 0 0;
+  height: 16px;
+  padding: 0 12px;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--element-neutral-color, #535353);
+}
+
+/* The drawing carries a little bleed, so it starts left of the bar itself. */
+.powerBar {
+  display: block;
+  margin: 15px 0 0 9px;
+}
+
+.readouts {
+  display: flex;
+  margin-top: 32px;
+  justify-content: space-around;
+  gap: 12px;
+  text-align: center;
+}
+
+
+/* ---- deploying sequence ---- */
+
+/* The dialogue sits over the whole screen, the way the design lays it out. */
+.modalLayer {
+  position: absolute;
+  z-index: 10;
+  inset: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 102px;
+}
+
+.modalContent {
+  position: relative;
+  height: 319px;
+  overflow: hidden;
+  background: var(--container-global-color, #fcfcfc);
+}
+
+/* The finished dialogue has no footer, so its picture runs 64px taller. */
+.modalRest {
+  height: 383px;
+}
+
+.illustration {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* The travel bar and its two end stops, placed as the design places them. */
+.travel {
+  position: absolute;
+  top: 174px;
+  left: 50%;
+  width: 411px;
+  transform: translateX(-50%);
+}
+
+.travelEnds {
+  display: flex;
+  height: 16px;
+  justify-content: space-between;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--element-neutral-color, #535353);
+}
+
+.travelBar {
+  display: block;
+  margin-top: 8px;
+}
+
+.remaining {
+  position: absolute;
+  top: 275px;
+  left: 50%;
+  width: 414px;
+  transform: translateX(-50%);
+}
+
+.modalMessage {
+  position: absolute;
+  top: 289px;
+  right: 0;
+  left: 0;
+  margin: 0;
+  text-align: center;
+  font-size: 24px;
+  font-weight: 370;
+  line-height: 32px;
+  color: var(--element-active-color, #1f1f1f);
+}

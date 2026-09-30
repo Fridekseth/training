@@ -16,6 +16,7 @@ export function TrainingRichButton({
   illustration,
   badge = false,
   disabled = false,
+  descriptionSize,
   onClick,
 }: {
   label: string;
@@ -25,6 +26,8 @@ export function TrainingRichButton({
   /** Shows the exclamation badge in the top right corner. */
   badge?: boolean;
   disabled?: boolean;
+  /** Overrides the description's size, in px, for a smaller screen. */
+  descriptionSize?: number;
   onClick?: () => void;
 }) {
   return (
@@ -41,7 +44,12 @@ export function TrainingRichButton({
       <span className={styles.text}>
         <span className={styles.label}>{label}</span>
         {description ? (
-          <span className={styles.description}>{description}</span>
+          <span
+            className={styles.description}
+            style={descriptionSize ? { fontSize: descriptionSize } : undefined}
+          >
+            {description}
+          </span>
         ) : null}
       </span>
 
