@@ -6,6 +6,7 @@
  * carry the library's sort arrow, and the widths follow the design.
  */
 
+import { useState } from "react";
 import { html } from "lit";
 import { ObcTable } from "@oicl/openbridge-webcomponents-react/components/table/table";
 import "@oicl/openbridge-webcomponents/dist/building-blocks/circular-progress/circular-progress.js";
@@ -77,11 +78,29 @@ function dateValue(text: string) {
   return year * 10_000 + month * 100 + day;
 }
 
+/** The small icon each status carries in the design, drawn in the tag's colour. */
+const TAG_ICON: Record<Status, string> = {
+  completed: "wf-tag-completed",
+  "in-progress": "wf-tag-in-progress",
+  "not-started": "wf-tag-not-started",
+};
+
+function tagIcon(status: Status) {
+  const url = `/prototype/icons/${TAG_ICON[status]}.svg`;
+  return html`<span
+    aria-hidden="true"
+    style="display:block;width:16px;height:16px;background-color:currentColor;
+           -webkit-mask:url(${url}) center / contain no-repeat;
+           mask:url(${url}) center / contain no-repeat;"
+  ></span>`;
+}
+
 const tagCell = (status: Status) => ({
   type: ObcTableCellType.Tag as const,
   label: STATUS_LABEL[status],
   color: TAG_COLOR[status],
   hasIcon: true,
+  icon: tagIcon(status),
 });
 
 export function ChapterTable({
@@ -92,6 +111,8 @@ export function ChapterTable({
   onStart: (chapter: Chapter) => void;
 }) {
   const find = (id: string) => chapters.find((item) => item.id === id);
+  // No row is picked out until the learner clicks one.
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const columns: ObcTableColumn[] = [
     {
@@ -144,7 +165,7 @@ export function ChapterTable({
 
   const data: ObcTableRow[] = chapters.map((chapter) => ({
     id: chapter.id,
-    selected: Boolean(chapter.highlighted),
+    selected: chapter.id === selectedId,
     chapter: { type: ObcTableCellType.Regular, text: chapter.title },
     result: { type: ObcTableCellType.Regular, text: `${chapter.result}%` },
     status: tagCell(chapter.status),
@@ -158,6 +179,7 @@ export function ChapterTable({
       data={data}
       rowDivider
       showHeader
+      onRowClick={(event) => setSelectedId(event.detail.row.id)}
     />
   );
 }

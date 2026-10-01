@@ -34,7 +34,7 @@ export const PAGES: PageDef[] = [
 
 export const CHAPTERS: Chapter[] = [
   { id: "application-patterns", title: "Application patterns", icon: "application-patterns", result: 92, status: "completed" },
-  { id: "component-overview", title: "Component overview", icon: "wf-component-overview", result: 20, status: "in-progress", highlighted: true },
+  { id: "component-overview", title: "Component overview", icon: "wf-component-overview", result: 20, status: "in-progress" },
   { id: "operating-the-foils", title: "Operating the foils", icon: "wf-operating-the-foils", result: 0, status: "not-started" },
   { id: "decision-support", title: "Decision support", icon: "wf-decision-support", result: 0, status: "not-started" },
   { id: "alarms", title: "Alarms", icon: "wf-alarms", result: 0, status: "not-started" },
@@ -42,7 +42,7 @@ export const CHAPTERS: Chapter[] = [
 
 export const SCENARIOS: Chapter[] = [
   { id: "docking-alarm", title: "Docking alarm", icon: "wf-docking-alarm", result: 92, status: "completed" },
-  { id: "heavy-seas", title: "Heavy seas", icon: "wf-heavy-seas", result: 20, status: "in-progress", highlighted: true },
+  { id: "heavy-seas", title: "Heavy seas", icon: "wf-heavy-seas", result: 20, status: "in-progress" },
 ];
 
 export const TRAINING_LOG: LogEntry[] = [

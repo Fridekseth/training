@@ -62,7 +62,8 @@ export function TrainingSection() {
   const [page, setPage] = useState<PageId>("home");
   const [history, setHistory] = useState<PageId[]>(["home"]);
   const [step, setStep] = useState(0);
-  const [folded, setFolded] = useState(false);
+  // Folded to icons until the panel button opens it.
+  const [folded, setFolded] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
 
   const go = (id: PageId) => {

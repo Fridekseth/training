@@ -1,10 +1,21 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { ObcTopBar } from "@oicl/openbridge-webcomponents-react/components/top-bar/top-bar";
 import { ObcAlertButton } from "@oicl/openbridge-webcomponents-react/components/alert-button/alert-button";
 import { ObcClock } from "@oicl/openbridge-webcomponents-react/components/clock/clock";
 import { ObcNotificationButton } from "@oicl/openbridge-webcomponents-react/components/notification-button/notification-button";
 import { ObcAlertButtonType } from "@oicl/openbridge-webcomponents/dist/components/alert-button/alert-button";
+
+/** The time, ticking each second. The clock component shows the date it is given. */
+function useNow() {
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const tick = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(tick);
+  }, []);
+  return now;
+}
 
 /**
  * The top bar of the Wavefoil screens. The overview carries the alert and the
@@ -26,6 +37,8 @@ export function WavefoilTopBar({
   menuOpen: boolean;
   onMenu: () => void;
 }) {
+  const now = useNow();
+
   return (
     <ObcTopBar
       appTitle="Wavefoil"
@@ -49,9 +62,10 @@ export function WavefoilTopBar({
       )}
       <ObcClock
         slot="clock"
-        date="2026-09-29T14:30:12Z"
+        date={now.toISOString()}
         showSeconds
-        timeZoneOffsetHours={0}
+        // The clock shows UTC plus an offset, so the offset is the viewer's own.
+        timeZoneOffsetHours={-now.getTimezoneOffset() / 60}
       />
     </ObcTopBar>
   );
