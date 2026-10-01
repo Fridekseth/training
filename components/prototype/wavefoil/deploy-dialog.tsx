@@ -24,11 +24,10 @@ import { DeployIllustration, DeployedIllustration } from "./deploy-illustration"
 import styles from "./wavefoil.module.css";
 
 /**
- * What the screen tells the operator the job will take. The prototype runs it
- * in a fraction of that, so the count comes off the progress rather than off
- * the clock.
+ * How long the prototype takes to run the job, and the time the screen counts
+ * down from, so the two agree. It is not how long deploying the foils takes.
  */
-const STATED_SECONDS = 120;
+export const DEPLOY_SECONDS = 30;
 
 /** The foil icon from the design's own title bar. */
 function FoilIcon() {
@@ -113,7 +112,7 @@ export function DeployingDialog({
   progress: number;
   onCancel: () => void;
 }) {
-  const remaining = Math.max(1, Math.ceil(STATED_SECONDS * (1 - progress)));
+  const remaining = Math.max(1, Math.ceil(DEPLOY_SECONDS * (1 - progress)));
 
   return (
     <div className={styles.modalLayer}>

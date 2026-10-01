@@ -18,7 +18,7 @@ import {
 } from "@oicl/openbridge-webcomponents/dist/navigation-instruments/readout/readout";
 import { Priority } from "@oicl/openbridge-webcomponents/dist/navigation-instruments/types";
 import { WavefoilMenu } from "./app-menu";
-import { DeployedDialog, DeployingDialog } from "./deploy-dialog";
+import { DEPLOY_SECONDS, DeployedDialog, DeployingDialog } from "./deploy-dialog";
 import { WavefoilTopBar } from "./top-bar";
 import { TrainingSection } from "./training-section";
 import { WaveChart } from "./wave-chart";
@@ -177,8 +177,8 @@ function Readout({
   );
 }
 
-/** How long the prototype takes to run what the screen calls a two minute job. */
-const RUN_MS = 30_000;
+/** How long the deploy sequence runs; the dialog counts down the same time. */
+const RUN_MS = DEPLOY_SECONDS * 1000;
 /** How long the confirmation stays up before the overview comes back. */
 const CONFIRM_MS = 4000;
 
