@@ -55,12 +55,18 @@
   --on-amplified-neutral-color: var(--teal-500);
 }
 
-/* The teal frame says this is not the live system. */
+/*
+  The teal frame says this is not the live system. In the design it is 6px thick
+  and lies outside the screen, so the ring is drawn with a shadow, which also
+  rounds its outer corners.
+*/
 .frame {
   position: absolute;
   inset: 0;
-  border: 3px solid var(--teal-300);
+  /* Above the tool row, so that row's shadow does not darken the ring beside it. */
+  z-index: 6;
   border-radius: 6px;
+  box-shadow: 0 0 0 6px var(--teal-300);
 }
 
 /* ---- adding a comment ---- */

@@ -22,7 +22,14 @@ let mounted = 0;
  * one under `:root[data-obc-theme]`. Dimming this screen therefore dims every
  * OpenBridge component on the page, the training prototype included.
  */
-export function WavefoilStage({ theme = "day" }: { theme?: string }) {
+export function WavefoilStage({
+  theme = "day",
+  onExploring,
+}: {
+  theme?: string;
+  /** Called as explore mode is entered and left, for a frame that has to make room for its ring. */
+  onExploring?: (exploring: boolean) => void;
+}) {
   const [palette, setPalette] = useState(theme);
 
   useEffect(() => {
@@ -58,6 +65,7 @@ export function WavefoilStage({ theme = "day" }: { theme?: string }) {
       <WavefoilApp
         palette={palette}
         onDim={dim}
+        onExploring={onExploring}
       />
     </div>
   );

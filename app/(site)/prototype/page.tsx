@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { PrototypeStage } from "@/components/prototype/prototype-stage";
 import { ScaledFrame } from "@/components/prototype/scaled-frame";
-import { WavefoilStage } from "@/components/prototype/wavefoil/wavefoil-stage";
+import { WavefoilDemo } from "@/components/prototype/wavefoil/wavefoil-demo";
 import { PAGE_CONTAINER } from "@/lib/layout";
 
 export const metadata: Metadata = {
@@ -50,16 +50,7 @@ export default function PrototypePage() {
           foil controls to move between the two states.
         </p>
 
-        {/* Drawn at its own size, so the frame closes around it instead of
-            stretching to the column; box-content keeps the border out of the
-            786px, so the scale stays at 1. */}
-        <ScaledFrame
-          width={786}
-          height={590}
-          className="mx-auto mt-5 box-content max-w-[786px] rounded-lg border border-border shadow-sm"
-        >
-          <WavefoilStage />
-        </ScaledFrame>
+        <WavefoilDemo />
       </section>
     </div>
   );

@@ -188,9 +188,11 @@ const CONFIRM_MS = 4000;
 export function WavefoilApp({
   palette,
   onDim,
+  onExploring,
 }: {
   palette: string;
   onDim: () => void;
+  onExploring?: (exploring: boolean) => void;
 }) {
   /**
    * The drawings carry their colours, so each one has a dusk version. The sea
@@ -216,6 +218,10 @@ export function WavefoilApp({
    * kept here and put back when they leave, so nothing carries over to the
    * system aboard.
    */
+  useEffect(() => {
+    onExploring?.(layer === "explore");
+  }, [layer, onExploring]);
+
   const realFoils = useRef(true);
   const goTo = (next: "app" | "training" | "explore") => {
     if (next === "explore" && layer !== "explore") realFoils.current = deployed;

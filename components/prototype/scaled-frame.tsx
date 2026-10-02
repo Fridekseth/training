@@ -15,12 +15,15 @@ export function ScaledFrame({
   className = "",
   /** Scaling past 1 would blow the interface up, so it is the default ceiling. */
   maxScale = 1,
+  overflowVisible = false,
 }: {
   width: number;
   height: number;
   children: ReactNode;
   className?: string;
   maxScale?: number;
+  /** Lets something drawn just outside the frame show, such as a ring around the screen. */
+  overflowVisible?: boolean;
 }) {
   const [scale, setScale] = useState(1);
   const frame = useRef<HTMLDivElement>(null);
@@ -40,7 +43,10 @@ export function ScaledFrame({
     <div
       ref={frame}
       className={className}
-      style={{ height: Math.round(height * scale), overflow: "hidden" }}
+      style={{
+        height: Math.round(height * scale),
+        overflow: overflowVisible ? "visible" : "hidden",
+      }}
     >
       <div
         style={{
