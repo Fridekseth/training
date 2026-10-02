@@ -18,6 +18,7 @@ import { IconButtonVariant } from "@oicl/openbridge-webcomponents/dist/component
 import { MaskIcon } from "../pieces";
 import { HOME, type PageDef, type PageId } from "../training-data";
 import { PAGES } from "./training-data";
+import type { Thread } from "./explore-data";
 import {
   ExplorePage,
   GettingStartedPage,
@@ -58,9 +59,21 @@ function MenuItem({
   );
 }
 
-export function TrainingSection() {
-  const [page, setPage] = useState<PageId>("home");
-  const [history, setHistory] = useState<PageId[]>(["home"]);
+export function TrainingSection({
+  start = "home",
+  threads,
+  onExplore,
+  onOpenThread,
+}: {
+  /** The page to open on, so leaving explore mode lands back on Explore. */
+  start?: PageId;
+  /** The comments, for the list on the Explore page. */
+  threads: Thread[];
+  onExplore: () => void;
+  onOpenThread: (id: string) => void;
+}) {
+  const [page, setPage] = useState<PageId>(start);
+  const [history, setHistory] = useState<PageId[]>([start]);
   const [step, setStep] = useState(0);
   // Folded to icons until the panel button opens it.
   const [folded, setFolded] = useState(true);
@@ -155,7 +168,7 @@ export function TrainingSection() {
             <GettingStartedPage onStart={(title) => setMessage(`Starting: ${title}`)} />
           ) : null}
           {page === "explore" ? (
-            <ExplorePage onEnter={() => setMessage("Explore mode would open here")} />
+            <ExplorePage threads={threads} onEnter={onExplore} onOpen={onOpenThread} />
           ) : null}
           {page === "scenarios" ? (
             <ScenariosPage onStart={(title) => setMessage(`Starting scenario: ${title}`)} />

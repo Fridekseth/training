@@ -40,33 +40,36 @@ export function WavefoilTopBar({
   const now = useNow();
 
   return (
-    <ObcTopBar
-      appTitle="Wavefoil"
-      pageName={pageName}
-      showClock
-      showDimmingButton
-      dimmingButtonActivated={palette !== "day"}
-      onDimmingButtonClicked={onDim}
-      menuButtonActivated={menuOpen}
-      onMenuButtonClicked={onMenu}
-    >
-      {training ? (
-        <span slot="alerts" style={{ display: "flex", alignItems: "center" }}>
-          <ObcAlertButton type={ObcAlertButtonType.Normal} />
-        </span>
-      ) : (
-        <span slot="alerts" style={{ display: "flex", alignItems: "center" }}>
-          <ObcAlertButton type={ObcAlertButtonType.Flat} />
-          <ObcNotificationButton />
-        </span>
-      )}
-      <ObcClock
-        slot="clock"
-        date={now.toISOString()}
-        showSeconds
-        // The clock shows UTC plus an offset, so the offset is the viewer's own.
-        timeZoneOffsetHours={-now.getTimezoneOffset() / 60}
-      />
-    </ObcTopBar>
+    // A plain wrapper, so explore mode can find the bar to comment on.
+    <div data-comment="Top bar">
+      <ObcTopBar
+        appTitle="Wavefoil"
+        pageName={pageName}
+        showClock
+        showDimmingButton
+        dimmingButtonActivated={palette !== "day"}
+        onDimmingButtonClicked={onDim}
+        menuButtonActivated={menuOpen}
+        onMenuButtonClicked={onMenu}
+      >
+        {training ? (
+          <span slot="alerts" style={{ display: "flex", alignItems: "center" }}>
+            <ObcAlertButton type={ObcAlertButtonType.Normal} />
+          </span>
+        ) : (
+          <span slot="alerts" style={{ display: "flex", alignItems: "center" }}>
+            <ObcAlertButton type={ObcAlertButtonType.Flat} />
+            <ObcNotificationButton />
+          </span>
+        )}
+        <ObcClock
+          slot="clock"
+          date={now.toISOString()}
+          showSeconds
+          // The clock shows UTC plus an offset, so the offset is the viewer's own.
+          timeZoneOffsetHours={-now.getTimezoneOffset() / 60}
+        />
+      </ObcTopBar>
+    </div>
   );
 }

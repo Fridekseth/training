@@ -240,3 +240,120 @@
   grid-template-columns:
     minmax(0, 268fr) minmax(0, 107fr) minmax(0, 136fr) minmax(0, 120fr);
 }
+
+/* ---- comments list on the Explore page ---- */
+
+.commentList {
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+  border-radius: 6px;
+  background: var(--container-background-color, #f7f7f7);
+  box-shadow: var(--shadow-flat-x, 0px) var(--shadow-flat-y, 1px)
+    calc(var(--shadow-flat-blur, 2px) / 2) var(--shadow-flat-color, rgba(0, 0, 0, 0.23));
+}
+
+.comment {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 56px;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--element-neutral-color, #535353);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.comment:hover {
+  background: var(--normal-hover-background-color, #f0f0f0);
+}
+
+.commentUnread {
+  color: var(--element-active-color, #1f1f1f);
+}
+
+/* The dot sits in the margin to the left of the avatar. */
+.commentDot {
+  position: absolute;
+  top: 50%;
+  left: 5px;
+  width: 6px;
+  height: 6px;
+  border-radius: 100px;
+  background: var(--base-teal-500, #005d61);
+  transform: translateY(-50%);
+}
+
+.commentAvatar {
+  display: inline-flex;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--base-teal-200, #80cacd);
+  border-radius: 100px;
+  background: var(--container-global-color, #fcfcfc);
+  color: var(--base-teal-500, #005d61);
+  font-size: 16px;
+}
+
+.commentUnread .commentAvatar {
+  border-color: var(--base-teal-600, #004346);
+  background: var(--base-teal-500, #005d61);
+  color: #fff;
+  font-weight: 600;
+}
+
+.commentText {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+}
+
+.commentTitle {
+  overflow: hidden;
+  font-size: 16px;
+  line-height: 24px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.commentUnread .commentTitle {
+  font-weight: 600;
+}
+
+.commentPreview {
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 16px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.commentWhen {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  padding: 0 4px;
+  font-size: 12px;
+  line-height: 16px;
+  white-space: nowrap;
+}
+
+.commentUnread .commentDate {
+  font-weight: 600;
+}
+
+.commentChevron {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}

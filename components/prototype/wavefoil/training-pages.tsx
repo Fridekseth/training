@@ -16,6 +16,8 @@ import { TrainingRichButton } from "../training-rich-button";
 import type { PageId } from "../training-data";
 import { CHAPTERS, PAGES, SCENARIOS, TRAINING_LOG } from "./training-data";
 import { ChapterTable, TrainingLogTable } from "./training-tables";
+import { CommentList } from "./comment-list";
+import type { Thread } from "./explore-data";
 import styles from "./training.module.css";
 
 /** The size the design sets card descriptions in on this screen. */
@@ -165,27 +167,40 @@ export function GettingStartedPage({ onStart }: { onStart: (title: string) => vo
   );
 }
 
-export function ExplorePage({ onEnter }: { onEnter: () => void }) {
+export function ExplorePage({
+  threads,
+  onEnter,
+  onOpen,
+}: {
+  threads: Thread[];
+  onEnter: () => void;
+  onOpen: (id: string) => void;
+}) {
   return (
     <div className={styles.page} style={{ paddingInline: 50 }}>
-      <div className={`${styles.introRow} ${styles.introRowTall}`}>
-        <Intro title="Explore" width={299}>
+      <div className={styles.introRow} style={{ alignItems: "center" }}>
+        <Intro title="Explore" width={260}>
           When explore mode is activated, you can click around in the interface
           without controlling the system. You can add comments to your team, and
           read others tips and tricks.
         </Intro>
-        <Collage />
+        <div style={{ flex: "0 1 322px" }}>
+          <TrainingRichButton
+            label="Start explore mode"
+            description="This function is only available when system is not in use."
+            descriptionSize={SMALL_TEXT}
+            onClick={onEnter}
+            illustration={
+              <Piece src="overview-group13" left={16} top={8} width={54} height={74.561} />
+            }
+          />
+        </div>
       </div>
 
-      <TrainingRichButton
-        label="Start explore mode"
-        description="This function is only available when system is not in use."
-        descriptionSize={SMALL_TEXT}
-        onClick={onEnter}
-        illustration={
-          <Piece src="overview-group13" left={16} top={8} width={54} height={74.561} />
-        }
-      />
+      <p className={styles.heading} style={{ marginTop: 20 }}>
+        Comments:
+      </p>
+      <CommentList threads={threads} onOpen={onOpen} />
     </div>
   );
 }

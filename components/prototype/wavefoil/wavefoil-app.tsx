@@ -18,8 +18,11 @@ import {
 } from "@oicl/openbridge-webcomponents/dist/navigation-instruments/readout/readout";
 import { Priority } from "@oicl/openbridge-webcomponents/dist/navigation-instruments/types";
 import { WavefoilMenu } from "./app-menu";
+import { ExploreMode } from "./explore-mode";
+import { THREADS, type Thread, type ThreadId } from "./explore-data";
 import { DEPLOY_SECONDS, DeployedDialog, DeployingDialog } from "./deploy-dialog";
 import { WavefoilTopBar } from "./top-bar";
+import type { PageId } from "../training-data";
 import { TrainingSection } from "./training-section";
 import { WaveChart } from "./wave-chart";
 import styles from "./wavefoil.module.css";
@@ -200,7 +203,29 @@ export function WavefoilApp({
   );
   const state = deployed ? "deployed" : "retracted";
   /** The overview, or the training section the menu leads to. */
-  const [layer, setLayer] = useState<"app" | "training">("app");
+  const [layer, setLayer] = useState<"app" | "training" | "explore">("app");
+  /** Which training page to open on, so explore mode returns to where it began. */
+  const [trainingStart, setTrainingStart] = useState<PageId>("home");
+  /** The comments left on the screen, shared by explore mode and the Explore page's list. */
+  const [threads, setThreads] = useState<Thread[]>(THREADS);
+  /** The comment explore mode opens on, when it was reached from the list. */
+  const [exploreOn, setExploreOn] = useState<ThreadId | null>(null);
+  /**
+   * Explore mode is a sandbox: the controls work as they do on the real screen,
+   * but what the learner does is theirs alone. The foil state from before is
+   * kept here and put back when they leave, so nothing carries over to the
+   * system aboard.
+   */
+  const realFoils = useRef(true);
+  const goTo = (next: "app" | "training" | "explore") => {
+    if (next === "explore" && layer !== "explore") realFoils.current = deployed;
+    if (layer === "explore" && next !== "explore") {
+      setDeployed(realFoils.current);
+      setPhase("idle");
+      setProgress(0);
+    }
+    setLayer(next);
+  };
   const [menuOpen, setMenuOpen] = useState(false);
   /** idle, the foils travelling out, or the confirmation that they are out. */
   const [phase, setPhase] = useState<"idle" | "running" | "done">("idle");
@@ -235,20 +260,37 @@ export function WavefoilApp({
   return (
     <div className={styles.screen}>
       <WavefoilTopBar
-        pageName={layer === "training" ? "Training" : "Overview"}
-        training={layer === "training"}
+        pageName={layer === "app" ? "Overview" : "Training"}
+        training={layer !== "app"}
         palette={palette}
         onDim={onDim}
         menuOpen={menuOpen}
         onMenu={() => setMenuOpen((open) => !open)}
       />
 
-      {layer === "training" ? <TrainingSection /> : null}
+      {layer === "training" ? (
+        <TrainingSection
+          key={trainingStart}
+          start={trainingStart}
+          threads={threads}
+          onExplore={() => {
+            setExploreOn(null);
+            goTo("explore");
+          }}
+          onOpenThread={(id) => {
+            setThreads((all) =>
+              all.map((item) => (item.id === id ? { ...item, unread: false } : item)),
+            );
+            setExploreOn(id);
+            goTo("explore");
+          }}
+        />
+      ) : null}
 
-      {layer === "app" ? (
+      {layer === "app" || layer === "explore" ? (
       <div className={styles.body}>
         <div className={`${styles.column} ${styles.left}`}>
-          <section className={`${styles.panel} ${styles.overview}`}>
+          <section className={`${styles.panel} ${styles.overview}`} data-comment="Foil overview">
             <Heading label="Foil overview" />
             <div>
               <div className={styles.vessel}>
@@ -297,7 +339,7 @@ export function WavefoilApp({
             </p>
           </section>
 
-          <section className={`${styles.panel} ${styles.controls}`}>
+          <section className={`${styles.panel} ${styles.controls}`} data-comment="Foil controls">
             <Heading label="Foil controls" />
             <div className={styles.controlRow}>
               <FoilButton
@@ -320,14 +362,14 @@ export function WavefoilApp({
         </div>
 
         <div className={`${styles.column} ${styles.right}`}>
-          <section className={`${styles.panel} ${styles.chart}`}>
+          <section className={`${styles.panel} ${styles.chart}`} data-comment="Wave conditions">
             <Heading label="Wave conditions and operating window" linked />
             <div className={styles.chartArea}>
               <WaveChart inWindow={deployed} palette={palette} />
             </div>
           </section>
 
-          <section className={`${styles.panel} ${styles.power}`}>
+          <section className={`${styles.panel} ${styles.power}`} data-comment="Engine power">
             <Heading label="Engine power decision support" linked/>
             <p className={styles.powerLabel}>% MCR</p>
             <PowerBar deployed={deployed} dark={dark}/>
@@ -351,15 +393,28 @@ export function WavefoilApp({
 
       ) : null}
 
+      {layer === "explore" ? (
+        <ExploreMode
+          threads={threads}
+          onThreads={setThreads}
+          initialOpen={exploreOn}
+          onExit={() => {
+            setTrainingStart("explore");
+            goTo("training");
+          }}
+        />
+      ) : null}
+
       {menuOpen ? (
         <WavefoilMenu
-          inTraining={layer === "training"}
+          inTraining={layer !== "app"}
           onOverview={() => {
-            setLayer("app");
+            goTo("app");
             setMenuOpen(false);
           }}
           onTraining={() => {
-            setLayer("training");
+            setTrainingStart("home");
+            goTo("training");
             setMenuOpen(false);
           }}
           onClose={() => setMenuOpen(false)}
