@@ -1,5 +1,6 @@
 import type { MDXComponents } from "mdx/types";
 import Link from "next/link";
+import { Carousel } from "@/components/carousel";
 import { PromptBox } from "@/components/prompt-box";
 import { PrototypeEmbed } from "@/components/prototype-embed";
 import { SourcePill } from "@/components/source-pill";
@@ -10,6 +11,7 @@ import { SourcePill } from "@/components/source-pill";
   so components imported into MDX inherit nothing unexpected.
 */
 const components: MDXComponents = {
+  Carousel,
   SourcePill,
   PromptBox,
   PrototypeEmbed,

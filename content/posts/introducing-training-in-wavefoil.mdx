@@ -1,0 +1,80 @@
+export const metadata = {
+  title: "Introducing training in Wavefoil interface: first iterations",
+  date: "2026-10-04",
+  summary:
+    "The first iterations of the Wavefoil prototype, starting with the interface, the training menu and an explore mode.",
+  image: "/posts/introducing-training-in-wavefoil/iteration-1-1-overview.png",
+  imageAlt:
+    "The Wavefoil overview screen with the ship, the wave chart, the engine power panel and the foil controls",
+  stage: "prototype",
+  tags: ["Wavefoil", "prototyping", "explore mode", "process"],
+  // Hidden from the listings of a production build until the post is finished.
+  draft: true,
+};
+
+Having tested prototyping with Claude Code on my first concept sketches, I began introducing
+the training concept on a new case: Wavefoil.
+
+In the [previous post](/blog/new-case-wavefoil) I ended with three ideas to test: letting
+users try an application's functionality in a safe environment, adding comments so captains
+can share experiences despite not working together, and making sure the training works in a
+compressed version of the interface as well as in the larger one.
+
+This post documents the iterations of the Wavefoil prototype, one at a time, in the order I
+made them.
+
+## First iteration: the interface, the training menu and explore mode
+
+The first iteration has three parts. The first is the Wavefoil interface itself, with the
+ship, the wave conditions, the engine power and the controls for deploying and retracting
+the foils. The second is a training menu, reached from the menu in the top bar, with the
+same structure as the one in the Orkla prototype, scaled down to fit the smaller screen.
+The third is an explore mode, where the user can use the interface freely without
+controlling the real system, and leave comments on the components for the other captains to
+read. Getting started and Scenarios only show their overview pages so far, as the training
+sequences behind them are not built yet.
+
+<Carousel
+  label="Screens from the first iteration"
+  ratio="786 / 590"
+  slides={[
+    {
+      src: "/posts/introducing-training-in-wavefoil/iteration-1-1-overview.png",
+      alt: "The Wavefoil overview screen with the ship, the wave chart, the engine power panel and the foil controls",
+      caption: "The Wavefoil interface: the ship, the wave conditions, the engine power and the controls for the foils.",
+    },
+    {
+      src: "/posts/introducing-training-in-wavefoil/iteration-1-2-deploying.png",
+      alt: "The deploying dialog, with the foils half way out, a progress bar and a button to cancel the operation",
+      caption: "Deploying the foils opens a dialog with the progress and a way to cancel.",
+    },
+    {
+      src: "/posts/introducing-training-in-wavefoil/iteration-1-3-training-menu.png",
+      alt: "The training menu home page, with an illustration and cards for Overview, Getting started, Explore and Scenarios",
+      caption: "The training menu, reached from the menu in the top bar.",
+    },
+    {
+      src: "/posts/introducing-training-in-wavefoil/iteration-1-4-explore-page.png",
+      alt: "The Explore page, with the button that starts explore mode and a list of the latest comments",
+      caption: "The Explore page, with the button that starts explore mode and a list of the latest comments.",
+    },
+    {
+      src: "/posts/introducing-training-in-wavefoil/iteration-1-5-explore-mode.png",
+      alt: "The overview screen in explore mode, with a teal frame, speech bubbles marking comments and a tool row in the corner",
+      caption: "Explore mode. The teal frame shows that this is not the live system, and the speech bubbles mark the comments left on the components.",
+    },
+    {
+      src: "/posts/introducing-training-in-wavefoil/iteration-1-6-thread.png",
+      alt: "A comment thread open on the left, with the part of the screen it is about outlined on the right",
+      caption: "A thread, opened from one of the speech bubbles. The part of the screen it is about is left clear.",
+    },
+  ]}
+/>
+
+I tested this first prototype on a captain who has Wavefoil on their vessel. He was positive to
+the training concept, but pointed out that it does not necessarily have to be exclusively
+available in the bridge screen. He could imagine using it at home for example.
+
+When testing on an OpenBridge designer, I also got some valuable feedback on interaction
+patterns and how the new components relates to the OpenBridge design language. The Comment
+functionality could be communicated more precisely, and benefit from OpenBridge styling.
