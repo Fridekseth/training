@@ -11,6 +11,9 @@ export const SELF = "KN";
 
 export type ThreadId = string;
 
+/** The three pages of the interface; a comment on the top bar belongs to all of them. */
+export type AppPage = "overview" | "decision" | "alarms" | "debriefing";
+
 export type Message = {
   id: string;
   author: string;
@@ -25,6 +28,8 @@ export type Box = { left: number; top: number; width: number; height: number };
 
 export type Thread = {
   id: ThreadId;
+  /** The page the comment is on. */
+  page: AppPage | "all";
   /** Shown in the panel header. */
   title: string;
   /** What the thread is about, for the list; the title when left out. */
@@ -45,11 +50,12 @@ export type Thread = {
 export const THREADS: Thread[] = [
   {
     id: "foil-controls",
+    page: "overview",
     title: "Foil controls thread",
     authors: ["VO"],
     unread: true,
-    indicator: { left: 296, top: 420 },
-    target: { left: 4, top: 431, width: 356, height: 155 },
+    indicator: { left: 540, top: 470 },
+    target: { left: 602, top: 52, width: 181, height: 533 },
     messages: [
       {
         id: "foil-controls-1",
@@ -61,12 +67,13 @@ export const THREADS: Thread[] = [
   },
   {
     id: "dimming-button",
+    page: "all",
     title: "Dimming button thread",
     authors: ["KS"],
     unread: true,
     below: true,
-    indicator: { left: 654, top: 50 },
-    target: { left: 632, top: 0, width: 48, height: 48 },
+    indicator: { left: 662, top: 50 },
+    target: { left: 640, top: 0, width: 48, height: 48 },
     messages: [
       {
         id: "dimming-button-1",
@@ -78,11 +85,12 @@ export const THREADS: Thread[] = [
   },
   {
     id: "chart",
+    page: "decision",
     title: "Thread",
     subject: "Wave conditions",
     authors: ["IM"],
-    indicator: { left: 492, top: 122 },
-    target: { left: 490, top: 170, width: 118, height: 56 },
+    indicator: { left: 330, top: 96 },
+    target: { left: 40, top: 130, width: 360, height: 200 },
     messages: [
       {
         id: "chart-1",
@@ -101,11 +109,12 @@ export const THREADS: Thread[] = [
   },
   {
     id: "power",
+    page: "decision",
     title: "Thread",
     subject: "Engine power",
     authors: ["HT", "AR", "KN"],
-    indicator: { left: 553, top: 356 },
-    target: { left: 638, top: 394, width: 118, height: 52 },
+    indicator: { left: 690, top: 62 },
+    target: { left: 430, top: 112, width: 340, height: 60 },
     messages: [
       {
         id: "power-1",
@@ -123,6 +132,11 @@ export const THREADS: Thread[] = [
     ],
   },
 ];
+
+/** Whether a comment is shown on a page. */
+export function onPage(thread: Thread, page: AppPage): boolean {
+  return thread.page === "all" || thread.page === page;
+}
 
 /** The panel opens on the side away from what the thread is about. */
 export function panelSide(target: Box): "left" | "right" {

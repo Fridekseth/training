@@ -24,6 +24,20 @@ export default function PrototypePage() {
 
       <section className="mt-12">
         <h2 className="text-lg font-semibold tracking-tight text-foreground">
+          Wavefoil interface
+        </h2>
+        <p className="mt-2 max-w-2xl text-[0.95rem] leading-7 text-muted">
+          The newest design: the interface for the bow foils on a ship, with an
+          overview, decision support, the alarm system and a debriefing of past
+          trips. Open the menu in the top left to move between the pages, and
+          use the foil controls on the overview to deploy and retract.
+        </p>
+
+        <WavefoilDemo />
+      </section>
+
+      <section className="mt-16">
+        <h2 className="text-lg font-semibold tracking-tight text-foreground">
           Training in a factory monitoring interface
         </h2>
         <p className="mt-2 max-w-2xl text-[0.95rem] leading-7 text-muted">
@@ -39,18 +53,6 @@ export default function PrototypePage() {
         >
           <PrototypeStage syncHash />
         </ScaledFrame>
-      </section>
-
-      <section className="mt-16">
-        <h2 className="text-lg font-semibold tracking-tight text-foreground">
-          Wavefoil control
-        </h2>
-        <p className="mt-2 max-w-2xl text-[0.95rem] leading-7 text-muted">
-          The screen that deploys and retracts the bow foils on a ship. Use the
-          foil controls to move between the two states.
-        </p>
-
-        <WavefoilDemo />
       </section>
     </div>
   );

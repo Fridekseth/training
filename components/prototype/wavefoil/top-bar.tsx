@@ -5,6 +5,9 @@ import { ObcTopBar } from "@oicl/openbridge-webcomponents-react/components/top-b
 import { ObcAlertButton } from "@oicl/openbridge-webcomponents-react/components/alert-button/alert-button";
 import { ObcClock } from "@oicl/openbridge-webcomponents-react/components/clock/clock";
 import { ObcNotificationButton } from "@oicl/openbridge-webcomponents-react/components/notification-button/notification-button";
+import { ObiNotificationAdvice } from "@oicl/openbridge-webcomponents-react/icons/icon-notification-advice";
+import { ObiNotificationAdviceActive } from "@oicl/openbridge-webcomponents-react/icons/icon-notification-advice-active";
+import { NotificationButtonStyle } from "@oicl/openbridge-webcomponents/dist/components/notification-button/notification-button";
 import { ObcAlertButtonType } from "@oicl/openbridge-webcomponents/dist/components/alert-button/alert-button";
 
 /** The time, ticking each second. The clock component shows the date it is given. */
@@ -29,6 +32,9 @@ export function WavefoilTopBar({
   onDim,
   menuOpen,
   onMenu,
+  adviceOpen = false,
+  onAdvice,
+  onAlerts,
 }: {
   pageName: string;
   training?: boolean;
@@ -36,6 +42,10 @@ export function WavefoilTopBar({
   onDim: () => void;
   menuOpen: boolean;
   onMenu: () => void;
+  /** The advice list under the bar is open. */
+  adviceOpen?: boolean;
+  onAdvice?: () => void;
+  onAlerts?: () => void;
 }) {
   const now = useNow();
 
@@ -58,8 +68,19 @@ export function WavefoilTopBar({
           </span>
         ) : (
           <span slot="alerts" style={{ display: "flex", alignItems: "center" }}>
-            <ObcAlertButton type={ObcAlertButtonType.Flat} />
-            <ObcNotificationButton />
+            <ObcAlertButton type={ObcAlertButtonType.Flat} onClick={onAlerts} />
+            <ObcNotificationButton
+              isActive={adviceOpen}
+              buttonStyle={NotificationButtonStyle.Normal}
+              aria-label="Advice"
+              onObcClick={onAdvice}
+            >
+              {adviceOpen ? (
+                <ObiNotificationAdviceActive slot="icon" />
+              ) : (
+                <ObiNotificationAdvice slot="icon" />
+              )}
+            </ObcNotificationButton>
           </span>
         )}
         <ObcClock

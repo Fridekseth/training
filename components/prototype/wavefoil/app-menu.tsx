@@ -3,12 +3,13 @@
 /**
  * The application menu, opened from the hamburger in the top bar. It slides
  * over the screen under the bar and is where the operator reaches Training.
- * Only Overview and Training lead anywhere; the other items are drawn as in the
- * design but have no screen behind them.
+ * The three pages and Training lead somewhere; Settings is drawn as in the
+ * design but has no screen behind it.
  */
 
 import { ObcNavigationItem } from "@oicl/openbridge-webcomponents-react/components/navigation-item/navigation-item";
 import { MaskIcon } from "../pieces";
+import type { AppPage } from "./explore-data";
 import styles from "./training.module.css";
 
 const ACTIVE = "var(--on-amplified-active-color, #1d3c67)";
@@ -42,13 +43,15 @@ function Item({
 }
 
 export function WavefoilMenu({
+  page,
   inTraining,
-  onOverview,
+  onPage,
   onTraining,
   onClose,
 }: {
+  page: AppPage;
   inTraining: boolean;
-  onOverview: () => void;
+  onPage: (page: AppPage) => void;
   onTraining: () => void;
   onClose: () => void;
 }) {
@@ -62,12 +65,32 @@ export function WavefoilMenu({
       */}
       <nav className={styles.menu}>
         <div className={styles.menuGroup}>
-          <Item label="Overview" icon="nav-home" checked={!inTraining} onClick={onOverview} />
-          <Item label="Decision support" icon="wf-menu-decision-support" />
+          <Item
+            label="Overview"
+            icon="nav-home"
+            checked={!inTraining && page === "overview"}
+            onClick={() => onPage("overview")}
+          />
+          <Item
+            label="Decision support"
+            icon="wf-menu-help"
+            checked={!inTraining && page === "decision"}
+            onClick={() => onPage("decision")}
+          />
+          <Item
+            label="Debriefing"
+            icon="wf-menu-debriefing"
+            checked={!inTraining && page === "debriefing"}
+            onClick={() => onPage("debriefing")}
+          />
         </div>
         <div className={`${styles.menuGroup} ${styles.menuFooter}`}>
-          <Item label="Alerts" icon="wf-menu-alerts" />
-          <Item label="Help" icon="wf-menu-help" />
+          <Item
+            label="Alerts"
+            icon="wf-menu-alerts"
+            checked={!inTraining && page === "alarms"}
+            onClick={() => onPage("alarms")}
+          />
           <Item label="Training" icon="wf-menu-training" checked={inTraining} onClick={onTraining} />
           <Item label="Settings" icon="wf-menu-settings" />
         </div>

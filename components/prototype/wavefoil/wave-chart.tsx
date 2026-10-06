@@ -15,7 +15,7 @@
 import { useMemo } from "react";
 import { ObcLineGraph } from "@oicl/openbridge-webcomponents-react/bars-graphs/line-graph/line-graph";
 import type { ObcLineGraph as ObcLineGraphElement } from "@oicl/openbridge-webcomponents/dist/bars-graphs/line-graph/line-graph";
-import styles from "./wavefoil.module.css";
+import styles from "./pages.module.css";
 
 /**
  * Wave height in metres from -2h to +2h. The design draws each line out of the
@@ -38,8 +38,8 @@ const WINDOW_HIGH = 6.3;
 const HEIGHTS = [8, 4, 0];
 /** The plot, at the design's own size. The box around it must match, or the
  * chart draws short of its frame. */
-const PLOT_WIDTH = 321;
-const PLOT_HEIGHT = 89;
+const PLOT_WIDTH = 302;
+const PLOT_HEIGHT = 133;
 
 /**
  * A canvas has no CSS to resolve, so the chart cannot be handed a token the
@@ -47,7 +47,7 @@ const PLOT_HEIGHT = 89;
  * and passed down as plain colours, which means the graph follows a change of
  * theme like everything else rather than staying in the day colours.
  */
-type Palette = {
+export type Palette = {
   measured: string;
   estimated: string;
   fill: string;
@@ -130,6 +130,14 @@ function Plot({ datasets }: { datasets: ChartDataset[] }) {
   );
 }
 
+/** The chart's colours, read again whenever the screen is dimmed; the legend beside it uses them too. */
+export function useWavePalette(inWindow: boolean, palette: string): Palette {
+  // `palette` is not read here; it is what tells us the document's colours
+  // have changed underneath us and have to be read again.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  return useMemo(() => readPalette(inWindow), [inWindow, palette]);
+}
+
 export function WaveChart({
   inWindow,
   palette,
@@ -138,16 +146,13 @@ export function WaveChart({
   /** Only to re-read the colours when the screen is dimmed. */
   palette: string;
 }) {
-  // `palette` is not read here; it is what tells us the document's colours
-  // have changed underneath us and have to be read again.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const colour = useMemo(() => readPalette(inWindow), [inWindow, palette]);
+  const colour = useWavePalette(inWindow, palette);
   const nowAt = (NOW / (POINTS - 1)) * 100;
   const at = (metres: number) => `${(1 - metres / 8) * 100}%`;
 
   return (
-    <div className={styles.chartStack}>
-      <p className={styles.hsLabel}>Hs</p>
+    <div className={styles.chart}>
+      <p className={styles.hs}>Hs</p>
 
       <div className={styles.plotRow}>
         <div className={styles.yLabels}>
@@ -227,13 +232,7 @@ export function WaveChart({
             ]}
           />
 
-
-          {/*
-            The window marked on the height axis. The chart takes a scale in
-            its right-scale slot, but that scale draws its advice in the advice
-            palette, and the design marks this one in the operational data
-            colour, so it is placed against the same axis range here.
-          */}
+          {/* The window marked on the height axis, in the operational data colour. */}
           <span
             className={styles.windowMark}
             style={{
@@ -247,39 +246,11 @@ export function WaveChart({
       </div>
 
       <div className={styles.xLabels}>
-        <span>-2h</span>
-        <span>now</span>
-        <span>2h</span>
+        <span style={{ left: 0 }}>-2h</span>
+        <span style={{ left: "50%" }}>now</span>
+        <span style={{ left: "100%" }}>2h</span>
       </div>
-
-      <Legend colour={colour} />
     </div>
   );
 }
 
-/**
- * The graph's own legend carries an entry per dataset, which would name the
- * two halves of the window, so the row is built here with the library's
- * markup and tokens instead.
- */
-function Legend({ colour }: { colour: Palette }) {
-  const items: [string, string, string][] = [
-    ["Actual", colour.measured, colour.measured],
-    ["Estimated", colour.estimated, colour.estimated],
-    ["Foil window", colour.chip, colour.chipEdge],
-  ];
-
-  return (
-    <div className={styles.legend}>
-      {items.map(([label, fill, edge]) => (
-        <span className={styles.legendItem} key={label}>
-          <span
-            className={styles.legendColor}
-            style={{ backgroundColor: fill, borderColor: edge }}
-          />
-          <span className={styles.legendLabel}>{label}</span>
-        </span>
-      ))}
-    </div>
-  );
-}

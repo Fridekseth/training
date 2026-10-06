@@ -1,0 +1,662 @@
+/*
+  The debriefing page. Sizes are the design's own, measured off the Figma file
+  at the 786 x 590 screen; type, colour and spacing come from OpenBridge tokens.
+*/
+
+.page {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  background: var(--container-section-color, #f0f0f0);
+  color: var(--element-active-color, #1f1f1f);
+  font-size: 16px;
+}
+
+.trip,
+.map,
+.analytics {
+  position: absolute;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--container-background-color, #f7f7f7);
+  box-shadow: var(--shadow-flat-x, 0px) var(--shadow-flat-y, 1px) var(--shadow-flat-blur, 2px)
+    var(--shadow-flat-color, rgba(0, 0, 0, 0.23));
+}
+
+.trip {
+  top: 4px;
+  left: 4px;
+  display: flex;
+  width: 322px;
+  height: 534px;
+  flex-direction: column;
+}
+
+.map {
+  top: 4px;
+  left: 330px;
+  width: 452px;
+  height: 334px;
+}
+
+.analytics {
+  top: 342px;
+  left: 330px;
+  width: 452px;
+  height: 196px;
+}
+
+/* ---- headings: a title that leads on ---- */
+
+.heading {
+  display: flex;
+  height: 32px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+}
+
+.analytics .heading {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+}
+
+.headingLink {
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 1px;
+  color: var(--element-neutral-color, #535353);
+  cursor: pointer;
+}
+
+/* ---- the trip ---- */
+
+.tripHeader {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border-divider-color, #ddd);
+  color: var(--element-neutral-color, #535353);
+}
+
+.vesselRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tripPicker {
+  display: flex;
+  margin: -4px -4px -4px 0;
+  padding: 4px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--element-neutral-color, #535353);
+  cursor: pointer;
+}
+
+.vessel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16.5px;
+  line-height: 20px;
+}
+
+.tripGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 0;
+  font-size: 11.5px;
+  line-height: 16px;
+}
+
+.place,
+.moment {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.moment {
+  flex-direction: row;
+  gap: 4px;
+}
+
+.placeName {
+  font-weight: 600;
+}
+
+.placeRole {
+  color: var(--element-inactive-color, #707070);
+}
+
+/* ---- the log ---- */
+
+.log {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 8px 6px 8px 8px;
+  scrollbar-width: thin;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 36px 16px 1fr;
+  align-items: stretch;
+}
+
+.stamp {
+  padding: 12px 4px 0 0;
+  text-align: right;
+  font-size: 11.5px;
+  line-height: 16px;
+  color: var(--element-inactive-color, #707070);
+  font-variant-numeric: tabular-nums;
+}
+
+.rail {
+  position: relative;
+}
+
+/* The line runs through the whole log, so each row draws its stretch of it. */
+.rail::before {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 7px;
+  width: 2px;
+  background: var(--element-neutral-enhanced-color, #2d548b);
+  content: "";
+}
+
+.railFirst::before {
+  top: 20px;
+}
+
+/* The docking card is taller, so its dot sits lower and the line ends there. */
+.railLast::before {
+  bottom: auto;
+  height: 20px;
+}
+
+.railDocking::before {
+  height: 28px;
+}
+
+.stampDocking {
+  padding-top: 20px;
+}
+
+.railDocking .dot {
+  top: 24px;
+}
+
+.dot {
+  position: absolute;
+  top: 16px;
+  left: 4px;
+  box-sizing: border-box;
+  width: 8px;
+  height: 8px;
+  border: 2px solid var(--element-neutral-enhanced-color, #2d548b);
+  border-radius: 50%;
+  background: var(--element-neutral-enhanced-color, #2d548b);
+}
+
+.card {
+  margin: 4px;
+  overflow: hidden;
+  border: 1px solid var(--border-outline-color, #ddd);
+  border-radius: 12px;
+  background: var(--container-global-color, #fff);
+  box-shadow: var(--shadow-flat-x, 0px) var(--shadow-flat-y, 1px) var(--shadow-flat-blur, 2px)
+    var(--shadow-flat-color, rgba(0, 0, 0, 0.23));
+}
+
+.eventCard {
+  border-color: var(--base-blue-100, #c9dffb);
+  background: var(--base-blue-050, #e6f0fd);
+}
+
+.cardTitle {
+  display: flex;
+  min-height: 32px;
+  align-items: center;
+  gap: 4px;
+  padding: 0 12px;
+  font-size: 11.5px;
+  line-height: 16px;
+}
+
+.cardName {
+  flex: 1;
+  font-weight: 600;
+  color: var(--element-active-color, #1f1f1f);
+}
+
+.cardStamp {
+  color: var(--element-inactive-color, #707070);
+  font-variant-numeric: tabular-nums;
+}
+
+.cardStamp strong {
+  font-weight: 600;
+}
+
+.waypointMark {
+  box-sizing: border-box;
+  width: 8px;
+  height: 8px;
+  margin: 0 4px;
+  border: 1.5px solid var(--element-neutral-color, #535353);
+  border-radius: 50%;
+}
+
+.measures {
+  display: flex;
+  padding: 0 8px 12px;
+}
+
+.measure {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+}
+
+.measure + .measure {
+  border-left: 1px solid var(--border-divider-color, #ddd);
+}
+
+.measureValue {
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--element-neutral-color, #535353);
+  font-variant-numeric: tabular-nums;
+}
+
+.measureLabel {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--element-inactive-color, #707070);
+}
+
+.measureLabel strong {
+  font-weight: 600;
+  color: var(--element-neutral-color, #535353);
+}
+
+.eventText {
+  margin: 0;
+  padding: 0 12px 12px;
+  white-space: nowrap;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--element-neutral-color, #535353);
+}
+
+/* ---- the map ---- */
+
+.map {
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.mapDragging {
+  cursor: grabbing;
+}
+
+.map:focus-visible {
+  outline: 2px solid var(--focus-frame-color, #5d8fd5);
+  outline-offset: -2px;
+}
+
+.mapLayer {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+
+.land,
+.route {
+  position: absolute;
+  display: block;
+  overflow: visible;
+}
+
+.landShape {
+  fill: var(--container-section-color, #f0f0f0);
+  stroke: var(--border-divider-color, #bebebe);
+  stroke-width: 0.573;
+}
+
+.route path {
+  fill: none;
+  stroke-width: 2;
+}
+
+.routeLine {
+  stroke: var(--element-inactive-color, #707070);
+}
+
+.routeFoils {
+  stroke: var(--base-blue-200, #94bef3);
+}
+
+.waypoint {
+  position: absolute;
+  box-sizing: border-box;
+  display: flex;
+  width: 14.75px;
+  height: 14.75px;
+  align-items: center;
+  justify-content: center;
+  border: 1.475px solid var(--element-active-inverted-color, #fff);
+  border-radius: 3.7px;
+  background: var(--base-categorical-400, #707070);
+}
+
+.waypointInner {
+  box-sizing: border-box;
+  width: 6px;
+  height: 6px;
+  border: 1.4px solid var(--element-active-inverted-color, #fff);
+  border-radius: 50%;
+}
+
+.destination {
+  position: absolute;
+  box-sizing: border-box;
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid var(--element-active-color, #1f1f1f);
+  border-radius: 50%;
+}
+
+.destination::after {
+  position: absolute;
+  inset: 2.5px;
+  border-radius: 50%;
+  background: var(--element-active-color, #1f1f1f);
+  content: "";
+}
+
+.vesselMarker {
+  position: absolute;
+  top: 53px;
+  left: 97px;
+  box-sizing: border-box;
+  display: flex;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--overlay-border-outline-color, #f0f0f0);
+  border-radius: 50%;
+  background: var(--overlay-container-background-color, rgba(255, 255, 255, 0.71));
+  box-shadow: var(--shadow-raised-x, 0px) var(--shadow-raised-y, 2px) var(--shadow-raised-blur, 4px)
+    var(--shadow-raised-color, rgba(0, 0, 0, 0.23));
+}
+
+.vesselMarkerInner {
+  display: flex;
+  width: 24px;
+  height: 24px;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--base-blue-100, #c9dffb);
+  border-radius: 50%;
+  background: var(--base-blue-050, #e6f0fd);
+  color: var(--element-neutral-enhanced-color, #2d548b);
+}
+
+.legendBar {
+  position: absolute;
+  bottom: 7.5px;
+  left: 9px;
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+  border: 1px solid var(--border-outline-color, #ddd);
+  border-radius: 12px;
+  background: var(--overlay-container-background-color, rgba(255, 255, 255, 0.71));
+  font-size: 11.5px;
+  line-height: 16px;
+  color: var(--element-neutral-color, #535353);
+}
+
+.legendItems {
+  display: flex;
+  gap: 18px;
+  padding: 0 8px;
+}
+
+.legendItems span {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.legendItems strong {
+  font-weight: 600;
+}
+
+.compass {
+  width: 34px;
+  height: 34px;
+}
+
+.compassRing {
+  fill: none;
+  stroke: var(--instrument-frame-tertiary-color, #bebebe);
+}
+
+.compassTick {
+  stroke: var(--instrument-tick-mark-secondary-color, #8e8e8e);
+  stroke-width: 1;
+}
+
+.compassArrow {
+  fill: var(--element-neutral-enhanced-color, #2d548b);
+}
+
+/* ---- analytics ---- */
+
+.yLabels {
+  position: absolute;
+  top: 54px;
+  left: 0;
+  width: 51px;
+  height: 107px;
+  font-size: 11.5px;
+  line-height: 16px;
+  color: var(--element-neutral-color, #535353);
+}
+
+.yLabels span {
+  position: absolute;
+  right: 0;
+  transform: translateY(-50%);
+}
+
+.yLabels span:first-child {
+  transform: none;
+  margin-top: -2px;
+}
+
+.plot {
+  position: absolute;
+  top: 54px;
+  left: 56px;
+  width: 210px;
+  height: 107px;
+  border-top: 1px solid var(--instrument-frame-tertiary-color, #bebebe);
+  border-left: 1px solid var(--instrument-frame-tertiary-color, #bebebe);
+  border-bottom: 1px solid var(--instrument-frame-tertiary-color, #bebebe);
+  box-sizing: content-box;
+}
+
+.plotLayer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+}
+
+.foilsBand {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: color-mix(in srgb, var(--base-blue-200, #94bef3) 28%, transparent);
+}
+
+.foilsMark {
+  position: absolute;
+  top: 165px;
+  box-sizing: border-box;
+  height: 4px;
+  border: 1px solid var(--base-blue-400, #4271b3);
+  border-radius: 2px;
+  background: var(--base-blue-100, #c9dffb);
+}
+
+.legend {
+  position: absolute;
+  top: 44px;
+  left: 284px;
+  display: flex;
+  width: 168px;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  /* The design's radio is a size smaller than the component's own. */
+  --ui-components-radio-button-selection-size: 18px;
+  --ui-components-radio-button-thumb-size: 8px;
+}
+
+.legend > div {
+  display: flex;
+  height: 32px;
+  align-items: center;
+  cursor: pointer;
+}
+
+.legend > div > * {
+  white-space: nowrap;
+}
+
+/* ---- docking ---- */
+
+.dockingTitle {
+  min-height: 48px;
+  gap: 8px;
+}
+
+.dockingName,
+.dockingTime {
+  display: flex;
+  flex-direction: column;
+}
+
+.dockingName {
+  flex: 1;
+  color: var(--element-neutral-color, #535353);
+}
+
+.dockingName strong {
+  font-weight: 600;
+  color: var(--element-active-color, #1f1f1f);
+}
+
+.dockingTime {
+  align-items: flex-end;
+  color: var(--element-active-color, #1f1f1f);
+  font-variant-numeric: tabular-nums;
+}
+
+.dockingTime strong {
+  font-weight: 600;
+  color: var(--element-inactive-color, #707070);
+}
+
+/* ---- the trip picker ---- */
+
+.menuScrim {
+  position: fixed;
+  inset: 0;
+  z-index: 29;
+}
+
+.tripMenu {
+  position: absolute;
+  top: 52px;
+  left: 24px;
+  z-index: 30;
+  box-sizing: border-box;
+  display: flex;
+  width: 282px;
+  flex-direction: column;
+  padding: 4px;
+  border-radius: 12px;
+  background: var(--container-global-color, #fcfcfc);
+  box-shadow: var(--shadow-floating-x, 0px) var(--shadow-floating-y, 4px)
+    var(--shadow-floating-blur, 16px) var(--shadow-floating-color, rgba(0, 0, 0, 0.32));
+}
+
+.tripOption {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: none;
+  font: inherit;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--on-flat-active-color, #1f1f1f);
+  text-align: left;
+  white-space: pre;
+  cursor: pointer;
+}
+
+.tripOption:hover {
+  background: var(--flat-hover-background-color, rgba(0, 0, 0, 0.06));
+}
+
+.tripOptionCurrent {
+  border-color: var(--base-blue-100, #c9dffb);
+  background: var(--base-blue-050, #e6f0fd);
+}
+
+.tripOption strong {
+  font-weight: 600;
+}
+
+.empty {
+  margin: 0;
+  padding: 24px 16px;
+  text-align: center;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--element-inactive-color, #707070);
+}

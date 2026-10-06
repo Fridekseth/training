@@ -25,6 +25,8 @@ import {
   panelSide,
   SELF,
   type Message,
+  type AppPage,
+  onPage,
   type Thread,
   type ThreadId,
 } from "./explore-data";
@@ -200,8 +202,11 @@ export function ExploreMode({
   threads,
   onThreads: setThreads,
   initialOpen = null,
+  page,
   onExit,
 }: {
+  /** The page being explored; its comments are the ones shown. */
+  page: AppPage;
   /** Kept by the app, so the Explore page can list the same comments. */
   threads: Thread[];
   onThreads: React.Dispatch<React.SetStateAction<Thread[]>>;
@@ -286,6 +291,7 @@ export function ExploreMode({
       ...all,
       {
         id,
+        page,
         title: `${hit.dataset.comment} thread`,
         authors: [SELF],
         // The bubble's sharp corner sits on the click. Near the top edge it hangs
@@ -336,7 +342,7 @@ export function ExploreMode({
       ) : null}
 
       {tool === "comment"
-        ? threads.map((item) => (
+        ? threads.filter((item) => onPage(item, page)).map((item) => (
             <Indicator
               key={item.id}
               thread={item}
