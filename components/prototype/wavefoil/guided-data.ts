@@ -19,24 +19,32 @@ export type GuidedStep = {
   arrow: "left" | "right" | "top" | "bottom" | null;
 };
 
-/** A question of a chapter's test: something to do on the screen, or something to answer. */
+/** A question of a chapter's test: something to do on the screen, or a scenario to watch and describe. */
 export type TestQuestion =
   | {
       kind: "scenario";
       title: string;
       text: string;
+      /** What the toast says while the scenario runs, when that is more than the title. */
+      toast?: string;
       /** How far out the foils are when the scenario opens. */
       start: number;
-      /** What ends it: the foils out, the foils in, or stopped about half way and then taken in. */
+      /** What ends it: the foils out, the foils in, or stopped before fully out and then taken in. */
       goal: "deploy" | "retract" | "halfway-retract";
       /** It ends by itself after this long, if the goal has not been reached. */
       seconds: number;
     }
   | {
-      kind: "choice";
+      kind: "watch";
       title: string;
       text: string;
+      /** What the foils do on their own while the learner watches. */
+      script: "deploying" | "stopped-halfway";
+      /** The time the scenario takes, which the toast counts down. */
+      seconds: number;
       options: string[];
+      /** The index of the option that describes the scenario. */
+      correct: number;
     };
 
 /** What the learner did on a question, for the results. */
@@ -54,6 +62,13 @@ export type GuidedSequence = {
   /** The questions of the last step, which is the chapter's test. */
   test?: TestQuestion[];
 };
+
+const DESCRIPTIONS = [
+  "The foils are deploying.",
+  "The foils are retracting.",
+  "The foil deployment has been stopped mid action.",
+  "The foil retraction has been stopped mid action.",
+];
 
 export const OPERATING_THE_FOILS: GuidedSequence = {
   id: "operating-the-foils",
@@ -137,15 +152,28 @@ export const OPERATING_THE_FOILS: GuidedSequence = {
       seconds: 30,
     },
     {
-      kind: "choice",
-      title: "Are the foils retracted?",
-      text: "Look at the foils on the screen as you left them, and answer.",
-      options: ["Yes", "No"],
+      kind: "watch",
+      title: "What description would best fit this scenario?",
+      text: "Look at the scenario, and choose the answer that best describes it.",
+      script: "deploying",
+      seconds: 6,
+      options: DESCRIPTIONS,
+      correct: 0,
+    },
+    {
+      kind: "watch",
+      title: "What description would best fit this scenario?",
+      text: "Look at the scenario, and choose the answer that best describes it.",
+      script: "stopped-halfway",
+      seconds: 7,
+      options: DESCRIPTIONS,
+      correct: 2,
     },
     {
       kind: "scenario",
-      title: "Stop deployment at about 50%, and retract the foils",
-      text: "Stop the deployment at about 50%, and then retract the foils. The scenario automatically ends once foils are retracted, or after 60 seconds.",
+      title: "Stop a deployment",
+      text: "Start a deployment, but stop it before it is fully deployed, and then retract the foils again.",
+      toast: "Start a deployment, but stop it before it is fully deployed, and then retract the foils again.",
       start: 0,
       goal: "halfway-retract",
       seconds: 60,

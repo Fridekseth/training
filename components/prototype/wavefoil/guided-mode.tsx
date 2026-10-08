@@ -42,8 +42,10 @@ import styles from "./guided.module.css";
 const noop = () => {};
 const NO_QUESTIONS: TestQuestion[] = [];
 
-/** How long the sequence takes to start, which the toast shows. */
-const STARTING_MS = 2400;
+/** The frame draws itself first, and a beat after it closes the toast says the sequence is starting. */
+const FRAME_MS = 1500;
+/** How long the toast stays before the first step. */
+const STARTING_MS = 2600;
 
 /** The row in the corner: the handle and the one button that opens the step menu. */
 const ROW_WIDTH = 85;
@@ -56,19 +58,91 @@ function Toast({
   title,
   subtitle,
   remaining,
+  at,
+  onMove,
+  layer,
   onCancel,
 }: {
-  icon: string;
+  icon?: string;
   title: string;
   /** A second line under the title; a scenario has none. */
   subtitle?: string;
   /** The share of a scenario's time that is left; the ring around the button runs down with it instead of turning. */
   remaining?: number;
+  /** Where the toast stands, when it can be moved; a toast with a place has a handle to move it by. */
+  at?: { left: number; top: number };
+  onMove?: (at: { left: number; top: number }) => void;
+  /** The layer it stands in, measured for the screen's scale while it is dragged. */
+  layer?: React.RefObject<HTMLDivElement | null>;
   onCancel: () => void;
 }) {
+  const box = useRef<HTMLDivElement>(null);
+  const grab = useRef<{ x: number; y: number; left: number; top: number; scale: number } | null>(null);
+
+  const place = (left: number, top: number) => {
+    const width = box.current?.offsetWidth ?? 480;
+    const height = box.current?.offsetHeight ?? 64;
+    onMove?.({
+      left: Math.min(SCREEN.width - width, Math.max(0, left)),
+      top: Math.min(SCREEN.height - height, Math.max(0, top)),
+    });
+  };
+
+  const start = (event: React.PointerEvent<HTMLButtonElement>) => {
+    const frame = layer?.current?.getBoundingClientRect();
+    if (!frame || !at) return;
+    grab.current = {
+      x: event.clientX,
+      y: event.clientY,
+      left: at.left,
+      top: at.top,
+      scale: frame.width / SCREEN.width,
+    };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+
+  const move = (event: React.PointerEvent<HTMLButtonElement>) => {
+    const from = grab.current;
+    if (!from) return;
+    place(from.left + (event.clientX - from.x) / from.scale, from.top + (event.clientY - from.y) / from.scale);
+  };
+
+  // Without a pointer, the arrow keys move it.
+  const nudge = (event: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (!at) return;
+    const by = { ArrowLeft: [-16, 0], ArrowRight: [16, 0], ArrowUp: [0, -16], ArrowDown: [0, 16] }[event.key];
+    if (!by) return;
+    event.preventDefault();
+    place(at.left + by[0], at.top + by[1]);
+  };
+
   return (
-    <div className={styles.toast} role="status">
-      <MaskIcon name={icon} size={32} style={{ color: "var(--element-neutral-color, #535353)" }} />
+    <div className={styles.toast} role="status" ref={box} style={at ? { left: at.left, top: at.top } : undefined}>
+      {at ? (
+        <>
+          <button
+            type="button"
+            className={styles.toastGrip}
+            aria-label="Move the task. Drag, or use the arrow keys."
+            onPointerDown={start}
+            onPointerMove={move}
+            onPointerUp={() => (grab.current = null)}
+            onPointerCancel={() => (grab.current = null)}
+            onKeyDown={nudge}
+          >
+            <svg width="12" height="18" viewBox="0 0 12 18" aria-hidden="true">
+              {[0, 1, 2].flatMap((row) =>
+                [0, 1].map((col) => (
+                  <circle key={`${row}${col}`} cx={3 + col * 6} cy={3 + row * 6} r="1.6" fill="currentColor" />
+                )),
+              )}
+            </svg>
+          </button>
+          <span className={styles.toastDivider} aria-hidden="true" />
+        </>
+      ) : icon ? (
+        <MaskIcon name={icon} size={32} style={{ color: "var(--element-neutral-color, #535353)" }} />
+      ) : null}
       <div className={styles.toastText}>
         <p className={styles.toastTitle}>{title}</p>
         {subtitle ? <p>{subtitle}</p> : null}
@@ -310,14 +384,16 @@ export function GuidedMode({
   /** How far out the foils are, which a test scenario watches. */
   deployment: number;
   moving: "deploy" | "retract" | null;
-  /** Puts the foils at a position, or with null stops them where they are. */
-  onFoils: (deployment: number | null) => void;
+  /** Puts the foils at a position, or with null stops them where they are; with a move, they set off at once. */
+  onFoils: (deployment: number | null, move?: "deploy") => void;
   /** Leaves the sequence part way. */
   onExit: () => void;
   /** Leaves it having been through every step, with how the test went. */
   onFinish: (results: TestResult[]) => void;
 }) {
-  const [started, setStarted] = useState(false);
+  /** The frame is drawn, then the toast shows, then the steps begin. */
+  const [phase, setPhase] = useState<"frame" | "toast" | "steps">("frame");
+  const started = phase === "steps";
   const [step, setStep] = useState(0);
   const [corner, setCorner] = useState<Corner>("bottom-right");
   const [menuOpen, setMenuOpen] = useState(false);
@@ -329,29 +405,52 @@ export function GuidedMode({
   const [testIndex, setTestIndex] = useState(0);
   const [scenario, setScenario] = useState<number | null>(null);
   const [passed, setPassed] = useState<boolean[]>([]);
-  const [answers, setAnswers] = useState<(string | undefined)[]>([]);
-  const [rightAnswers, setRightAnswers] = useState<boolean[]>([]);
+  const [answers, setAnswers] = useState<(number | undefined)[]>([]);
   /** True once the foils are where the scenario starts, so the goal is not read off where they were. */
   const armed = useRef(false);
   /** How much of the scenario's time is left, in percent. */
   const [remaining, setRemaining] = useState(100);
   const halfway = useRef(false);
+  const scripted = useRef(false);
+  const ending = useRef<number | undefined>(undefined);
+  /** Where the task toast stands, which the learner can move off whatever it covers. */
+  const [toastAt, setToastAt] = useState({ left: 162, top: 8 });
 
   const openScenario = () => {
     const question = questions[testIndex];
-    if (question?.kind !== "scenario") return;
-    armed.current = false;
+    if (!question) return;
+    armed.current = question.kind === "watch";
     halfway.current = false;
-    onFoils(question.start);
+    scripted.current = false;
+    // A scenario to watch begins with the foils coming out on their own.
+    if (question.kind === "watch") onFoils(0, "deploy");
+    else onFoils(question.start);
     setRemaining(100);
     setScenario(testIndex);
   };
+
+  const endScenario = (at: number, ok: boolean) => {
+    window.clearTimeout(ending.current);
+    if (ok) setPassed((now) => Object.assign([...now], { [at]: true }));
+    setScenario(null);
+  };
+  useEffect(() => () => window.clearTimeout(ending.current), []);
+
+  // The first question finds the foils in.
+  const entered = useRef(false);
+  const testing = started && questions.length > 0 && step === sequence.steps.length - 1;
+  useEffect(() => {
+    if (testing && !entered.current) {
+      entered.current = true;
+      onFoils(0);
+    }
+  }, [testing, onFoils]);
 
   // The toast counts the time down.
   useEffect(() => {
     if (scenario === null) return;
     const question = questions[scenario];
-    if (question?.kind !== "scenario") return;
+    if (!question) return;
     const began = Date.now();
     const tick = window.setInterval(() => {
       setRemaining(Math.max(0, 100 - ((Date.now() - began) / (question.seconds * 1000)) * 100));
@@ -363,57 +462,72 @@ export function GuidedMode({
   useEffect(() => {
     if (scenario === null) return;
     const question = questions[scenario];
-    if (question?.kind !== "scenario") return;
+    if (!question) return;
     const timer = window.setTimeout(() => {
       onFoils(null);
-      setScenario(null);
+      endScenario(scenario, question.kind === "watch");
     }, question.seconds * 1000);
     return () => window.clearTimeout(timer);
   }, [scenario, questions, onFoils]);
 
-  // ...or when the foils do what it asked.
+  // ...or when the foils do what it asked, or what the scenario to watch has to show.
   useEffect(() => {
     if (scenario === null) return;
     const question = questions[scenario];
-    if (question?.kind !== "scenario") return;
+    if (!question) return;
+
+    if (question.kind === "watch") {
+      if (deployment >= 50 && !scripted.current) {
+        scripted.current = true;
+        if (question.script === "deploying") {
+          ending.current = window.setTimeout(() => endScenario(scenario, true), 0);
+        } else {
+          onFoils(null);
+          ending.current = window.setTimeout(() => endScenario(scenario, true), 1500);
+        }
+      }
+      return;
+    }
+
     if (!armed.current) {
       if (deployment === question.start && moving === null) armed.current = true;
       return;
     }
     const idle = moving === null;
-    if (question.goal === "halfway-retract" && idle && deployment >= 35 && deployment <= 65) halfway.current = true;
+    // Stopped before it is fully out counts as stopped half way.
+    if (question.goal === "halfway-retract" && idle && deployment > 0 && deployment < 100) halfway.current = true;
     const done =
       (question.goal === "deploy" && deployment >= 100) ||
       (question.goal === "retract" && deployment <= 0) ||
       (question.goal === "halfway-retract" && halfway.current && idle && deployment <= 0);
     if (done) {
-      const at = scenario;
-      const finish = window.setTimeout(() => {
-        setPassed((now) => Object.assign([...now], { [at]: true }));
-        setScenario(null);
-      }, 0);
-      return () => window.clearTimeout(finish);
+      ending.current = window.setTimeout(() => endScenario(scenario, true), 0);
     }
-  }, [deployment, moving, scenario, questions]);
+  }, [deployment, moving, scenario, questions, onFoils]);
 
-  const answer = (value: string) => {
-    setAnswers((now) => Object.assign([...now], { [testIndex]: value }));
-    // The foils are retracted if they are all the way in.
-    setRightAnswers((now) => Object.assign([...now], { [testIndex]: value === (deployment <= 0 ? "Yes" : "No") }));
-  };
+  const answer = (option: number) => setAnswers((now) => Object.assign([...now], { [testIndex]: option }));
 
   const finishTest = () =>
     onFinish(
       questions.map((question, at) =>
         question.kind === "scenario"
           ? { question: question.title, answer: "-", correct: Boolean(passed[at]) }
-          : { question: question.title, answer: answers[at] ?? "-", correct: Boolean(rightAnswers[at]) },
+          : {
+              question: question.title,
+              // The answer is given by its number in the list.
+              answer: answers[at] === undefined ? "-" : String(answers[at] + 1),
+              correct: answers[at] === question.correct,
+            },
       ),
     );
 
   useEffect(() => {
-    const timer = window.setTimeout(() => setStarted(true), STARTING_MS);
-    return () => window.clearTimeout(timer);
+    const toast = window.setTimeout(() => setPhase((now) => (now === "frame" ? "toast" : now)), FRAME_MS);
+    const steps = window.setTimeout(() => setPhase("steps"), FRAME_MS + STARTING_MS);
+    return () => {
+      window.clearTimeout(toast);
+      window.clearTimeout(steps);
+    };
   }, []);
 
   // The menu opens when the training button is hovered, and stays while the
@@ -426,7 +540,6 @@ export function GuidedMode({
   useEffect(() => () => window.clearTimeout(closing.current), []);
 
   const current = sequence.steps[step];
-  const testing = started && questions.length > 0 && step === sequence.steps.length - 1;
   const running = scenario !== null;
   const hole = started && !testing ? current.hole : null;
   // With nothing to leave clear the wash closes over the middle, and opens from there to the first step.
@@ -441,7 +554,7 @@ export function GuidedMode({
         <WavefoilMenu rail page={sequence.page} inTraining={false} onPage={noop} onTraining={noop} onClose={noop} />
       ) : null}
 
-      {running || testing ? null : (
+      {running ? null : (
         <>
           <div className={styles.wash} style={{ left: 0, top: 0, width: SCREEN.width, height: frame.top }} />
           <div className={styles.wash} style={{ left: 0, top: frame.top, width: frame.left, height: frame.height }} />
@@ -471,7 +584,25 @@ export function GuidedMode({
       )}
 
       {running ? (
-        <Toast icon={sequence.icon} title={questions[scenario].title} remaining={remaining} onCancel={() => { onFoils(null); setScenario(null); }} />
+        <>
+          {/* A scenario to watch plays on its own, so the screen is left alone while it does. */}
+          {questions[scenario].kind === "watch" ? <div className={styles.blocker} /> : null}
+          <Toast
+            title={
+              questions[scenario].kind === "scenario"
+                ? (questions[scenario].toast ?? questions[scenario].title)
+                : questions[scenario].title
+            }
+            remaining={remaining}
+            at={toastAt}
+            onMove={setToastAt}
+            layer={layer}
+            onCancel={() => {
+              onFoils(null);
+              endScenario(scenario, false);
+            }}
+          />
+        </>
       ) : testing ? (
         <TestModal
           questions={questions}
@@ -492,9 +623,9 @@ export function GuidedMode({
           onNext={() => setStep((value) => Math.min(sequence.steps.length - 1, value + 1))}
           onFinish={() => onFinish([])}
         />
-      ) : (
+      ) : phase === "toast" ? (
         <Toast icon={sequence.icon} title={sequence.title} subtitle="Starting..." onCancel={onExit} />
-      )}
+      ) : null}
 
       <CornerTools
         corner={corner}
@@ -520,7 +651,7 @@ export function GuidedMode({
           step={started ? step : -1}
           corner={corner}
           onStep={(index) => {
-            setStarted(true);
+            setPhase("steps");
             setStep(index);
           }}
           onExit={onExit}

@@ -7,6 +7,7 @@
  */
 
 import { ObcButton } from "@oicl/openbridge-webcomponents-react/components/button/button";
+import { ObcRadio } from "@oicl/openbridge-webcomponents-react/components/radio/radio";
 import { ObcSequenceModal } from "@oicl/openbridge-webcomponents-react/components/sequence-modal/sequence-modal";
 import { ObcSequenceStep } from "@oicl/openbridge-webcomponents-react/components/sequence-step/sequence-step";
 import { ObcSequenceToolbar } from "@oicl/openbridge-webcomponents-react/components/sequence-toolbar/sequence-toolbar";
@@ -66,10 +67,10 @@ export function TestModal({
   index: number;
   /** Which scenarios have been carried out. */
   passed: boolean[];
-  /** What was chosen on the plain questions. */
-  answers: (string | undefined)[];
+  /** The option chosen on each scenario that is described, by its place in the list. */
+  answers: (number | undefined)[];
   onOpenScenario: () => void;
-  onAnswer: (value: string) => void;
+  onAnswer: (option: number) => void;
   onGo: (index: number) => void;
   onFinish: () => void;
 }) {
@@ -88,36 +89,40 @@ export function TestModal({
           <div className={styles.testBody}>
             <p className={styles.testText}>{question.text}</p>
 
-            <div className={styles.testAction}>
-              {question.kind === "scenario" ? (
-                <>
-                  <ObcButton
-                    variant={ButtonVariant.normal}
-                    showLeadingIcon
-                    disabled={passed[index]}
-                    onClick={onOpenScenario}
+            {question.kind === "watch" && passed[index] ? (
+              // Once the scenario has played, it is described by choosing one of the answers.
+              <div className={styles.testChoices} role="radiogroup" aria-label={question.title}>
+                {question.options.map((option, at) => (
+                  <div
+                    key={at}
+                    className={`${styles.testChoice} ${answers[index] === at ? styles.testChoiceOn : ""}`}
+                    onClick={() => onAnswer(at)}
                   >
-                    <ObiMediaPlay slot="leading-icon" />
-                    Open scenario
-                  </ObcButton>
-                  {passed[index] ? <ObiPassed className={styles.testPassed} /> : null}
-                </>
-              ) : (
-                <div className={styles.testChoices} role="radiogroup" aria-label={question.title}>
-                  {question.options.map((option) => (
-                    <ObcButton
-                      key={option}
-                      variant={answers[index] === option ? ButtonVariant.raised : ButtonVariant.normal}
-                      role="radio"
-                      aria-checked={answers[index] === option}
-                      onClick={() => onAnswer(option)}
-                    >
-                      {option}
-                    </ObcButton>
-                  ))}
-                </div>
-              )}
-            </div>
+                    <ObcRadio
+                      label={option}
+                      name={`test-${index}`}
+                      value={String(at)}
+                      inputId={`test-${index}-${at}`}
+                      checked={answers[index] === at}
+                      onChange={() => onAnswer(at)}
+                    />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className={styles.testAction}>
+                <ObcButton
+                  variant={ButtonVariant.normal}
+                  showLeadingIcon
+                  disabled={passed[index]}
+                  onClick={onOpenScenario}
+                >
+                  <ObiMediaPlay slot="leading-icon" />
+                  Start
+                </ObcButton>
+                {passed[index] ? <ObiPassed className={styles.testPassed} /> : null}
+              </div>
+            )}
 
             <ObcSequenceToolbar
               ref={fitToolbar}

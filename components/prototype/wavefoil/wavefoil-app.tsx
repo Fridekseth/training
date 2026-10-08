@@ -137,9 +137,9 @@ export function WavefoilApp({
   const deploy = () => setMoving("deploy");
 
   /** A test scenario puts the foils where it begins, or stops them where they are. */
-  const placeFoils = useCallback((to: number | null) => {
+  const placeFoils = useCallback((to: number | null, move?: "deploy") => {
     if (to !== null) setDeployment(to);
-    setMoving(null);
+    setMoving(move ?? null);
   }, []);
 
   return (

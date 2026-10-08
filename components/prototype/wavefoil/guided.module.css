@@ -21,6 +21,17 @@
   background: color-mix(in srgb, var(--teal-200) 20%, transparent);
   pointer-events: auto;
   transition: left 0.4s var(--glide), top 0.4s var(--glide), width 0.4s var(--glide), height 0.4s var(--glide);
+  /* The screen takes on the wash as the frame is drawn. */
+  animation: wash-in 1.2s both;
+}
+
+@keyframes wash-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .highlight {
@@ -117,6 +128,10 @@
     transition: none;
   }
 
+  .wash {
+    animation: none;
+  }
+
   .tipHeader,
   .tipBody,
   .arrow {
@@ -188,7 +203,7 @@
   display: flex;
   box-sizing: border-box;
   width: 480px;
-  height: 64px;
+  min-height: 64px;
   align-items: center;
   gap: 8px;
   padding: 8px 8px 8px 16px;
@@ -196,6 +211,39 @@
   background: var(--container-background-color, #f7f7f7);
   box-shadow: var(--shadow-floating-x, 0px) var(--shadow-floating-y, 4px)
     var(--shadow-floating-blur, 16px) var(--shadow-floating-color, rgba(0, 0, 0, 0.32));
+  pointer-events: auto;
+}
+
+.toastGrip {
+  display: flex;
+  width: 24px;
+  height: 48px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  color: var(--element-neutral-color, #535353);
+  cursor: grab;
+  touch-action: none;
+}
+
+.toastGrip:active {
+  cursor: grabbing;
+}
+
+.toastDivider {
+  width: 1px;
+  height: 24px;
+  flex-shrink: 0;
+  background: var(--border-divider-color, #c4c4c4);
+}
+
+/* A scenario that plays by itself: nothing on the screen is for pressing. */
+.blocker {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
   pointer-events: auto;
 }
 
@@ -441,11 +489,11 @@
   position: absolute;
   z-index: 2;
   inset: 0;
-  background: var(--teal-050);
-  pointer-events: auto;
+  pointer-events: none;
 }
 
 .testModal {
+  pointer-events: auto;
   position: absolute;
   top: 95px;
   left: 114px;
@@ -480,7 +528,7 @@
 
 .testText {
   position: absolute;
-  top: 49px;
+  top: 23px;
   left: 51px;
   width: 455px;
   margin: 0;
@@ -505,8 +553,28 @@
 }
 
 .testChoices {
+  position: absolute;
+  top: 64px;
+  left: 30px;
   display: flex;
-  gap: 8px;
+  flex-direction: column;
+}
+
+.testChoice {
+  cursor: pointer;
+}
+
+.testChoice {
+  font-size: 14px;
+}
+
+.testChoice * {
+  font-size: inherit;
+}
+
+/* The chosen answer is set in bold, as the design has it. */
+.testChoiceOn label {
+  font-weight: 600;
 }
 
 .testToolbar {
