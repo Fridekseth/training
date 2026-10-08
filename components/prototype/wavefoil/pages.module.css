@@ -625,3 +625,24 @@
   z-index: 15;
   width: 640px;
 }
+
+/* Marks a control the page recommends that has already been used. */
+.agreeBadge {
+  position: absolute;
+  top: 49px;
+  display: flex;
+  width: 16px;
+  height: 16px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  background: var(--instrument-enhanced-secondary-color, #2d548b);
+  color: var(--element-active-inverted-color, #fff);
+  pointer-events: none;
+}
+
+/* In the caution state the badge is drawn in the caution colours, like the tag it replaces. */
+.agreeBadgeWarn {
+  background: var(--alert-caution-color, #ffce34);
+  color: var(--element-active-color, #1f1f1f);
+}

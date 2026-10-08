@@ -480,11 +480,23 @@ function Analytics({ palette, recorded }: { palette: string; recorded: boolean }
         />
       </div>
       {(recorded ? FOILS_OUT : []).map(([from, to]) => (
-        <span
-          key={from}
-          className={styles.foilsMark}
-          style={{ left: 54 + from, width: to - from }}
-        />
+        <span key={from}>
+          <span
+            className={styles.foilsMark}
+            style={{ left: 54 + from, width: to - from }}
+          />
+          {/* A wavefoil under each stretch, to say the foils were out. */}
+          <MaskIcon
+            name="wf-wavefoil"
+            size={24}
+            style={{
+              position: "absolute",
+              top: 172,
+              left: 54 + (from + to) / 2 - 12,
+              color: "var(--instrument-enhanced-secondary-color, #2d548b)",
+            }}
+          />
+        </span>
       ))}
     </section>
   );

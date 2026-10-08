@@ -9,6 +9,7 @@
 import type { ReactNode } from "react";
 import { ObcRichButton } from "@oicl/openbridge-webcomponents-react/components/rich-button/rich-button";
 import { ObiCloseGoogle } from "@oicl/openbridge-webcomponents-react/icons/icon-close-google";
+import { ObiNotificationAdviceActive } from "@oicl/openbridge-webcomponents-react/icons/icon-notification-advice-active";
 import { ObiMediaPause } from "@oicl/openbridge-webcomponents-react/icons/icon-media-pause";
 import { RichButtonDirection } from "@oicl/openbridge-webcomponents/dist/components/rich-button/rich-button";
 import { MaskIcon } from "../pieces";
@@ -51,6 +52,22 @@ function Control({
       {icon}
     </ObcRichButton>
   );
+  // The recommended action is already taken: the control is spent, and a badge says the page agrees.
+  if (recommended && disabled) {
+    return (
+      <>
+        {button}
+        <span
+          className={`${styles.agreeBadge} ${warn ? styles.agreeBadgeWarn : ""}`}
+          style={{ left: left + 177 }}
+          role="img"
+          aria-label="Recommended, and already done"
+        >
+          <ObiNotificationAdviceActive style={{ width: 12, height: 12 }} />
+        </span>
+      </>
+    );
+  }
   if (!boxed) return button;
   return (
     <div
