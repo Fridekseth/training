@@ -75,7 +75,16 @@ const fitToolbar = (toolbar: HTMLElement | null) =>
  * Before the first question: a modal that says what is coming, so the test is
  * not just there. The learner starts it when they are ready.
  */
-export function TestIntro({ questions, onStart }: { questions: number; onStart: () => void }) {
+export function TestIntro({
+  questions,
+  kinds,
+  onStart,
+}: {
+  questions: number;
+  /** Which kinds of question the test has, for saying what is in it. */
+  kinds: Set<string>;
+  onStart: () => void;
+}) {
   return (
     <div className={styles.testLayer}>
       <div className={`${styles.testModal} ${styles.testIntro}`}>
@@ -83,7 +92,12 @@ export function TestIntro({ questions, onStart }: { questions: number; onStart: 
           <div className={styles.testIntroBody}>
             <p className={styles.testText}>
               You have been through all the steps. Next is a test of what you have learned, with {questions}{" "}
-              questions. Some are tasks to carry out on the screen, and others are scenarios to watch.
+              questions.{" "}
+              {kinds.has("scenario")
+                ? "Some are tasks to carry out on the screen, and others are questions to answer."
+                : kinds.has("watch")
+                  ? "Some of them are questions to answer after looking at the screen."
+                  : "Each one is a question to answer."}
             </p>
             <div className={styles.testIntroAction}>
               <ObcButton variant={ButtonVariant.raised} showTrailingIcon onClick={onStart}>
@@ -134,7 +148,7 @@ export function TestModal({
           <div className={styles.testBody}>
             <p className={styles.testText}>{question.text}</p>
 
-            {question.kind === "watch" && passed[index] ? (
+            {question.kind === "ask" || (question.kind === "watch" && passed[index]) ? (
               // Once the scenario has played, it is described by choosing one of the answers.
               <div className={styles.testChoices} role="radiogroup" aria-label={question.title}>
                 {question.options.map((option, at) => (

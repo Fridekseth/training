@@ -15,7 +15,7 @@ import type { Conditions } from "./conditions";
 import { DecisionSupportPage } from "./decision-support-page";
 import { ExploreMode } from "./explore-mode";
 import { GuidedMode } from "./guided-mode";
-import { OPERATING_THE_FOILS, type GuidedSequence, type TestResult } from "./guided-data";
+import { OPERATING_THE_FOILS, SEQUENCES, type GuidedSequence, type TestResult } from "./guided-data";
 import { THREADS, type AppPage, type Thread, type ThreadId } from "./explore-data";
 import { OverviewPage, type Moving } from "./overview-page";
 import { WavefoilTopBar } from "./top-bar";
@@ -58,8 +58,11 @@ export function WavefoilApp({
   /** The comment explore mode opens on, when it was reached from the list. */
   const [exploreOn, setExploreOn] = useState<ThreadId | null>(null);
   /** How the learner did on the last test, kept for the results page. */
-  const [outcome, setOutcome] = useState<TestResult[] | null>(null);
-  const [showResults, setShowResults] = useState(false);
+  const [outcomes, setOutcomes] = useState<Record<string, TestResult[]>>({});
+  /** The chapter whose results Getting started opens on, when it was just left by finishing its test. */
+  const [resultsFor, setResultsFor] = useState<string | null>(null);
+  /** The sea a guided sequence shows decision support in, in the place of the one picked outside the screen. */
+  const [shownSea, setShownSea] = useState<Conditions | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [adviceOpen, setAdviceOpen] = useState(false);
 
@@ -122,7 +125,7 @@ export function WavefoilApp({
     setDeployment(next.deployment);
     setMoving(null);
     setMenuOpen(false);
-    setShowResults(false);
+    setResultsFor(null);
     goTo("guided");
   };
 
@@ -171,10 +174,11 @@ export function WavefoilApp({
             goTo("explore");
           }}
           onGuided={(id) => {
-            if (id === OPERATING_THE_FOILS.id) startGuided(OPERATING_THE_FOILS);
+            const next = SEQUENCES[id];
+            if (next) startGuided(next);
           }}
-          results={outcome}
-          openResults={showResults}
+          results={outcomes}
+          openResults={resultsFor}
           onOpenThread={(id) => {
             const thread = threads.find((item) => item.id === id);
             if (thread && thread.page !== "all") setPage(thread.page);
@@ -198,7 +202,7 @@ export function WavefoilApp({
           ) : null}
           {page === "decision" ? <DecisionSupportPage
               palette={palette}
-              conditions={conditions}
+              conditions={shownSea ?? conditions}
               deployment={deployment}
               moving={moving}
               onDeploy={deploy}
@@ -231,15 +235,16 @@ export function WavefoilApp({
             deployment={deployment}
             moving={moving}
             onFoils={placeFoils}
+            onConditions={setShownSea}
             onExit={() => {
-              setShowResults(false);
+              setResultsFor(null);
               setTrainingStart("getting-started");
               goTo("training");
             }}
             onFinish={(results) => {
               // The test's results are what Getting started opens on.
-              if (results.length > 0) setOutcome(results);
-              setShowResults(results.length > 0);
+              if (results.length > 0) setOutcomes((now) => ({ ...now, [sequence.id]: results }));
+              setResultsFor(results.length > 0 ? sequence.id : null);
               setTrainingStart("getting-started");
               goTo("training");
             }}

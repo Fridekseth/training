@@ -18,7 +18,7 @@ import { IconButtonVariant } from "@oicl/openbridge-webcomponents/dist/component
 import { MaskIcon } from "../pieces";
 import { HOME, type PageDef, type PageId } from "../training-data";
 import { CHAPTERS, PAGES } from "./training-data";
-import type { TestResult } from "./guided-data";
+import { SEQUENCES, type TestResult } from "./guided-data";
 import type { Thread } from "./explore-data";
 import {
   ChapterResultsPage,
@@ -67,7 +67,7 @@ export function TrainingSection({
   onExplore,
   onGuided,
   results,
-  openResults = false,
+  openResults = null,
   onOpenThread,
 }: {
   /** The page to open on, so leaving explore mode lands back on Explore. */
@@ -78,9 +78,9 @@ export function TrainingSection({
   /** Starts the guided sequence of a chapter in Getting started. */
   onGuided: (chapterId: string) => void;
   /** How the learner did on the chapter's test, once they have taken it. */
-  results: TestResult[] | null;
-  /** Opens on those results rather than the list of chapters. */
-  openResults?: boolean;
+  results: Record<string, TestResult[]>;
+  /** Opens on that chapter's results rather than the list of chapters. */
+  openResults?: string | null;
   onOpenThread: (id: string) => void;
 }) {
   const [page, setPage] = useState<PageId>(start);
@@ -89,18 +89,23 @@ export function TrainingSection({
   // Folded to icons until the panel button opens it.
   const [folded, setFolded] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
-  const [resultsOpen, setResultsOpen] = useState(openResults && start === "getting-started" && results !== null);
+  /** The chapter whose results are open, if any. */
+  const [resultsFor, setResultsFor] = useState<string | null>(
+    start === "getting-started" && openResults && results[openResults] ? openResults : null,
+  );
+  const resultsOpen = resultsFor !== null;
 
   // A chapter whose test has been taken is completed, with the share of right answers as its result.
-  const chapters = CHAPTERS.map((chapter) =>
-    chapter.id === "operating-the-foils" && results
+  const chapters = CHAPTERS.map((chapter) => {
+    const taken = results[chapter.id];
+    return taken
       ? {
           ...chapter,
           status: "completed" as const,
-          result: Math.round((results.filter((item) => item.correct).length / results.length) * 100),
+          result: Math.round((taken.filter((item) => item.correct).length / taken.length) * 100),
         }
-      : chapter,
-  );
+      : chapter;
+  });
 
   const go = (id: PageId) => {
     if (id === page) return;
@@ -111,13 +116,13 @@ export function TrainingSection({
     setStep(next.length - 1);
     setPage(id);
     setMessage(null);
-    setResultsOpen(false);
+    setResultsFor(null);
   };
 
   const move = (delta: number) => {
     // The results are a page inside Getting started, so back leaves them for the list.
     if (resultsOpen && delta < 0) {
-      setResultsOpen(false);
+      setResultsFor(null);
       return;
     }
     const target = step + delta;
@@ -193,20 +198,20 @@ export function TrainingSection({
         <div className={styles.scroll}>
           {page === "home" ? <HomePage onOpen={go} /> : null}
           {page === "overview" ? <OverviewPage onOpen={go} /> : null}
-          {page === "getting-started" && resultsOpen && results ? (
+          {page === "getting-started" && resultsFor && results[resultsFor] ? (
             <ChapterResultsPage
-              title="Operating the foils"
-              results={results}
-              onStartOver={() => onGuided("operating-the-foils")}
+              title={CHAPTERS.find((chapter) => chapter.id === resultsFor)?.title ?? ""}
+              results={results[resultsFor]}
+              onStartOver={() => onGuided(resultsFor)}
             />
           ) : null}
           {page === "getting-started" && !resultsOpen ? (
             <GettingStartedPage
               chapters={chapters}
               onStart={(chapter) => {
-                // Only Operating the foils is built; the others only show their overview so far.
-                if (chapter.id === "operating-the-foils") {
-                  if (results) setResultsOpen(true);
+                // A chapter with a sequence is started, or opened on its results once it has been taken.
+                if (SEQUENCES[chapter.id]) {
+                  if (results[chapter.id]) setResultsFor(chapter.id);
                   else onGuided(chapter.id);
                 } else setMessage(`Starting: ${chapter.title}`);
               }}

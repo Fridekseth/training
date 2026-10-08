@@ -33,6 +33,7 @@ import {
 import { MaskIcon } from "../pieces";
 import { WavefoilMenu } from "./app-menu";
 import { CornerTools, SCREEN, ToolButton, type Corner } from "./corner-tools";
+import type { Conditions } from "./conditions";
 import type { GuidedSequence, GuidedStep, TestQuestion, TestResult } from "./guided-data";
 import { TestIntro, TestModal } from "./test-modal";
 import { TrainingFrame } from "./training-frame";
@@ -377,6 +378,7 @@ export function GuidedMode({
   deployment,
   moving,
   onFoils,
+  onConditions,
   onExit,
   onFinish,
 }: {
@@ -386,6 +388,8 @@ export function GuidedMode({
   moving: "deploy" | "retract" | null;
   /** Puts the foils at a position, or with null stops them where they are; with a move, they set off at once. */
   onFoils: (deployment: number | null, move?: "deploy") => void;
+  /** Sets the sea the decision support page reads while the sequence runs; null gives it back. */
+  onConditions: (conditions: Conditions | null) => void;
   /** Leaves the sequence part way. */
   onExit: () => void;
   /** Leaves it having been through every step, with how the test went. */
@@ -420,13 +424,13 @@ export function GuidedMode({
 
   const openScenario = () => {
     const question = questions[testIndex];
-    if (!question) return;
+    if (!question || question.kind === "ask") return;
     armed.current = question.kind === "watch";
     halfway.current = false;
     scripted.current = false;
-    // A scenario to watch begins with the foils coming out on their own.
-    if (question.kind === "watch") onFoils(0, "deploy");
-    else onFoils(question.start);
+    // A scenario to watch begins with the foils coming out on their own, or only with the page to look at.
+    if (question.kind === "watch" && question.script !== "look") onFoils(0, "deploy");
+    else onFoils(question.start ?? 0);
     setRemaining(100);
     setScenario(testIndex);
   };
@@ -452,7 +456,7 @@ export function GuidedMode({
   useEffect(() => {
     if (scenario === null) return;
     const question = questions[scenario];
-    if (!question) return;
+    if (!question || question.kind === "ask") return;
     const began = Date.now();
     const tick = window.setInterval(() => {
       setRemaining(Math.max(0, 100 - ((Date.now() - began) / (question.seconds * 1000)) * 100));
@@ -464,14 +468,14 @@ export function GuidedMode({
   useEffect(() => {
     if (scenario === null) return;
     const question = questions[scenario];
-    if (!question) return;
+    if (!question || question.kind === "ask") return;
     // A scenario to watch ends with its script; this is only the net under it, a little past its time.
     const timer = window.setTimeout(
       () => {
         if (question.kind === "scenario") onFoils(null);
         endScenario(scenario, question.kind === "watch");
       },
-      (question.seconds + (question.kind === "watch" ? 3 : 0)) * 1000,
+      (question.seconds + (question.kind === "watch" && question.script !== "look" ? 3 : 0)) * 1000,
     );
     return () => window.clearTimeout(timer);
   }, [scenario, questions, onFoils]);
@@ -480,9 +484,11 @@ export function GuidedMode({
   useEffect(() => {
     if (scenario === null) return;
     const question = questions[scenario];
-    if (!question) return;
+    if (!question || question.kind === "ask") return;
 
     if (question.kind === "watch") {
+      // Looking at the page has no script; the scenario ends when its time is out.
+      if (question.script === "look") return;
       if (deployment >= 50 && !scripted.current) {
         scripted.current = true;
         if (question.script === "deploying") {
@@ -512,6 +518,14 @@ export function GuidedMode({
       ending.current = window.setTimeout(() => endScenario(scenario, true), 0);
     }
   }, [deployment, moving, scenario, questions, onFoils]);
+
+  // The sea the page reads is the question's while a question is up, and the chapter's otherwise.
+  const seaOf = (index: number | null) => (index === null ? undefined : questions[index]?.conditions);
+  const sea = (scenario !== null ? seaOf(scenario) : testing ? seaOf(testIndex) : undefined) ?? sequence.conditions ?? null;
+  useEffect(() => {
+    onConditions(sea);
+  }, [sea, onConditions]);
+  useEffect(() => () => onConditions(null), [onConditions]);
 
   const answer = (option: number) => setAnswers((now) => Object.assign([...now], { [testIndex]: option }));
 
@@ -558,7 +572,7 @@ export function GuidedMode({
       <TrainingFrame />
 
       {/* The menu is shown folded to icons while the first step points at it, and is gone after, so it does not cover what the later steps explain. */}
-      {!running && (!started || step === 0) ? (
+      {!running && sequence.rail !== false && (!started || step === 0) ? (
         <WavefoilMenu rail page={sequence.page} inTraining={false} onPage={noop} onTraining={noop} onClose={noop} />
       ) : null}
 
@@ -612,7 +626,11 @@ export function GuidedMode({
           />
         </>
       ) : testing && !testBegun ? (
-        <TestIntro questions={questions.length} onStart={() => setTestBegun(true)} />
+        <TestIntro
+          questions={questions.length}
+          kinds={new Set(questions.map((question) => question.kind))}
+          onStart={() => setTestBegun(true)}
+        />
       ) : testing ? (
         <TestModal
           questions={questions}
