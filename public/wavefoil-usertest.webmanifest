@@ -1,0 +1,14 @@
+{
+  "name": "Wavefoil",
+  "short_name": "Wavefoil",
+  "start_url": "/wavefoil/usertest",
+  "scope": "/wavefoil/",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [
+    { "src": "/wavefoil-icon-180.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "/wavefoil-icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
