@@ -22,13 +22,13 @@ const WING_DEPLOYED = 1.69;
 const deployed: CSSProperties = {
   fill: "var(--base-blue-050, #e4eefd)",
   stroke: "var(--base-blue-400, #4271b3)",
-  strokeWidth: 2,
+  strokeWidth: 1.5,
 };
 
 const stowed: CSSProperties = {
   fill: "var(--base-categorical-050, #f0f0f0)",
   stroke: "var(--base-categorical-400, #6e6e6e)",
-  strokeWidth: 2,
+  strokeWidth: 1.5,
 };
 
 function Foil({ side, deployment }: { side: "port" | "stbd"; deployment: number }) {
