@@ -49,6 +49,23 @@ function adopt(element: HTMLElement | null, css: string) {
   });
 }
 
+/**
+ * The modal that opens the test is not a step, so the numbered circle the
+ * library puts before every title is taken away. It is drawn by the card inside
+ * the modal, so the rule goes in the card's own shadow root.
+ */
+const fitIntro = (modal: HTMLElement | null) => {
+  fitModal(modal);
+  const host = modal as (HTMLElement & { updateComplete?: Promise<unknown> }) | null;
+  if (!host?.updateComplete) return;
+  void host.updateComplete.then(() => {
+    const card = host.shadowRoot?.querySelector("obc-sequence-card") as
+      | (HTMLElement & { updateComplete?: Promise<unknown> })
+      | null;
+    if (card) adopt(card, "obc-sequence-step { display: none; }");
+  });
+};
+
 const fitModal = (modal: HTMLElement | null) =>
   adopt(modal, ".sequence-modal-header-actions { display: none; } .sequence-modal { height: var(--modal-height, 399px); }");
 const fitToolbar = (toolbar: HTMLElement | null) =>
@@ -62,7 +79,7 @@ export function TestIntro({ questions, onStart }: { questions: number; onStart: 
   return (
     <div className={styles.testLayer}>
       <div className={`${styles.testModal} ${styles.testIntro}`}>
-        <ObcSequenceModal ref={fitModal} modalTitle="Test" stepLabel="8" stepValue={SequenceValue.regular}>
+        <ObcSequenceModal ref={fitIntro} modalTitle="Test" stepValue={SequenceValue.regular}>
           <div className={styles.testIntroBody}>
             <p className={styles.testText}>
               You have been through all the steps. Next is a test of what you have learned, with {questions}{" "}

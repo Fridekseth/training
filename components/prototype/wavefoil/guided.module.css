@@ -605,3 +605,9 @@
   width: 100%;
   justify-content: center;
 }
+
+/* Without the number in front of the title, the words under it line up with the title. */
+.testIntroBody .testText {
+  left: 17px;
+  width: 520px;
+}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { ScreenScale } from "../screen-scale";
 import { CONDITIONS, type Conditions } from "./conditions";
 import { WavefoilStage } from "./wavefoil-stage";
 
@@ -162,7 +163,9 @@ export function WavefoilUsertest() {
             transform: `translate(-50%, -50%) scale(${scale})`,
           }}
         >
-          <WavefoilStage key={run} conditions={conditions} />
+          <ScreenScale.Provider value={scale}>
+            <WavefoilStage key={run} conditions={conditions} />
+          </ScreenScale.Provider>
         </div>
       </div>
 

@@ -528,6 +528,13 @@
   box-sizing: content-box;
 }
 
+.plotCounter {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+}
+
 .plotLayer {
   position: absolute;
   top: 0;

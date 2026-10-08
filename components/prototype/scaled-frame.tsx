@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
+import { ScreenScale } from "./screen-scale";
 
 /**
  * Shows something built at a fixed size inside a container of any width, by
@@ -56,7 +57,7 @@ export function ScaledFrame({
           transformOrigin: "top left",
         }}
       >
-        {children}
+        <ScreenScale.Provider value={scale}>{children}</ScreenScale.Provider>
       </div>
     </div>
   );

@@ -5,7 +5,7 @@
  * on a map at the top right, and an analytics graph under it.
  */
 
-import { useMemo, useRef, useState } from "react";
+import { useContext, useMemo, useRef, useState } from "react";
 import { ObcLineGraph } from "@oicl/openbridge-webcomponents-react/bars-graphs/line-graph/line-graph";
 import { ObiDropDownGoogle } from "@oicl/openbridge-webcomponents-react/icons/icon-drop-down-google";
 import { ObiChevronRightGoogle } from "@oicl/openbridge-webcomponents-react/icons/icon-chevron-right-google";
@@ -25,6 +25,7 @@ import {
 } from "./debriefing-data";
 import { LAND } from "./debriefing-land";
 import { useWavePalette } from "./wave-chart";
+import { ScreenScale } from "../screen-scale";
 import styles from "./debriefing.module.css";
 
 function Heading({ label }: { label: string }) {
@@ -399,6 +400,7 @@ function Analytics({ palette, recorded }: { palette: string; recorded: boolean }
   const [open, setOpen] = useState(false);
   const series = SERIES.find((item) => item.id === selected) ?? SERIES[1];
   const colour = useWavePalette(false, palette);
+  const scale = useContext(ScreenScale);
 
   const datasets = useMemo(
     () => [
@@ -409,13 +411,14 @@ function Analytics({ palette, recorded }: { palette: string; recorded: boolean }
           : series.data.map(() => null as unknown as number),
         borderColor: colour.measured,
         backgroundColor: colour.fill,
-        borderWidth: 2,
+        // Drawn inside the counter scale below, where a pixel is a pixel on the display, so the line is scaled up by hand.
+        borderWidth: 2 * scale,
         pointRadius: 0,
         tension: 0.4,
         fill: true,
       },
     ],
-    [series, colour, recorded],
+    [series, colour, recorded, scale],
   );
 
   return (
@@ -444,17 +447,30 @@ function Analytics({ palette, recorded }: { palette: string; recorded: boolean }
         {(recorded ? FOILS_OUT : []).map(([from, to]) => (
           <span key={from} className={styles.foilsBand} style={{ left: from, width: to - from }} />
         ))}
-        <ObcLineGraph
-          className={styles.plotLayer}
-          width={PLOT_WIDTH}
-          height={PLOT_HEIGHT}
-          fixedAspectRatioScaling={false}
-          hasLabelPadding={false}
-          unit=""
-          labels={series.data.map((_, i) => String(i))}
-          yAxes={[{ id: "y", position: "left", min: 0, max: 100 }]}
-          datasets={datasets}
-        />
+        {/*
+          The chart sizes itself by the space it is given in the page's pixels, which a scaled screen makes
+          wrong. It stands in a box scaled back, so that its pixels and the page's are the same.
+        */}
+        <div
+          className={styles.plotCounter}
+          style={{
+            width: PLOT_WIDTH * scale,
+            height: PLOT_HEIGHT * scale,
+            transform: `scale(${1 / scale})`,
+          }}
+        >
+          <ObcLineGraph
+            className={styles.plotLayer}
+            width={PLOT_WIDTH * scale}
+            height={PLOT_HEIGHT * scale}
+            fixedAspectRatioScaling={false}
+            hasLabelPadding={false}
+            unit=""
+            labels={series.data.map((_, i) => String(i))}
+            yAxes={[{ id: "y", position: "left", min: 0, max: 100 }]}
+            datasets={datasets}
+          />
+        </div>
       </div>
       {(recorded ? FOILS_OUT : []).map(([from, to]) => (
         <span key={from}>
