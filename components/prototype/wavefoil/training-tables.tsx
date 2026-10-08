@@ -26,6 +26,7 @@ import {
   type Status,
   STATUS_LABEL,
 } from "../training-data";
+import type { TestResult } from "./guided-data";
 import styles from "./training.module.css";
 
 const TAG_COLOR: Record<Status, TagColor> = {
@@ -41,16 +42,20 @@ const STATUS_ORDER: Record<Status, number> = {
   completed: 2,
 };
 
-/** A ring plus its percentage, as the Result column shows it. */
-function resultCell(value: number) {
+/**
+ * A ring plus its percentage, as the Result column shows it. The chapter list
+ * of Getting started draws the ring larger and in the neutral dark grey.
+ */
+function resultCell(value: number, neutral = false) {
+  const size = neutral ? 28 : 24;
   return html`
     <div style="display:flex;align-items:center;gap:8px;">
       <!-- the ring positions itself absolutely, so it needs a box of its own -->
-      <span style="position:relative;display:block;flex:0 0 24px;width:24px;height:24px;">
+      <span style="position:relative;display:block;flex:0 0 ${size}px;width:${size}px;height:${size}px;">
         <obc-circular-progress
           mode=${CircularProgressMode.determinate}
           value=${value}
-          style="width:24px;height:24px;"
+          style="width:${size}px;height:${size}px;${neutral ? "--instrument-enhanced-secondary-color:var(--element-neutral-color,#535353);" : ""}"
         ></obc-circular-progress>
       </span>
       <span>${value}%</span>
@@ -106,9 +111,12 @@ const tagCell = (status: Status) => ({
 export function ChapterTable({
   chapters,
   onStart,
+  gettingStarted = false,
 }: {
   chapters: Chapter[];
   onStart: (chapter: Chapter) => void;
+  /** Getting started's list: a completed chapter is opened rather than started, and the rings are neutral. */
+  gettingStarted?: boolean;
 }) {
   const find = (id: string) => chapters.find((item) => item.id === id);
   // No row is picked out until the learner clicks one.
@@ -130,7 +138,7 @@ export function ChapterTable({
       dividerRight: true,
       renderCell: (_value, row) => {
         const chapter = find(row.id);
-        return chapter ? resultCell(chapter.result) : html``;
+        return chapter ? resultCell(chapter.result, gettingStarted) : html``;
       },
     },
     {
@@ -149,13 +157,15 @@ export function ChapterTable({
       key: "start",
       renderCell: (_value, row) => {
         const chapter = find(row.id);
+        const open = gettingStarted && chapter?.status === "completed";
         return html`
           <obc-button
-            variant="raised"
+            variant=${open ? "normal" : "raised"}
+            style=${open ? "--ui-components-button-label-spacing:6px;" : ""}
             showTrailingIcon
             @click=${() => chapter && onStart(chapter)}
           >
-            Start
+            ${open ? "Open" : "Start"}
             <obi-chevron-right-google slot="trailing-icon"></obi-chevron-right-google>
           </obc-button>
         `;
@@ -180,6 +190,77 @@ export function ChapterTable({
       rowDivider
       showHeader
       onRowClick={(event) => setSelectedId(event.detail.row.id)}
+    />
+  );
+}
+
+/** A question as a sentence: it gets its full stop unless it is one that already ends in a question mark. */
+const sentence = (text: string) => (text.endsWith("?") ? text : `${text}.`);
+
+/** The questions of a test, what was answered, and whether it was right. */
+export function ResultsTable({ results }: { results: TestResult[] }) {
+  const total = results.length ? Math.round((results.filter((item) => item.correct).length / results.length) * 100) : 0;
+  const scoreTag = (correct: boolean) => {
+    const icon = correct ? "wf-tag-completed" : "wf-tag-incorrect";
+    const url = `/prototype/icons/${icon}.svg`;
+    return {
+      type: ObcTableCellType.Tag as const,
+      label: correct ? "Correct" : "Incorrect",
+      color: correct ? TagColor.green : TagColor.red,
+      hasIcon: true,
+      icon: html`<span
+        aria-hidden="true"
+        style="display:block;width:16px;height:16px;background-color:currentColor;
+               -webkit-mask:url(${url}) center / contain no-repeat;
+               mask:url(${url}) center / contain no-repeat;"
+      ></span>`,
+    };
+  };
+
+  const columns: ObcTableColumn[] = [
+    {
+      label: "Question",
+      key: "question",
+      dividerRight: true,
+      renderCell: (_value, row) => {
+        if (row.id === "total") return html`<strong>Total score</strong>`;
+        const at = Number(row.id);
+        const result = results[at];
+        return result
+          ? html`<span
+              style="display:block;min-width:0;overflow:hidden;text-align:left;text-overflow:ellipsis;white-space:nowrap;"
+              ><strong>${at + 1}.</strong> ${sentence(result.question)}</span
+            >`
+          : html``;
+      },
+    },
+    { label: "Your answer", key: "answer", dividerRight: true },
+    { label: "Score", key: "score" },
+  ];
+
+  const data: ObcTableRow[] = [
+    ...results.map((result, at) => ({
+      id: String(at),
+      question: { type: ObcTableCellType.Regular, text: `${at + 1}. ${sentence(result.question)}` },
+      answer: { type: ObcTableCellType.Regular, text: result.answer },
+      score: scoreTag(result.correct),
+    })),
+    // The last row sums the test up as one score.
+    {
+      id: "total",
+      question: { type: ObcTableCellType.Regular, text: "Total score" },
+      answer: { type: ObcTableCellType.Regular, text: "" },
+      score: { type: ObcTableCellType.Regular, text: `${total}%` },
+    },
+  ];
+
+  return (
+    <ObcTable
+      className={`${styles.table} ${styles.resultsTable}`}
+      columns={columns}
+      data={data}
+      rowDivider
+      showHeader
     />
   );
 }

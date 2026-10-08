@@ -34,10 +34,10 @@ export const PAGES: PageDef[] = [
 
 export const CHAPTERS: Chapter[] = [
   { id: "application-patterns", title: "Application patterns", icon: "application-patterns", result: 92, status: "completed" },
-  { id: "component-overview", title: "Component overview", icon: "wf-component-overview", result: 20, status: "in-progress" },
   { id: "operating-the-foils", title: "Operating the foils", icon: "wf-operating-the-foils", result: 0, status: "not-started" },
-  { id: "decision-support", title: "Decision support", icon: "wf-decision-support", result: 0, status: "not-started" },
-  { id: "alarms", title: "Alarms", icon: "wf-alarms", result: 0, status: "not-started" },
+  { id: "decision-support", title: "Decision support", icon: "wf-menu-help", result: 0, status: "not-started" },
+  { id: "debriefing", title: "Debriefing", icon: "wf-menu-debriefing", result: 0, status: "not-started" },
+  { id: "alarms", title: "Alarms", icon: "wf-menu-alerts", result: 0, status: "not-started" },
 ];
 
 export const SCENARIOS: Chapter[] = [

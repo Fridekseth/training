@@ -21,13 +21,11 @@ function useNow() {
 }
 
 /**
- * The top bar of the Wavefoil screens. The overview carries the alert and the
- * notification buttons; the training section keeps one alert button, drawn as
- * a normal button in the design.
+ * The top bar of the Wavefoil screens. It carries the alert and the advice
+ * buttons everywhere, in the training section as well.
  */
 export function WavefoilTopBar({
   pageName,
-  training = false,
   palette,
   onDim,
   menuOpen,
@@ -37,7 +35,6 @@ export function WavefoilTopBar({
   onAlerts,
 }: {
   pageName: string;
-  training?: boolean;
   palette: string;
   onDim: () => void;
   menuOpen: boolean;
@@ -62,27 +59,22 @@ export function WavefoilTopBar({
         menuButtonActivated={menuOpen}
         onMenuButtonClicked={onMenu}
       >
-        {training ? (
-          <span slot="alerts" style={{ display: "flex", alignItems: "center" }}>
-            <ObcAlertButton type={ObcAlertButtonType.Normal} />
-          </span>
-        ) : (
-          <span slot="alerts" style={{ display: "flex", alignItems: "center" }}>
-            <ObcAlertButton type={ObcAlertButtonType.Flat} onClick={onAlerts} />
-            <ObcNotificationButton
-              isActive={adviceOpen}
-              buttonStyle={NotificationButtonStyle.Normal}
-              aria-label="Advice"
-              onObcClick={onAdvice}
-            >
-              {adviceOpen ? (
-                <ObiNotificationAdviceActive slot="icon" />
-              ) : (
-                <ObiNotificationAdvice slot="icon" />
-              )}
-            </ObcNotificationButton>
-          </span>
-        )}
+        {/* The alarms and the advice are reachable from every screen, the training section included. */}
+        <span slot="alerts" style={{ display: "flex", alignItems: "center" }}>
+          <ObcAlertButton type={ObcAlertButtonType.Flat} onClick={onAlerts} />
+          <ObcNotificationButton
+            isActive={adviceOpen}
+            buttonStyle={NotificationButtonStyle.Normal}
+            aria-label="Advice"
+            onObcClick={onAdvice}
+          >
+            {adviceOpen ? (
+              <ObiNotificationAdviceActive slot="icon" />
+            ) : (
+              <ObiNotificationAdvice slot="icon" />
+            )}
+          </ObcNotificationButton>
+        </span>
         <ObcClock
           slot="clock"
           date={now.toISOString()}

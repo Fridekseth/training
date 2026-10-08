@@ -13,9 +13,10 @@ import { ObcElevatedCardSize } from "@oicl/openbridge-webcomponents/dist/compone
 import { ObiChevronRightGoogle } from "@oicl/openbridge-webcomponents-react/icons/icon-chevron-right-google";
 import { MaskIcon, Piece, SymbolCard } from "../pieces";
 import { TrainingRichButton } from "../training-rich-button";
-import type { PageId } from "../training-data";
-import { CHAPTERS, PAGES, SCENARIOS, TRAINING_LOG } from "./training-data";
-import { ChapterTable, TrainingLogTable } from "./training-tables";
+import type { Chapter, PageId } from "../training-data";
+import { PAGES, SCENARIOS, TRAINING_LOG } from "./training-data";
+import { ChapterTable, ResultsTable, TrainingLogTable } from "./training-tables";
+import type { TestResult } from "./guided-data";
 import { CommentList } from "./comment-list";
 import type { Thread } from "./explore-data";
 import styles from "./training.module.css";
@@ -145,7 +146,13 @@ export function OverviewPage({ onOpen }: { onOpen: (id: PageId) => void }) {
   );
 }
 
-export function GettingStartedPage({ onStart }: { onStart: (title: string) => void }) {
+export function GettingStartedPage({
+  chapters,
+  onStart,
+}: {
+  chapters: Chapter[];
+  onStart: (chapter: Chapter) => void;
+}) {
   return (
     <div className={styles.page} style={{ paddingInline: 48 }}>
       <div className={styles.introRow}>
@@ -161,7 +168,43 @@ export function GettingStartedPage({ onStart }: { onStart: (title: string) => vo
       </div>
 
       <div className={styles.tableBlock} style={{ marginTop: 32 }}>
-        <ChapterTable chapters={CHAPTERS} onStart={(chapter) => onStart(chapter.title)} />
+        <ChapterTable chapters={chapters} onStart={onStart} gettingStarted />
+      </div>
+    </div>
+  );
+}
+
+/** A chapter's results: what the learner answered in its test, and a way to take it again. */
+export function ChapterResultsPage({
+  title,
+  results,
+  onStartOver,
+}: {
+  title: string;
+  results: TestResult[];
+  onStartOver: () => void;
+}) {
+  return (
+    <div className={styles.page} style={{ paddingInline: 48 }}>
+      <div className={styles.introRow} style={{ alignItems: "center" }}>
+        <Intro title={title} width={305}>
+          This chapter gives an overview of the screens for the topping stations.
+        </Intro>
+        <div style={{ flex: "0 1 240px" }}>
+          <TrainingRichButton
+            label="Start from scratch"
+            description="Start from the beginning."
+            descriptionSize={SMALL_TEXT}
+            onClick={onStartOver}
+          />
+        </div>
+      </div>
+
+      <p className={styles.heading} style={{ marginTop: 20 }}>
+        Results:
+      </p>
+      <div className={styles.tableBlock}>
+        <ResultsTable results={results} />
       </div>
     </div>
   );

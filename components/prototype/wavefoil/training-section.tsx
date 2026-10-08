@@ -17,9 +17,11 @@ import { ObcNavigationMenuVariant } from "@oicl/openbridge-webcomponents/dist/co
 import { IconButtonVariant } from "@oicl/openbridge-webcomponents/dist/components/icon-button/icon-button";
 import { MaskIcon } from "../pieces";
 import { HOME, type PageDef, type PageId } from "../training-data";
-import { PAGES } from "./training-data";
+import { CHAPTERS, PAGES } from "./training-data";
+import type { TestResult } from "./guided-data";
 import type { Thread } from "./explore-data";
 import {
+  ChapterResultsPage,
   ExplorePage,
   GettingStartedPage,
   HomePage,
@@ -63,6 +65,9 @@ export function TrainingSection({
   start = "home",
   threads,
   onExplore,
+  onGuided,
+  results,
+  openResults = false,
   onOpenThread,
 }: {
   /** The page to open on, so leaving explore mode lands back on Explore. */
@@ -70,6 +75,12 @@ export function TrainingSection({
   /** The comments, for the list on the Explore page. */
   threads: Thread[];
   onExplore: () => void;
+  /** Starts the guided sequence of a chapter in Getting started. */
+  onGuided: (chapterId: string) => void;
+  /** How the learner did on the chapter's test, once they have taken it. */
+  results: TestResult[] | null;
+  /** Opens on those results rather than the list of chapters. */
+  openResults?: boolean;
   onOpenThread: (id: string) => void;
 }) {
   const [page, setPage] = useState<PageId>(start);
@@ -78,6 +89,18 @@ export function TrainingSection({
   // Folded to icons until the panel button opens it.
   const [folded, setFolded] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
+  const [resultsOpen, setResultsOpen] = useState(openResults && start === "getting-started" && results !== null);
+
+  // A chapter whose test has been taken is completed, with the share of right answers as its result.
+  const chapters = CHAPTERS.map((chapter) =>
+    chapter.id === "operating-the-foils" && results
+      ? {
+          ...chapter,
+          status: "completed" as const,
+          result: Math.round((results.filter((item) => item.correct).length / results.length) * 100),
+        }
+      : chapter,
+  );
 
   const go = (id: PageId) => {
     if (id === page) return;
@@ -88,9 +111,15 @@ export function TrainingSection({
     setStep(next.length - 1);
     setPage(id);
     setMessage(null);
+    setResultsOpen(false);
   };
 
   const move = (delta: number) => {
+    // The results are a page inside Getting started, so back leaves them for the list.
+    if (resultsOpen && delta < 0) {
+      setResultsOpen(false);
+      return;
+    }
     const target = step + delta;
     if (target < 0 || target >= history.length) return;
     setStep(target);
@@ -140,7 +169,7 @@ export function TrainingSection({
             <ObcIconButton
               variant={IconButtonVariant.flat}
               cornerRight
-              disabled={step === 0}
+              disabled={step === 0 && !resultsOpen}
               onClick={() => move(-1)}
             >
               <ObiArrowLeftGoogle />
@@ -164,8 +193,24 @@ export function TrainingSection({
         <div className={styles.scroll}>
           {page === "home" ? <HomePage onOpen={go} /> : null}
           {page === "overview" ? <OverviewPage onOpen={go} /> : null}
-          {page === "getting-started" ? (
-            <GettingStartedPage onStart={(title) => setMessage(`Starting: ${title}`)} />
+          {page === "getting-started" && resultsOpen && results ? (
+            <ChapterResultsPage
+              title="Operating the foils"
+              results={results}
+              onStartOver={() => onGuided("operating-the-foils")}
+            />
+          ) : null}
+          {page === "getting-started" && !resultsOpen ? (
+            <GettingStartedPage
+              chapters={chapters}
+              onStart={(chapter) => {
+                // Only Operating the foils is built; the others only show their overview so far.
+                if (chapter.id === "operating-the-foils") {
+                  if (results) setResultsOpen(true);
+                  else onGuided(chapter.id);
+                } else setMessage(`Starting: ${chapter.title}`);
+              }}
+            />
           ) : null}
           {page === "explore" ? (
             <ExplorePage threads={threads} onEnter={onExplore} onOpen={onOpenThread} />

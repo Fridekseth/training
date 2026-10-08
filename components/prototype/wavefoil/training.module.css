@@ -17,6 +17,16 @@
   inset: 0;
 }
 
+/* Left in place under a guided sequence: only the strip of icons, which takes no clicks. */
+.menuLayerRail {
+  inset: 48px auto 0 0;
+  width: 56px;
+  /* Under the guided sequence's wash, which is drawn after it. */
+  z-index: 0;
+  pointer-events: none;
+}
+
+
 .menu {
   position: absolute;
   top: 0;
@@ -29,6 +39,10 @@
   background: var(--container-global-color, #fcfcfc);
   box-shadow: var(--shadow-flat-x, 0px) var(--shadow-flat-y, 1px)
     calc(var(--shadow-flat-blur, 2px) / 2) var(--shadow-flat-color, rgba(0, 0, 0, 0.23));
+}
+
+.menu.menuIcons {
+  width: 56px;
 }
 
 .menuGroup {
@@ -228,10 +242,22 @@
     calc(var(--shadow-flat-blur, 2px) / 2) var(--shadow-flat-color, rgba(0, 0, 0, 0.23));
 }
 
+/* The tables show every row, so the rows never scroll and the library's scroll bar has no place in them. */
+.table::part(body) {
+  overflow: visible;
+  scrollbar-gutter: auto;
+}
+
 /* Column widths as the design sets them; the library sizes columns by content. */
 .logTable::part(grid) {
   grid-template-columns:
     minmax(0, 107fr) minmax(0, 269fr) minmax(0, 107fr) minmax(0, 150fr);
+}
+
+/* The question takes most of the width, as the design gives it. */
+.resultsTable::part(grid) {
+  grid-template-columns:
+    minmax(0, 357fr) minmax(0, 138fr) minmax(0, 129fr);
 }
 
 /* The Start column gives up a little to the others: the library's button is

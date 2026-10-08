@@ -30,6 +30,9 @@ import {
   type Thread,
   type ThreadId,
 } from "./explore-data";
+import { CornerTools, SCREEN, ToolButton, type Corner } from "./corner-tools";
+import { TrainingFrame } from "./training-frame";
+import tealStyles from "./teal-scope.module.css";
 import styles from "./explore.module.css";
 
 type Tool = "hand" | "comment";
@@ -71,29 +74,54 @@ function Avatar({ initials, self = false }: { initials: string; self?: boolean }
   );
 }
 
-/** The speech bubble that marks a comment on the screen. */
+/**
+ * The pin that marks a comment on the screen. Unread comments are drawn dark and
+ * read ones light. While one comment is open the others are disabled, and the
+ * open one grows into the people who have written in it.
+ */
 function Indicator({
   thread,
-  open,
+  state,
   onClick,
 }: {
   thread: Thread;
-  open: boolean;
+  state: "enabled" | "disabled" | "checked";
   onClick: () => void;
 }) {
+  const read = !thread.unread;
+  // The pill is wider and taller than the pin, so near an edge it is pushed back inside the screen.
+  const width = thread.authors.length * 28 + 16;
+  const centre = thread.indicator.left + 16;
+  const shift = Math.min(
+    Math.max(centre - width / 2, EDGE_GAP),
+    SCREEN.width - EDGE_GAP - width,
+  ) - (centre - width / 2);
+  const drop = Math.max(0, EDGE_GAP - (thread.indicator.top - 12));
+  const tone = `${read ? styles.markerRead : ""} ${state === "disabled" ? styles.markerDisabled : ""}`;
   return (
     <button
       type="button"
-      className={`${styles.indicator} ${open ? styles.indicatorOpen : ""} ${thread.below ? styles.indicatorBelow : ""}`}
+      className={`${styles.marker} ${tone} ${state === "checked" ? styles.markerChecked : ""}`}
       style={thread.indicator}
       aria-label={`Comments from ${thread.authors.join(", ")}`}
+      aria-pressed={state === "checked"}
+      disabled={state === "disabled"}
       onClick={onClick}
     >
-      {thread.authors.map((author) => (
-        <span key={author} className={styles.indicatorAvatar}>
-          <Avatar initials={author} self />
+      {state === "checked" ? (
+        <span
+          className={styles.markerPeople}
+          style={{ "--shift": `${shift}px`, "--drop": `${drop}px` } as React.CSSProperties}
+        >
+          {thread.authors.map((author) => (
+            <span key={author} className={styles.markerPerson}>
+              <Avatar initials={author} self={read} />
+            </span>
+          ))}
         </span>
-      ))}
+      ) : (
+        <MaskIcon name="wf-explore-notification" size={24} />
+      )}
     </button>
   );
 }
@@ -155,7 +183,7 @@ function ThreadPanel({
     >
       <header className={styles.panelHeader}>
         <ObiComMessageGoogle className={styles.panelIcon} />
-        <span className={styles.panelTitle}>{thread.title}</span>
+        <span className={styles.panelTitle}>{thread.subject ?? thread.title}</span>
         <ObcIconButton
           className={styles.panelClose}
           variant={IconButtonVariant.flat}
@@ -198,35 +226,13 @@ function ThreadPanel({
   );
 }
 
-/** The screen the tool row snaps around, and the row's own size. */
-const SCREEN = { width: 786, height: 590 };
-const TOOLS = { width: 197, height: 48 };
-
-type Corner = "top-left" | "top-right" | "bottom-left" | "bottom-right";
-
-const cornerPosition = (corner: Corner) => ({
-  left: corner.endsWith("left") ? 0 : SCREEN.width - TOOLS.width,
-  top: corner.startsWith("top") ? 0 : SCREEN.height - TOOLS.height,
-});
-
-/** The corner nearest the middle of the row, for where it was let go. */
-const nearestCorner = (left: number, top: number): Corner => {
-  const x = left + TOOLS.width / 2 < SCREEN.width / 2 ? "left" : "right";
-  const y = top + TOOLS.height / 2 < SCREEN.height / 2 ? "top" : "bottom";
-  return `${y}-${x}`;
-};
+/** How near the screen's edge a comment may come. */
+const EDGE_GAP = 4;
 
 const mirror = (corner: Corner): Corner =>
   corner.endsWith("left")
     ? (corner.replace("left", "right") as Corner)
     : (corner.replace("right", "left") as Corner);
-
-const CORNER_CLASS: Record<Corner, string> = {
-  "top-left": styles.toolsTopLeft,
-  "top-right": styles.toolsTopRight,
-  "bottom-left": styles.toolsBottomLeft,
-  "bottom-right": styles.toolsBottomRight,
-};
 
 export function ExploreMode({
   threads,
@@ -251,8 +257,6 @@ export function ExploreMode({
   const layer = useRef<HTMLDivElement>(null);
   /** Where the tool row has been left, and where it is while it is being dragged. */
   const [corner, setCorner] = useState<Corner>("bottom-right");
-  const [dragAt, setDragAt] = useState<{ left: number; top: number } | null>(null);
-  const grab = useRef<{ x: number; y: number; left: number; top: number; scale: number } | null>(null);
 
   const thread = threads.find((item) => item.id === open) ?? null;
   const target = thread?.target;
@@ -262,22 +266,20 @@ export function ExploreMode({
   // An open comment sits on one side, so the tool row steps over to the other rather than cover it.
   const shown =
     thread && corner.endsWith(side) ? mirror(corner) : corner;
-  const toolsAt = dragAt ?? cornerPosition(shown);
 
   /** Closes the open thread; one nobody wrote in is dropped rather than left as an empty pin. */
   const close = () => {
+    // Reading a comment through is what marks it read, so it is drawn unread while it is open.
     setThreads((all) =>
-      all.filter((item) => item.id !== open || item.messages.length > 0),
+      all
+        .filter((item) => item.id !== open || item.messages.length > 0)
+        .map((item) => (item.id === open ? { ...item, unread: false } : item)),
     );
     setOpen(null);
   };
 
   const show = (id: ThreadId) => {
     if (id !== open) setDraft("");
-    // Opening a comment reads it.
-    setThreads((all) =>
-      all.map((item) => (item.id === id ? { ...item, unread: false } : item)),
-    );
     setOpen(id);
   };
 
@@ -322,7 +324,6 @@ export function ExploreMode({
     if (!hit) return;
     const box = hit.getBoundingClientRect();
     const clickY = Math.round((event.clientY - frame.top) / scale);
-    const hangs = clickY - 48 < 6;
     const id = `new-${Date.now()}`;
     setDraft("");
     setThreads((all) => [
@@ -332,13 +333,11 @@ export function ExploreMode({
         page,
         title: `${hit.dataset.comment} thread`,
         authors: [SELF],
-        // The bubble's sharp corner sits on the click. Near the top edge it hangs
-        // below the click instead, and near the right edge it is pulled back in.
+        // The pin's tail points at the click, so the pin stands above it, centred (the tail hangs 6px below the pin).
         indicator: {
-          left: Math.min(Math.round((event.clientX - frame.left) / scale), 786 - 56 - 6),
-          top: hangs ? clickY : clickY - 48,
+          left: Math.min(Math.max(Math.round((event.clientX - frame.left) / scale) - 16, 0), 786 - 32),
+          top: Math.max(clickY - 38, 0),
         },
-        below: hangs,
         target: {
           left: Math.round((box.left - frame.left) / scale),
           top: Math.round((box.top - frame.top) / scale),
@@ -351,60 +350,14 @@ export function ExploreMode({
     setOpen(id);
   };
 
-  const startDrag = (event: React.PointerEvent<HTMLButtonElement>) => {
-    const frame = layer.current?.getBoundingClientRect();
-    if (!frame) return;
-    const from = cornerPosition(shown);
-    grab.current = {
-      x: event.clientX,
-      y: event.clientY,
-      left: from.left,
-      top: from.top,
-      scale: frame.width / SCREEN.width,
-    };
-    event.currentTarget.setPointerCapture(event.pointerId);
-    setDragAt(from);
-  };
-
-  const moveDrag = (event: React.PointerEvent<HTMLButtonElement>) => {
-    const start = grab.current;
-    if (!start) return;
-    const clamp = (value: number, max: number) => Math.min(max, Math.max(0, value));
-    setDragAt({
-      left: clamp(start.left + (event.clientX - start.x) / start.scale, SCREEN.width - TOOLS.width),
-      top: clamp(start.top + (event.clientY - start.y) / start.scale, SCREEN.height - TOOLS.height),
-    });
-  };
-
-  /** Letting go snaps the row to the nearest corner. */
-  const endDrag = () => {
-    grab.current = null;
-    if (dragAt) setCorner(nearestCorner(dragAt.left, dragAt.top));
-    setDragAt(null);
-  };
-
-  /** Without a pointer, the arrow keys step the row between corners. */
-  const stepCorner = (event: React.KeyboardEvent<HTMLButtonElement>) => {
-    const [y, x] = shown.split("-");
-    const next = {
-      ArrowLeft: `${y}-left`,
-      ArrowRight: `${y}-right`,
-      ArrowUp: `top-${x}`,
-      ArrowDown: `bottom-${x}`,
-    }[event.key];
-    if (!next) return;
-    event.preventDefault();
-    setCorner(next as Corner);
-  };
-
   const pick = (next: Tool) => {
     setTool(next);
     if (next === "hand") close();
   };
 
   return (
-    <div className={styles.layer} ref={layer} data-explore-tool={tool}>
-      <div className={styles.frame} aria-hidden="true" />
+    <div className={`${tealStyles.teal} ${styles.layer}`} ref={layer} data-explore-tool={tool}>
+      <TrainingFrame />
 
       {/* The comment cursor: any click lands on a component. */}
       {tool === "comment" && !thread ? (
@@ -430,7 +383,7 @@ export function ExploreMode({
             <Indicator
               key={item.id}
               thread={item}
-              open={open === item.id}
+              state={open === null ? "enabled" : open === item.id ? "checked" : "disabled"}
               onClick={() => (open === item.id ? close() : show(item.id))}
             />
           ))
@@ -449,57 +402,24 @@ export function ExploreMode({
         />
       ) : null}
 
-      <div
-        className={`${styles.tools} ${CORNER_CLASS[dragAt ? nearestCorner(dragAt.left, dragAt.top) : shown]} ${dragAt ? styles.toolsDragging : ""}`}
-        style={{ left: toolsAt.left, top: toolsAt.top }}
-        role="toolbar"
-        aria-label="Explore tools"
+      <CornerTools
+        corner={shown}
+        onCorner={setCorner}
+        width={197}
+        label="Explore tools"
+        layer={layer}
       >
-        <button
-          type="button"
-          className={styles.grip}
-          aria-label="Move the tools. Drag, or use the arrow keys."
-          onPointerDown={startDrag}
-          onPointerMove={moveDrag}
-          onPointerUp={endDrag}
-          onPointerCancel={endDrag}
-          onKeyDown={stepCorner}
-        >
-          <svg width="12" height="18" viewBox="0 0 12 18" aria-hidden="true">
-            {[0, 1, 2].flatMap((row) =>
-              [0, 1].map((col) => (
-                <circle key={`${row}${col}`} cx={3 + col * 6} cy={3 + row * 6} r="1.6" fill="currentColor" />
-              )),
-            )}
-          </svg>
-        </button>
-        <button
-          type="button"
-          className={`${styles.tool} ${tool === "hand" ? styles.toolOn : ""}`}
-          aria-label="Look around"
-          aria-pressed={tool === "hand"}
-          onClick={() => pick("hand")}
-        >
-          <MaskIcon name="wf-explore-hand" />
-        </button>
-        <button
-          type="button"
-          className={`${styles.tool} ${tool === "comment" ? styles.toolOn : ""}`}
-          aria-label="Comments"
-          aria-pressed={tool === "comment"}
-          onClick={() => pick("comment")}
-        >
-          <MaskIcon name="wf-explore-comment" />
-        </button>
-        <button
-          type="button"
-          className={styles.tool}
-          aria-label="Leave explore mode"
-          onClick={onExit}
-        >
-          <MaskIcon name="wf-explore-training" />
-        </button>
-      </div>
+        <ToolButton label="Look around" icon="wf-explore-hand" on={tool === "hand"} onClick={() => pick("hand")} />
+        <ToolButton label="Comments" icon="wf-explore-notification" on={tool === "comment"} onClick={() => pick("comment")} />
+        <ToolButton
+          label="Leave explore mode"
+          icon="wf-explore-training"
+          onClick={() => {
+            if (open) close();
+            onExit();
+          }}
+        />
+      </CornerTools>
 
       {typing ? (
         <div className={styles.keyboardLayer}>

@@ -10,63 +10,6 @@
   inset: 0;
   /* Only the controls take clicks; the screen underneath stays out of reach. */
   pointer-events: none;
-  --teal-050: var(--base-teal-050, #e2f2f3);
-  --teal-100: var(--base-teal-100, #bee4e5);
-  --teal-200: var(--base-teal-200, #80cacd);
-  --teal-300: var(--base-teal-300, #1d9da1);
-  --teal-400: var(--base-teal-400, #007d81);
-  --teal-500: var(--base-teal-500, #005d61);
-  --teal-600: var(--base-teal-600, #004346);
-
-  /*
-    Everything the learner uses in explore mode is teal, resting and hovered
-    and pressed. The library's buttons read these tokens, and custom properties
-    reach into their shadow DOM, so setting them here recolours only what is
-    inside this layer. The ship screen underneath keeps its own colours.
-  */
-  --border-focus-color: var(--teal-300);
-
-  /* normal: the plain keys and buttons */
-  --normal-hover-background-color: var(--teal-050);
-  --normal-hover-border-color: var(--teal-200);
-  --normal-pressed-background-color: var(--teal-100);
-  --normal-pressed-border-color: var(--teal-200);
-
-  /* flat: icon buttons without a frame, such as close */
-  --flat-hover-background-color: color-mix(in srgb, var(--teal-300) 14%, transparent);
-  --flat-pressed-background-color: color-mix(in srgb, var(--teal-300) 28%, transparent);
-
-  /* raised: DONE and the other emphasised keys */
-  --raised-enabled-background-color: var(--teal-600);
-  --raised-enabled-border-color: var(--teal-600);
-  --raised-hover-background-color: color-mix(in srgb, var(--teal-600) 78%, black);
-  --raised-hover-border-color: color-mix(in srgb, var(--teal-600) 78%, black);
-  --raised-pressed-background-color: color-mix(in srgb, var(--teal-600) 60%, black);
-  --raised-pressed-border-color: color-mix(in srgb, var(--teal-600) 60%, black);
-
-  /* amplified: a switched-on key such as CAPS */
-  --amplified-enabled-background-color: var(--teal-050);
-  --amplified-enabled-border-color: var(--teal-200);
-  --amplified-hover-background-color: var(--teal-100);
-  --amplified-hover-border-color: var(--teal-200);
-  --amplified-pressed-background-color: var(--teal-200);
-  --amplified-pressed-border-color: var(--teal-300);
-  --on-amplified-active-color: var(--teal-500);
-  --on-amplified-neutral-color: var(--teal-500);
-}
-
-/*
-  The teal frame says this is not the live system. In the design it is 6px thick
-  and lies outside the screen, so the ring is drawn with a shadow, which also
-  rounds its outer corners.
-*/
-.frame {
-  position: absolute;
-  inset: 0;
-  /* Above the tool row, so that row's shadow does not darken the ring beside it. */
-  z-index: 6;
-  border-radius: 6px;
-  box-shadow: 0 0 0 6px var(--teal-300);
 }
 
 /* ---- adding a comment ---- */
@@ -82,38 +25,131 @@
 
 /* ---- comment indicators ---- */
 
-.indicator {
+/*
+  A comment's pin: a small rounded square with a tail under it, standing on the
+  point it is about. Unread is dark, read is pale. While one comment is open the
+  others are disabled, and the open one becomes a pill of the people in it.
+*/
+.marker {
+  --pin-bg: var(--teal-400);
+  --pin-fg: var(--container-global-color, #fcfcfc);
   position: absolute;
+  z-index: 3;
   display: flex;
-  height: 48px;
-  min-width: 48px;
+  width: 32px;
+  height: 32px;
   align-items: center;
   justify-content: center;
-  padding: 0 6px;
-  border: 1px solid var(--overlay-border-outline-color, #f0f0f0);
-  border-radius: 25px 25px 25px 0;
-  background: var(--container-global-color, #fcfcfc);
-  filter: drop-shadow(
-    var(--shadow-raised-x, 0px) var(--shadow-raised-y, 2px)
-      calc(var(--shadow-raised-blur, 4px) / 2) var(--shadow-raised-color, rgba(0, 0, 0, 0.23))
-  );
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: var(--pin-bg);
+  color: var(--pin-fg);
   cursor: pointer;
   pointer-events: auto;
-  z-index: 3;
+  filter: drop-shadow(
+    var(--shadow-floating-x, 0px) var(--shadow-floating-y, 4px)
+      calc(var(--shadow-floating-blur, 16px) / 2) var(--shadow-floating-color, rgba(0, 0, 0, 0.32))
+  );
 }
 
-/* Hung below its point, the sharp corner is the top left one. */
-.indicatorBelow {
-  border-radius: 0 25px 25px 25px;
+/* The tail: 12 by 6, with a softened tip, in the pin's own colour. */
+.marker::after,
+.markerPeople::after {
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  width: 12px;
+  height: 6px;
+  background: var(--pin-bg);
+  clip-path: path(
+    "M4.3359 4.88L0 0H12L7.6641 4.88C7.1077 5.50623 6.82949 5.81935 6.47884 5.92846C6.17227 6.02385 5.82773 6.02385 5.52116 5.92846C5.17051 5.81935 4.89231 5.50623 4.3359 4.88Z"
+  );
+  transform: translateX(-50%);
+  content: "";
 }
 
-.indicator:focus-visible {
+.markerPeople::after {
+  left: calc(50% - var(--shift, 0px));
+}
+
+.marker:focus-visible {
   outline: 2px solid var(--teal-500);
   outline-offset: 2px;
 }
 
-.indicatorAvatar + .indicatorAvatar {
+/* Read comments are pale, with the bubble in the dark teal. */
+.markerRead {
+  --pin-bg: var(--teal-050);
+  --pin-fg: var(--teal-500);
+}
+
+.markerDisabled {
+  --pin-bg: var(--teal-300);
+  --pin-fg: var(--container-global-color, #fcfcfc);
+  cursor: default;
+}
+
+.markerDisabled.markerRead {
+  --pin-bg: var(--teal-050);
+  --pin-fg: var(--teal-300);
+}
+
+/* The open comment: the people who have written in it, on a pill 12px above the pin's own place. */
+.markerChecked {
+  overflow: visible;
+  background: none;
+  filter: none;
+}
+
+.markerChecked::after {
+  display: none;
+}
+
+.markerPeople {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  display: flex;
+  box-sizing: border-box;
+  align-items: center;
+  padding: 4px;
+  border-radius: 6px;
+  background: var(--pin-bg);
+  /* --shift and --drop keep the pill inside the screen; the tail stays on the pin. */
+  transform: translate(calc(-50% + var(--shift, 0px)), var(--drop, 0px));
+  white-space: nowrap;
+  filter: drop-shadow(
+    var(--shadow-floating-x, 0px) var(--shadow-floating-y, 4px)
+      calc(var(--shadow-floating-blur, 16px) / 2) var(--shadow-floating-color, rgba(0, 0, 0, 0.32))
+  );
+}
+
+.markerPerson {
+  display: inline-flex;
+}
+
+.markerPerson + .markerPerson {
   margin-left: -8px;
+}
+
+/* Unread: pale people on the dark pill. Read: dark people on the pale pill. */
+.markerPerson .avatar {
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  background: var(--teal-050);
+  color: var(--teal-500);
+  font-weight: 700;
+}
+
+.markerPerson .avatarSelf {
+  background: var(--teal-400);
+  color: var(--element-active-inverted-color, #fff);
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  font-size: 14px;
 }
 
 .avatar {
@@ -297,106 +333,6 @@
 .compose {
   flex-shrink: 0;
   padding: 0 10px 8px;
-}
-
-/* ---- tool row ---- */
-
-.tools {
-  position: absolute;
-  z-index: 5;
-  display: flex;
-  width: 197px;
-  height: 48px;
-  overflow: hidden;
-  background: var(--teal-300);
-  box-shadow: var(--shadow-floating-x, 0px) var(--shadow-floating-y, 4px)
-    var(--shadow-floating-blur, 16px) var(--shadow-floating-color, rgba(0, 0, 0, 0.32));
-  pointer-events: auto;
-  /* Letting go slides the row into its corner. */
-  transition: left 0.18s ease-out, top 0.18s ease-out;
-}
-
-.toolsDragging {
-  transition: none;
-}
-
-/* The corner toward the middle of the screen is the rounded one; the outer one follows the frame. */
-.toolsBottomRight {
-  border-radius: 12px 0 6px 0;
-}
-
-.toolsTopRight {
-  border-radius: 0 6px 0 12px;
-}
-
-.toolsBottomLeft {
-  border-radius: 0 12px 0 6px;
-}
-
-.toolsTopLeft {
-  border-radius: 6px 0 12px 0;
-}
-
-/* On the left the row reads the other way round, so the handle is always on the outer edge. */
-.toolsBottomLeft,
-.toolsTopLeft {
-  flex-direction: row-reverse;
-}
-
-/* The handle to move the row by, set off from the tools by a line. */
-.grip {
-  position: relative;
-  display: flex;
-  width: 41px;
-  height: 48px;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  border: 0;
-  background: transparent;
-  color: var(--teal-050);
-  cursor: grab;
-  touch-action: none;
-}
-
-.grip::after {
-  position: absolute;
-  top: 16px;
-  right: 0;
-  width: 1px;
-  height: 16px;
-  background: color-mix(in srgb, var(--teal-050) 60%, transparent);
-  content: "";
-}
-
-.toolsBottomLeft .grip::after,
-.toolsTopLeft .grip::after {
-  right: auto;
-  left: 0;
-}
-
-.toolsDragging .grip {
-  cursor: grabbing;
-}
-
-.tool {
-  display: flex;
-  width: 52px;
-  height: 48px;
-  align-items: center;
-  justify-content: center;
-  border: 0;
-  background: transparent;
-  color: var(--teal-050);
-  cursor: pointer;
-}
-
-.tool:hover {
-  background: color-mix(in srgb, var(--teal-400) 60%, transparent);
-}
-
-.toolOn {
-  background: var(--teal-400);
 }
 
 /* ---- keyboard ---- */

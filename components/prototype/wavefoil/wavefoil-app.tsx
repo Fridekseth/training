@@ -5,7 +5,7 @@
  * advice list in the top bar, and the training layer the menu leads to.
  */
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import "@oicl/openbridge-webcomponents/dist/openbridge.css";
 import { AdviceMenu } from "./advice-menu";
 import { AlarmPage } from "./alarm-page";
@@ -14,6 +14,8 @@ import { DebriefingPage } from "./debriefing-page";
 import type { Conditions } from "./conditions";
 import { DecisionSupportPage } from "./decision-support-page";
 import { ExploreMode } from "./explore-mode";
+import { GuidedMode } from "./guided-mode";
+import { OPERATING_THE_FOILS, type GuidedSequence, type TestResult } from "./guided-data";
 import { THREADS, type AppPage, type Thread, type ThreadId } from "./explore-data";
 import { OverviewPage, type Moving } from "./overview-page";
 import { WavefoilTopBar } from "./top-bar";
@@ -46,13 +48,18 @@ export function WavefoilApp({
 }) {
   const [page, setPage] = useState<AppPage>("overview");
   /** The pages, or the training section the menu leads to. */
-  const [layer, setLayer] = useState<"app" | "training" | "explore">("app");
+  const [layer, setLayer] = useState<"app" | "training" | "explore" | "guided">("app");
+  /** The guided sequence that is running, when the layer is "guided". */
+  const [sequence, setSequence] = useState<GuidedSequence>(OPERATING_THE_FOILS);
   /** Which training page to open on, so explore mode returns to where it began. */
   const [trainingStart, setTrainingStart] = useState<PageId>("home");
   /** The comments left on the screen, shared by explore mode and the Explore page's list. */
   const [threads, setThreads] = useState<Thread[]>(THREADS);
   /** The comment explore mode opens on, when it was reached from the list. */
   const [exploreOn, setExploreOn] = useState<ThreadId | null>(null);
+  /** How the learner did on the last test, kept for the results page. */
+  const [outcome, setOutcome] = useState<TestResult[] | null>(null);
+  const [showResults, setShowResults] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [adviceOpen, setAdviceOpen] = useState(false);
 
@@ -86,24 +93,37 @@ export function WavefoilApp({
   }, [moving]);
 
   /**
-   * Explore mode is a sandbox: the controls work as they do on the real screen,
-   * but what the learner does is theirs alone. The foil position from before is
-   * kept here and put back when they leave, so nothing carries over to the
-   * system aboard.
+   * Explore mode and the guided sequences are sandboxes: the controls work as
+   * they do on the real screen, but what the learner does is theirs alone. The
+   * foil position from before is kept here and put back when they leave, so
+   * nothing carries over to the system aboard. Both are framed in teal.
    */
+  const sandbox = layer === "explore" || layer === "guided";
   useEffect(() => {
-    onExploring?.(layer === "explore");
-  }, [layer, onExploring]);
+    onExploring?.(sandbox);
+  }, [sandbox, onExploring]);
 
   const real = useRef(0);
-  const goTo = (next: "app" | "training" | "explore") => {
-    if (next === "explore" && layer !== "explore") real.current = deployment;
-    if (layer === "explore" && next !== "explore") {
+  const goTo = (next: "app" | "training" | "explore" | "guided") => {
+    const entering = next === "explore" || next === "guided";
+    if (entering && !sandbox) real.current = deployment;
+    if (sandbox && !entering) {
       setDeployment(real.current);
       setMoving(null);
     }
     setLayer(next);
     setAdviceOpen(false);
+  };
+
+  /** Runs a guided sequence on the page and with the foils as it describes them. */
+  const startGuided = (next: GuidedSequence) => {
+    setSequence(next);
+    setPage(next.page);
+    setDeployment(next.deployment);
+    setMoving(null);
+    setMenuOpen(false);
+    setShowResults(false);
+    goTo("guided");
   };
 
   const showPage = (next: AppPage) => {
@@ -116,11 +136,16 @@ export function WavefoilApp({
 
   const deploy = () => setMoving("deploy");
 
+  /** A test scenario puts the foils where it begins, or stops them where they are. */
+  const placeFoils = useCallback((to: number | null) => {
+    if (to !== null) setDeployment(to);
+    setMoving(null);
+  }, []);
+
   return (
     <div className={styles.screen}>
       <WavefoilTopBar
-        pageName={layer === "app" ? PAGE_NAMES[page] : "Training"}
-        training={layer !== "app"}
+        pageName={layer === "app" || layer === "guided" ? PAGE_NAMES[page] : "Training"}
         palette={palette}
         onDim={onDim}
         menuOpen={menuOpen}
@@ -145,19 +170,21 @@ export function WavefoilApp({
             setExploreOn(null);
             goTo("explore");
           }}
+          onGuided={(id) => {
+            if (id === OPERATING_THE_FOILS.id) startGuided(OPERATING_THE_FOILS);
+          }}
+          results={outcome}
+          openResults={showResults}
           onOpenThread={(id) => {
             const thread = threads.find((item) => item.id === id);
             if (thread && thread.page !== "all") setPage(thread.page);
-            setThreads((all) =>
-              all.map((item) => (item.id === id ? { ...item, unread: false } : item)),
-            );
             setExploreOn(id);
             goTo("explore");
           }}
         />
       ) : null}
 
-      {layer === "app" || layer === "explore" ? (
+      {layer === "app" || layer === "explore" || layer === "guided" ? (
         <>
           {page === "overview" ? (
             <OverviewPage
@@ -194,6 +221,30 @@ export function WavefoilApp({
             goTo("training");
           }}
         />
+      ) : null}
+
+      {layer === "guided" ? (
+        <>
+          <GuidedMode
+            key={sequence.id}
+            sequence={sequence}
+            deployment={deployment}
+            moving={moving}
+            onFoils={placeFoils}
+            onExit={() => {
+              setShowResults(false);
+              setTrainingStart("getting-started");
+              goTo("training");
+            }}
+            onFinish={(results) => {
+              // The test's results are what Getting started opens on.
+              if (results.length > 0) setOutcome(results);
+              setShowResults(results.length > 0);
+              setTrainingStart("getting-started");
+              goTo("training");
+            }}
+          />
+        </>
       ) : null}
 
       {menuOpen ? (

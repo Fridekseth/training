@@ -1,0 +1,51 @@
+/*
+  The library's teal palette, and the teal the library's own controls take on
+  inside it. Training mode is drawn in this colour; explore mode and the guided
+  sequences share it by putting this class on their layer.
+*/
+
+.teal {
+  --teal-050: var(--base-teal-050, #e2f2f3);
+  --teal-100: var(--base-teal-100, #bee4e5);
+  --teal-200: var(--base-teal-200, #80cacd);
+  --teal-300: var(--base-teal-300, #1d9da1);
+  --teal-400: var(--base-teal-400, #007d81);
+  --teal-500: var(--base-teal-500, #005d61);
+  --teal-600: var(--base-teal-600, #004346);
+
+  /*
+    Everything the learner uses in explore mode is teal, resting and hovered
+    and pressed. The library's buttons read these tokens, and custom properties
+    reach into their shadow DOM, so setting them here recolours only what is
+    inside this layer. The ship screen underneath keeps its own colours.
+  */
+  --border-focus-color: var(--teal-300);
+
+  /* normal: the plain keys and buttons */
+  --normal-hover-background-color: var(--teal-050);
+  --normal-hover-border-color: var(--teal-200);
+  --normal-pressed-background-color: var(--teal-100);
+  --normal-pressed-border-color: var(--teal-200);
+
+  /* flat: icon buttons without a frame, such as close */
+  --flat-hover-background-color: color-mix(in srgb, var(--teal-300) 14%, transparent);
+  --flat-pressed-background-color: color-mix(in srgb, var(--teal-300) 28%, transparent);
+
+  /* raised: DONE and the other emphasised keys */
+  --raised-enabled-background-color: var(--teal-600);
+  --raised-enabled-border-color: var(--teal-600);
+  --raised-hover-background-color: color-mix(in srgb, var(--teal-600) 78%, black);
+  --raised-hover-border-color: color-mix(in srgb, var(--teal-600) 78%, black);
+  --raised-pressed-background-color: color-mix(in srgb, var(--teal-600) 60%, black);
+  --raised-pressed-border-color: color-mix(in srgb, var(--teal-600) 60%, black);
+
+  /* amplified: a switched-on key such as CAPS */
+  --amplified-enabled-background-color: var(--teal-050);
+  --amplified-enabled-border-color: var(--teal-200);
+  --amplified-hover-background-color: var(--teal-100);
+  --amplified-hover-border-color: var(--teal-200);
+  --amplified-pressed-background-color: var(--teal-200);
+  --amplified-pressed-border-color: var(--teal-300);
+  --on-amplified-active-color: var(--teal-500);
+  --on-amplified-neutral-color: var(--teal-500);
+}

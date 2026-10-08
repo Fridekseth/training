@@ -1,0 +1,517 @@
+/*
+  A guided sequence, drawn over the ship screen. Sizes are the design's own,
+  measured off the Figma file at the 786 x 590 screen.
+*/
+
+.layer {
+  /* How the frame and the explanation glide from one step to the next. */
+  --glide: cubic-bezier(0.4, 0, 0.2, 1);
+  position: absolute;
+  z-index: 30;
+  inset: 0;
+  /* The pointer is teal while training, so the mode is visible in the cursor. */
+  cursor: url("/prototype/cursor-teal.svg") 2 2, auto;
+  /* Only what is drawn here takes clicks; the screen underneath stays out of reach. */
+  pointer-events: none;
+}
+
+/* Bands around the part a step explains, so it stays at full strength. */
+.wash {
+  position: absolute;
+  background: color-mix(in srgb, var(--teal-200) 20%, transparent);
+  pointer-events: auto;
+  transition: left 0.4s var(--glide), top 0.4s var(--glide), width 0.4s var(--glide), height 0.4s var(--glide);
+}
+
+.highlight {
+  position: absolute;
+  box-sizing: border-box;
+  border: 2px solid var(--teal-300);
+  border-radius: 6px;
+  pointer-events: none;
+  transition: left 0.4s var(--glide), top 0.4s var(--glide), width 0.4s var(--glide), height 0.4s var(--glide),
+    opacity 0.3s;
+}
+
+/* ---- the explanation ---- */
+
+.tip {
+  position: absolute;
+  z-index: 3;
+  border-radius: var(--ui-components-toggletip-border-radius, 6px);
+  background: var(--teal-400);
+  /* The width changes at once: the words wrap to it, and the box is placed by the height they make. */
+  transition: left 0.4s var(--glide), top 0.4s var(--glide);
+  filter: drop-shadow(
+    var(--shadow-floating-x, 0px) var(--shadow-floating-y, 4px)
+      calc(var(--shadow-floating-blur, 16px) / 2) var(--shadow-floating-color, rgba(0, 0, 0, 0.32))
+  );
+  pointer-events: auto;
+}
+
+.tipHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 8px 8px 8px 16px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
+  letter-spacing: 0.15px;
+  white-space: nowrap;
+}
+
+.tipBody {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 10px 16px 11px;
+  border: 2px solid var(--teal-400);
+  border-radius: var(--ui-components-toggletip-border-radius, 6px);
+  background: var(--container-background-color, #f7f7f7);
+  color: var(--element-active-color, #1f1f1f);
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.tipText {
+  margin: 0;
+}
+
+.tipActions {
+  display: flex;
+  gap: 8px;
+}
+
+.tipButton {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* The words and the pointer come in once the box has begun to move. */
+.tipHeader,
+.tipBody {
+  animation: tip-in 0.3s 0.1s both;
+}
+
+.arrow {
+  animation: tip-in 0.3s 0.3s both;
+}
+
+@keyframes tip-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wash,
+  .highlight,
+  .tip {
+    transition: none;
+  }
+
+  .tipHeader,
+  .tipBody,
+  .arrow {
+    animation: none;
+  }
+}
+
+/* The narrow explanations have less room between the icon and the label. */
+.tipNarrow {
+  --ui-components-button-label-spacing: 4px;
+}
+
+/* The design's Next is the dark teal; the library's raised button reads these. */
+.tipNext {
+  --raised-enabled-background-color: var(--teal-500);
+  --raised-enabled-border-color: var(--teal-600);
+  --raised-hover-background-color: var(--teal-600);
+  --raised-hover-border-color: var(--teal-600);
+  --raised-pressed-background-color: var(--teal-600);
+  --raised-pressed-border-color: var(--teal-600);
+  --on-raised-active-color: var(--teal-050);
+}
+
+/* The pointer towards the part being explained, 20 by 12 and the tip's own teal. */
+.arrow {
+  position: absolute;
+  background: var(--teal-400);
+}
+
+.arrow_left,
+.arrow_right {
+  width: 12px;
+  height: 20px;
+}
+
+.arrow_top,
+.arrow_bottom {
+  width: 20px;
+  height: 12px;
+}
+
+.arrow_left {
+  left: -11px;
+  clip-path: polygon(0 50%, 100% 0, 100% 100%);
+}
+
+.arrow_right {
+  right: -11px;
+  clip-path: polygon(100% 50%, 0 0, 0 100%);
+}
+
+.arrow_top {
+  top: -11px;
+  clip-path: polygon(50% 0, 0 100%, 100% 100%);
+}
+
+.arrow_bottom {
+  bottom: -11px;
+  clip-path: polygon(50% 100%, 0 0, 100% 0);
+}
+
+/* ---- starting ---- */
+
+.toast {
+  position: absolute;
+  z-index: 3;
+  top: 8px;
+  left: 162px;
+  display: flex;
+  box-sizing: border-box;
+  width: 480px;
+  height: 64px;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 8px 8px 16px;
+  border-radius: 6px;
+  background: var(--container-background-color, #f7f7f7);
+  box-shadow: var(--shadow-floating-x, 0px) var(--shadow-floating-y, 4px)
+    var(--shadow-floating-blur, 16px) var(--shadow-floating-color, rgba(0, 0, 0, 0.32));
+  pointer-events: auto;
+}
+
+.toastText {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding-left: 4px;
+  line-height: 24px;
+}
+
+.toastText p {
+  margin: 0;
+}
+
+.toastTitle {
+  font-weight: 700;
+}
+
+.toastCancel {
+  position: relative;
+  width: 48px;
+  height: 48px;
+}
+
+.spinner {
+  /* The library draws the turning arc in blue; here it is teal. */
+  --element-neutral-enhanced-color: var(--teal-400);
+  --base-blue-500: var(--teal-400);
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 48px;
+  height: 48px;
+  pointer-events: none;
+}
+
+/* The ring that runs down with the time left, in the place of the spinner. */
+.countdown {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 48px;
+  height: 48px;
+  pointer-events: none;
+  --instrument-enhanced-secondary-color: var(--teal-400);
+  --container-backdrop-color: var(--border-divider-color, #d0d0d0);
+}
+
+/* ---- step menu ---- */
+
+.menu {
+  position: absolute;
+  z-index: 4;
+  display: flex;
+  box-sizing: border-box;
+  width: 270px;
+  flex-direction: column;
+  gap: 0;
+  padding: 4px;
+  border-radius: 6px;
+  background: var(--container-background-color, #f7f7f7);
+  box-shadow: var(--shadow-floating-x, 0px) var(--shadow-floating-y, 4px)
+    var(--shadow-floating-blur, 16px) var(--shadow-floating-color, rgba(0, 0, 0, 0.32));
+  pointer-events: auto;
+}
+
+/* Opens away from the row, on the side it sits on, 8px clear of it. */
+.menuRight {
+  right: 8px;
+}
+
+.menuLeft {
+  left: 8px;
+}
+
+.menuBottom {
+  bottom: 56px;
+}
+
+.menuTop {
+  top: 56px;
+}
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 4px;
+}
+
+/* One step: the number, the dot on the line, and the card. */
+.stepRow {
+  display: flex;
+  align-items: stretch;
+  padding-block: 4px;
+  /* The line is the library's; its finished steps are teal here, not blue. */
+  --base-blue-200: var(--teal-400);
+  --element-neutral-enhanced-color: var(--teal-400);
+  --amplified-enabled-background-color: var(--container-background-color, #f7f7f7);
+}
+
+.stepNumber {
+  display: flex;
+  width: 20px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  color: var(--element-neutral-color, #535353);
+  font-size: 12px;
+}
+
+.track {
+  position: relative;
+  width: 24px;
+  flex-shrink: 0;
+}
+
+/* Each row draws its own stretch of the line, so it runs unbroken down the list. */
+.line {
+  position: absolute;
+  left: 50%;
+  width: 2px;
+  transform: translateX(-50%);
+  background: var(--border-divider-color, #c4c4c4);
+}
+
+.lineUp {
+  top: -4px;
+  height: calc(50% + 4px);
+}
+
+.lineDown {
+  top: 50%;
+  bottom: -4px;
+}
+
+.lineDone {
+  background: var(--teal-400);
+}
+
+.stepDot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: block;
+  transform: translate(-50%, -50%) scale(1.25);
+  /* The line stops at a ring instead of running through it. */
+  border-radius: 50%;
+  background: var(--container-background-color, #f7f7f7);
+}
+
+.stepCardWrap {
+  flex: 1;
+  min-width: 0;
+}
+
+.stepCard {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  height: 32px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--teal-050);
+  box-shadow: var(--shadow-flat-x, 0px) var(--shadow-flat-y, 1px) var(--shadow-flat-blur, 2px)
+    var(--shadow-flat-color, rgba(0, 0, 0, 0.23));
+  color: var(--element-active-color, #1f1f1f);
+  font: inherit;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* Steps still to come are in the quieter text. */
+.stepCardAhead {
+  color: var(--element-neutral-color, #535353);
+}
+
+/* Cards folded behind this one, standing for the steps between it and the last. */
+.stack {
+  position: relative;
+}
+
+.stack::before,
+.stack::after {
+  position: absolute;
+  z-index: -1;
+  height: 32px;
+  border-radius: 12px;
+  background: var(--teal-050);
+  box-shadow: var(--shadow-flat-x, 0px) var(--shadow-flat-y, 1px) var(--shadow-flat-blur, 2px)
+    var(--shadow-flat-color, rgba(0, 0, 0, 0.23));
+  content: "";
+}
+
+.stack::before {
+  top: 6px;
+  right: 8px;
+  left: 8px;
+}
+
+.stack::after {
+  /* Further back than the first, so each layer sits behind the one before. */
+  z-index: -2;
+  top: 12px;
+  right: 18px;
+  left: 18px;
+}
+
+.gap {
+  display: flex;
+  height: 24px;
+}
+
+/* The dotted line for the steps in the stack, down the middle of the same column as the dots. */
+.dots {
+  position: absolute;
+  top: -12px;
+  bottom: -12px;
+  left: 50%;
+  width: 3px;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, var(--element-disabled-color, #a0a0a0) 1.4px, transparent 1.6px) 50% 0 / 3px 9px
+    repeat-y;
+}
+
+.exit {
+  --raised-enabled-background-color: var(--teal-500);
+  --raised-enabled-border-color: var(--teal-600);
+  --raised-hover-background-color: var(--teal-600);
+  --raised-hover-border-color: var(--teal-600);
+  --on-raised-active-color: var(--teal-050);
+  margin-top: 4px;
+}
+
+/* ---- the test ---- */
+
+/* The test takes the whole screen, so the modal stands on its own as in the design. */
+.testLayer {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  background: var(--teal-050);
+  pointer-events: auto;
+}
+
+.testModal {
+  position: absolute;
+  top: 95px;
+  left: 114px;
+  width: 557px;
+  height: 399px;
+  /* The library's step lines are blue; here they are teal, like the step menu's. */
+  --base-blue-200: var(--teal-400);
+  --element-neutral-enhanced-color: var(--teal-400);
+  /* Finished steps and Next are the dark teal, where the library uses its selected blue. */
+  --selected-enabled-background-color: var(--teal-600);
+  --selected-enabled-border-color: var(--teal-600);
+  --selected-hover-background-color: color-mix(in srgb, var(--teal-600) 85%, black);
+  --selected-hover-border-color: color-mix(in srgb, var(--teal-600) 85%, black);
+  --selected-pressed-background-color: color-mix(in srgb, var(--teal-600) 70%, black);
+  --selected-pressed-border-color: color-mix(in srgb, var(--teal-600) 70%, black);
+  --selected-activated-background-color: var(--teal-600);
+  --selected-activated-border-color: var(--teal-600);
+  --on-selected-active-color: var(--teal-050);
+}
+
+.testModal > obc-sequence-modal {
+  display: block;
+  height: 399px;
+}
+
+/* The header is 56px here against the design's 48, so the body is that much shorter than the screen's 399. */
+.testBody {
+  position: relative;
+  width: 557px;
+  height: 343px;
+}
+
+.testText {
+  position: absolute;
+  top: 49px;
+  left: 51px;
+  width: 455px;
+  margin: 0;
+  color: var(--element-neutral-color, #535353);
+  font-size: 11.5px;
+  line-height: 16px;
+}
+
+.testAction {
+  position: absolute;
+  top: 137px;
+  left: 0;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.testPassed {
+  color: var(--teal-400);
+}
+
+.testChoices {
+  display: flex;
+  gap: 8px;
+}
+
+.testToolbar {
+  position: absolute;
+  bottom: 9px;
+  left: 7.5px;
+  width: 542px;
+}

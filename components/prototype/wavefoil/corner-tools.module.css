@@ -1,0 +1,99 @@
+/* ---- tool row ---- */
+
+.tools {
+  position: absolute;
+  z-index: 5;
+  display: flex;
+  height: 48px;
+  overflow: hidden;
+  background: var(--teal-300);
+  box-shadow: var(--shadow-floating-x, 0px) var(--shadow-floating-y, 4px)
+    var(--shadow-floating-blur, 16px) var(--shadow-floating-color, rgba(0, 0, 0, 0.32));
+  pointer-events: auto;
+  /* Letting go slides the row into its corner. */
+  transition: left 0.18s ease-out, top 0.18s ease-out;
+}
+
+.toolsDragging {
+  transition: none;
+}
+
+/* The corner toward the middle of the screen is the rounded one; the outer one follows the frame. */
+.toolsBottomRight {
+  border-radius: 12px 0 6px 0;
+}
+
+.toolsTopRight {
+  border-radius: 0 6px 0 12px;
+}
+
+.toolsBottomLeft {
+  border-radius: 0 12px 0 6px;
+}
+
+.toolsTopLeft {
+  border-radius: 6px 0 12px 0;
+}
+
+/* On the left the row reads the other way round, so the handle is always on the outer edge. */
+.toolsBottomLeft,
+.toolsTopLeft {
+  flex-direction: row-reverse;
+}
+
+/* The handle to move the row by, set off from the tools by a line. */
+.grip {
+  position: relative;
+  display: flex;
+  width: 41px;
+  height: 48px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  color: var(--teal-050);
+  cursor: grab;
+  touch-action: none;
+}
+
+.grip::after {
+  position: absolute;
+  top: 16px;
+  right: 0;
+  width: 1px;
+  height: 16px;
+  background: color-mix(in srgb, var(--teal-050) 60%, transparent);
+  content: "";
+}
+
+.toolsBottomLeft .grip::after,
+.toolsTopLeft .grip::after {
+  right: auto;
+  left: 0;
+}
+
+.toolsDragging .grip {
+  cursor: grabbing;
+}
+
+.tool {
+  display: flex;
+  width: 52px;
+  height: 48px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  color: var(--teal-050);
+  cursor: pointer;
+}
+
+.tool:hover {
+  background: color-mix(in srgb, var(--teal-400) 60%, transparent);
+}
+
+.toolOn {
+  background: var(--teal-400);
+}
+

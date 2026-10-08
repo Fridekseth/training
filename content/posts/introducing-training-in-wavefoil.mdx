@@ -2,7 +2,7 @@ export const metadata = {
   title: "Introducing training in Wavefoil interface: first iterations",
   date: "2026-10-04",
   summary:
-    "The first iterations of the Wavefoil prototype, starting with the interface, the training menu and an explore mode.",
+    "The first iterations of the Wavefoil prototype: the interface, the training menu, an explore mode, and a second round with decision support, debriefing and comment states.",
   image: "/posts/introducing-training-in-wavefoil/iteration-1-1-overview.png",
   imageAlt:
     "The Wavefoil overview screen with the ship, the wave chart, the engine power panel and the foil controls",
@@ -73,8 +73,66 @@ sequences behind them are not built yet.
 
 I tested this first prototype on a captain who has Wavefoil on their vessel. He was positive to
 the training concept, but pointed out that it does not necessarily have to be exclusively
-available in the bridge screen. He could imagine using it at home for example.
+available in the bridge screen. He could imagine using it at home for example. He also gave me valuable feedback on the
+interface itself, which is still a work in progress. Clearer controls, and the possibility to
+monitor the two foils separately were important takeaways.
 
 When testing on an OpenBridge designer, I also got some valuable feedback on interaction
 patterns and how the new components relates to the OpenBridge design language. The Comment
 functionality could be communicated more precisely, and benefit from OpenBridge styling.
+
+## Second iteration: Improved WF interface and training interactions
+
+The feedback from the WF operator let me iterate on the interface itself, to more precisely
+cover their needs when operating the system. I also added a more comprehensive decision
+support and debriefing function on separate pages, to provide more insight "in-action", and
+also work as a sort of continuous learning feature baked into the interface.
+
+The explore and comment function was tidied up to have more precise and intuitive interaction
+patterns, with added states to the comment pins.
+
+To try the decision support without waiting for the sea to change, the prototype has a
+simulated sea state under the screen, with ideal, harmful and wicked waves. The comments in
+the screenshots are placeholder texts for now.
+
+<Carousel
+  label="Screens from the second iteration"
+  ratio="786 / 590"
+  slides={[
+    {
+      src: "/posts/introducing-training-in-wavefoil/iteration-2-1-overview.png",
+      alt: "The updated Wavefoil overview with both foils drawn out, a level for each foil and the three foil controls",
+      caption: "The updated overview. Each foil has its own level, so the two can be monitored separately.",
+    },
+    {
+      src: "/posts/introducing-training-in-wavefoil/iteration-2-2-decision-ideal.png",
+      alt: "The decision support page in ideal waves, with wave conditions, vessel motion and engine power, and blue advice frames",
+      caption: "Decision support in ideal waves: the wave conditions, the vessel motion and the engine power, each with an advice frame beneath.",
+    },
+    {
+      src: "/posts/introducing-training-in-wavefoil/iteration-2-3-decision-harmful.png",
+      alt: "The decision support page in harmful waves, with a yellow caution frame and a recommendation to retract the foils",
+      caption: "In harmful waves the advice turns to caution, and the control to retract the foils is marked as recommended.",
+    },
+    {
+      src: "/posts/introducing-training-in-wavefoil/iteration-2-4-decision-wicked.png",
+      alt: "The decision support page in unclear wave conditions, with a floating advice suggesting the foils are tried for five minutes",
+      caption: "In unclear conditions an advice floats over the page, with the option to decline or deploy the foils.",
+    },
+    {
+      src: "/posts/introducing-training-in-wavefoil/iteration-2-5-debriefing.png",
+      alt: "The debriefing page with a voyage timeline on the left, a map with the route and a graph of engine power with the foil periods marked",
+      caption: "The debriefing page lets you select a voyage, see the timeline, the route on a map and a graph analysing how different data was impacted by the foils.",
+    },
+    {
+      src: "/posts/introducing-training-in-wavefoil/iteration-2-6-explore-pins.png",
+      alt: "The overview in explore mode, with comment pins in different states on the vessel, the STBD level and the top bar",
+      caption: "Explore mode with the new comment pins. Unread comments are filled, read ones are lighter.",
+    },
+    {
+      src: "/posts/introducing-training-in-wavefoil/iteration-2-7-explore-thread.png",
+      alt: "A comment thread open on the left, with the other pins on the screen disabled and the commented foil outlined",
+      caption: "With a thread open, the other pins are disabled and the part of the screen it is about is left clear.",
+    },
+  ]}
+/>
