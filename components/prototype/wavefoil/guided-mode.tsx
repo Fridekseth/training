@@ -34,7 +34,7 @@ import { MaskIcon } from "../pieces";
 import { WavefoilMenu } from "./app-menu";
 import { CornerTools, SCREEN, ToolButton, type Corner } from "./corner-tools";
 import type { GuidedSequence, GuidedStep, TestQuestion, TestResult } from "./guided-data";
-import { TestModal } from "./test-modal";
+import { TestIntro, TestModal } from "./test-modal";
 import { TrainingFrame } from "./training-frame";
 import tealStyles from "./teal-scope.module.css";
 import styles from "./guided.module.css";
@@ -403,6 +403,8 @@ export function GuidedMode({
   // The test: which question is up, which scenario is open, and how each went.
   const questions = sequence.test ?? NO_QUESTIONS;
   const [testIndex, setTestIndex] = useState(0);
+  /** The test opens on a modal of its own, and begins when the learner says so. */
+  const [testBegun, setTestBegun] = useState(false);
   const [scenario, setScenario] = useState<number | null>(null);
   const [passed, setPassed] = useState<boolean[]>([]);
   const [answers, setAnswers] = useState<(number | undefined)[]>([]);
@@ -463,10 +465,14 @@ export function GuidedMode({
     if (scenario === null) return;
     const question = questions[scenario];
     if (!question) return;
-    const timer = window.setTimeout(() => {
-      onFoils(null);
-      endScenario(scenario, question.kind === "watch");
-    }, question.seconds * 1000);
+    // A scenario to watch ends with its script; this is only the net under it, a little past its time.
+    const timer = window.setTimeout(
+      () => {
+        if (question.kind === "scenario") onFoils(null);
+        endScenario(scenario, question.kind === "watch");
+      },
+      (question.seconds + (question.kind === "watch" ? 3 : 0)) * 1000,
+    );
     return () => window.clearTimeout(timer);
   }, [scenario, questions, onFoils]);
 
@@ -480,10 +486,12 @@ export function GuidedMode({
       if (deployment >= 50 && !scripted.current) {
         scripted.current = true;
         if (question.script === "deploying") {
-          ending.current = window.setTimeout(() => endScenario(scenario, true), 0);
+          // The foils are left coming out for a while, to be seen doing it.
+          ending.current = window.setTimeout(() => endScenario(scenario, true), 2000);
         } else {
           onFoils(null);
-          ending.current = window.setTimeout(() => endScenario(scenario, true), 1500);
+          // Stopped, and left standing before the question comes, to be seen stopped.
+          ending.current = window.setTimeout(() => endScenario(scenario, true), 4000);
         }
       }
       return;
@@ -603,6 +611,8 @@ export function GuidedMode({
             }}
           />
         </>
+      ) : testing && !testBegun ? (
+        <TestIntro questions={questions.length} onStart={() => setTestBegun(true)} />
       ) : testing ? (
         <TestModal
           questions={questions}

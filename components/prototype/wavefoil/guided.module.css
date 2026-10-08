@@ -516,7 +516,7 @@
 
 .testModal > obc-sequence-modal {
   display: block;
-  height: 399px;
+  height: var(--modal-height, 399px);
 }
 
 /* The header is 56px here against the design's 48, so the body is that much shorter than the screen's 399. */
@@ -582,4 +582,26 @@
   bottom: 9px;
   left: 7.5px;
   width: 542px;
+}
+
+/* The modal that opens the test is shorter than the questions are, and stands in the middle. */
+.testIntro {
+  --modal-height: 270px;
+  top: 160px;
+  height: 270px;
+}
+
+.testIntroBody {
+  position: relative;
+  width: 557px;
+  height: 214px;
+}
+
+.testIntroAction {
+  position: absolute;
+  top: 118px;
+  left: 0;
+  display: flex;
+  width: 100%;
+  justify-content: center;
 }

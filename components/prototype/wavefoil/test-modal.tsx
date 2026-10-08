@@ -11,6 +11,7 @@ import { ObcRadio } from "@oicl/openbridge-webcomponents-react/components/radio/
 import { ObcSequenceModal } from "@oicl/openbridge-webcomponents-react/components/sequence-modal/sequence-modal";
 import { ObcSequenceStep } from "@oicl/openbridge-webcomponents-react/components/sequence-step/sequence-step";
 import { ObcSequenceToolbar } from "@oicl/openbridge-webcomponents-react/components/sequence-toolbar/sequence-toolbar";
+import { ObiChevronRightGoogle } from "@oicl/openbridge-webcomponents-react/icons/icon-chevron-right-google";
 import { ObiMediaPlay } from "@oicl/openbridge-webcomponents-react/icons/icon-media-play";
 import { ObiPassed } from "@oicl/openbridge-webcomponents-react/icons/icon-passed";
 import { ButtonVariant } from "@oicl/openbridge-webcomponents/dist/components/button/button";
@@ -49,9 +50,36 @@ function adopt(element: HTMLElement | null, css: string) {
 }
 
 const fitModal = (modal: HTMLElement | null) =>
-  adopt(modal, ".sequence-modal-header-actions { display: none; } .sequence-modal { height: 399px; }");
+  adopt(modal, ".sequence-modal-header-actions { display: none; } .sequence-modal { height: var(--modal-height, 399px); }");
 const fitToolbar = (toolbar: HTMLElement | null) =>
   adopt(toolbar, ".sequence-toolbar.type-sequential { width: 100%; }");
+
+/**
+ * Before the first question: a modal that says what is coming, so the test is
+ * not just there. The learner starts it when they are ready.
+ */
+export function TestIntro({ questions, onStart }: { questions: number; onStart: () => void }) {
+  return (
+    <div className={styles.testLayer}>
+      <div className={`${styles.testModal} ${styles.testIntro}`}>
+        <ObcSequenceModal ref={fitModal} modalTitle="Test" stepLabel="8" stepValue={SequenceValue.regular}>
+          <div className={styles.testIntroBody}>
+            <p className={styles.testText}>
+              You have been through all the steps. Next is a test of what you have learned, with {questions}{" "}
+              questions. Some are tasks to carry out on the screen, and others are scenarios to watch.
+            </p>
+            <div className={styles.testIntroAction}>
+              <ObcButton variant={ButtonVariant.raised} showTrailingIcon onClick={onStart}>
+                Start test
+                <ObiChevronRightGoogle slot="trailing-icon" />
+              </ObcButton>
+            </div>
+          </div>
+        </ObcSequenceModal>
+      </div>
+    </div>
+  );
+}
 
 export function TestModal({
   questions,

@@ -8,6 +8,11 @@ import { WavefoilStage } from "./wavefoil-stage";
 const SCREEN = { width: 786, height: 590 };
 const DIAGONAL = Math.hypot(SCREEN.width, SCREEN.height);
 
+/** Training mode draws a 6px frame outside the screen, and it needs room that is not cut off. */
+const RING = 6;
+/** Space kept clear around the screen and its frame, in the display's own pixels. */
+const MARGIN = 24;
+
 /** The bridge display the prototype stands in for is about 10 inches across the diagonal. */
 const DEFAULT_INCHES = 10;
 
@@ -40,26 +45,35 @@ export function WavefoilUsertest() {
   const [panel, setPanel] = useState(false);
   const [run, setRun] = useState(0);
   const taps = useRef<number[]>([]);
+  /** The area the screen stands in: the display less the parts the system keeps for itself, such as the status bar. */
+  const area = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const element = area.current;
+    if (!element) return;
     const fit = () => {
-      const width = window.visualViewport?.width ?? window.innerWidth;
-      const height = window.visualViewport?.height ?? window.innerHeight;
+      // The screen, its frame and a margin all have to fit in what the display leaves.
+      const width = element.clientWidth;
+      const height = element.clientHeight;
+      const query = new URLSearchParams(window.location.search);
+      const room = Math.min(
+        (width - 2 * MARGIN) / (SCREEN.width + 2 * RING),
+        (height - 2 * MARGIN) / (SCREEN.height + 2 * RING),
+      );
       // The screen is shown at the size of a real one, as large as the display allows when that is smaller.
       // ?inches=12 sets another size, ?scale=1 draws it at one pixel to the design's pixel, ?ppi= corrects the density.
-      const query = new URLSearchParams(window.location.search);
-      const fit = Math.min(width / SCREEN.width, height / SCREEN.height);
       const inches = Number(query.get("inches")) || DEFAULT_INCHES;
       const ppi = Number(query.get("ppi")) || pixelsPerInch();
       const real = (inches * ppi) / DIAGONAL;
-      setScale(Number(query.get("scale")) || Math.min(fit, real));
-      setPortrait(height > width);
+      setScale(Number(query.get("scale")) || Math.min(room, real));
+      setPortrait(window.innerHeight > window.innerWidth);
     };
     fit();
-    window.addEventListener("resize", fit);
+    const observer = new ResizeObserver(fit);
+    observer.observe(element);
     window.addEventListener("orientationchange", fit);
     return () => {
-      window.removeEventListener("resize", fit);
+      observer.disconnect();
       window.removeEventListener("orientationchange", fit);
     };
   }, []);
@@ -123,6 +137,12 @@ export function WavefoilUsertest() {
         inset: 0,
         overflow: "hidden",
         background: "#000",
+        // The status bar and the home indicator take their share, and the screen is centred in what is left.
+        boxSizing: "border-box",
+        paddingTop: "env(safe-area-inset-top)",
+        paddingRight: "env(safe-area-inset-right)",
+        paddingBottom: "env(safe-area-inset-bottom)",
+        paddingLeft: "env(safe-area-inset-left)",
         // Taps are taps: no highlight, no double-tap zoom, no selection, no callout.
         touchAction: "manipulation",
         userSelect: "none",
@@ -131,17 +151,19 @@ export function WavefoilUsertest() {
         WebkitTapHighlightColor: "transparent",
       }}
     >
-      <div
-        style={{
-          position: "absolute",
-          left: "50%",
-          top: "50%",
-          width: SCREEN.width,
-          height: SCREEN.height,
-          transform: `translate(-50%, -50%) scale(${scale})`,
-        }}
-      >
-        <WavefoilStage key={run} conditions={conditions} />
+      <div ref={area} style={{ position: "relative", width: "100%", height: "100%" }}>
+        <div
+          style={{
+            position: "absolute",
+            left: "50%",
+            top: "50%",
+            width: SCREEN.width,
+            height: SCREEN.height,
+            transform: `translate(-50%, -50%) scale(${scale})`,
+          }}
+        >
+          <WavefoilStage key={run} conditions={conditions} />
+        </div>
       </div>
 
       {portrait ? (

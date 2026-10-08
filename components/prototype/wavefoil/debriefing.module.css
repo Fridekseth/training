@@ -644,9 +644,11 @@
 
 .seriesMenu {
   position: absolute;
-  top: 38px;
-  left: 6px;
+  /* Under the picker, which stands at 342px down and 330px across on the page. */
+  top: 380px;
+  left: 336px;
   z-index: 30;
+  transform: translateZ(0);
   box-sizing: border-box;
   display: flex;
   width: 154px;

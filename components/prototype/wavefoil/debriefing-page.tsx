@@ -419,6 +419,7 @@ function Analytics({ palette, recorded }: { palette: string; recorded: boolean }
   );
 
   return (
+    <>
     <section className={styles.analytics} data-comment="Analytics">
       <button
         type="button"
@@ -431,30 +432,6 @@ function Analytics({ palette, recorded }: { palette: string; recorded: boolean }
         <span className={styles.seriesUnit}>{series.unit}</span>
         <ObiDropDownGoogle style={{ width: 25, height: 25 }} />
       </button>
-      {open ? (
-        <>
-          <div className={styles.menuScrim} onClick={() => setOpen(false)} aria-hidden="true" />
-          <div className={styles.seriesMenu} role="listbox" aria-label="Series">
-            {SERIES.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                role="option"
-                aria-selected={item.id === selected}
-                className={`${styles.seriesOption} ${item.id === selected ? styles.tripOptionCurrent : ""}`}
-                onClick={() => {
-                  setSelected(item.id);
-                  setOpen(false);
-                }}
-              >
-                <span>{item.label}</span>
-                <span className={styles.seriesUnit}>{item.unit}</span>
-              </button>
-            ))}
-          </div>
-        </>
-      ) : null}
-
       <div className={styles.yLabels}>
         {[series.max, series.max / 2, 0].map((value, i) => (
           <span key={value} style={{ top: i * (PLOT_HEIGHT / 2) }}>
@@ -499,6 +476,31 @@ function Analytics({ palette, recorded }: { palette: string; recorded: boolean }
         </span>
       ))}
     </section>
+    {/* Outside the section, which clips what it holds: on a tablet the chart's own layer was drawn over the menu. */}
+      {open ? (
+        <>
+          <div className={styles.menuScrim} onClick={() => setOpen(false)} aria-hidden="true" />
+          <div className={styles.seriesMenu} role="listbox" aria-label="Series">
+            {SERIES.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                role="option"
+                aria-selected={item.id === selected}
+                className={`${styles.seriesOption} ${item.id === selected ? styles.tripOptionCurrent : ""}`}
+                onClick={() => {
+                  setSelected(item.id);
+                  setOpen(false);
+                }}
+              >
+                <span>{item.label}</span>
+                <span className={styles.seriesUnit}>{item.unit}</span>
+              </button>
+            ))}
+          </div>
+        </>
+      ) : null}
+    </>
   );
 }
 
