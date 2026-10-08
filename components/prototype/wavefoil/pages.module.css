@@ -14,6 +14,11 @@
   font-size: 16px;
 }
 
+/* The overview is one surface rather than a set of cards. */
+.pageFlat {
+  background: var(--container-background-color, #f7f7f7);
+}
+
 /* Cards are placed by the design, so each one is positioned on its page. */
 .card {
   position: absolute;
@@ -43,6 +48,59 @@
 }
 
 /* ---- overview ---- */
+
+.state {
+  position: absolute;
+  top: 20px;
+  right: 0;
+  left: 0;
+  margin: 0;
+  text-align: center;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--element-active-color, #1f1f1f);
+}
+
+.sideName {
+  position: absolute;
+  width: 105px;
+  margin: 0;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  color: var(--element-neutral-color, #535353);
+}
+
+.endLabel {
+  position: absolute;
+  width: 105px;
+  margin: 0;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+  color: var(--element-neutral-color, #535353);
+}
+
+/* The foil controls sit under the vessel, divided from it by a line. */
+.toolbar {
+  position: absolute;
+  top: 391px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border-top: 1px solid var(--border-divider-color, #ddd);
+  background: var(--container-background-color, #f7f7f7);
+}
+
+.rich {
+  position: absolute;
+  top: 41px;
+  display: block;
+  width: 200px;
+  height: 72px;
+}
 
 .sideLabel {
   position: absolute;
@@ -112,55 +170,35 @@
 
 /* ---- decision support ---- */
 
-.chart {
+.wave {
   position: absolute;
-  top: 50px;
-  left: 29px;
-  width: 340px;
-  height: 190px;
+  top: 58px;
+  left: 34px;
+  width: 212px;
+  height: 140px;
 }
 
-.hs {
+.wavePlot {
   position: absolute;
   top: 0;
   left: 0;
-  margin: 0;
-  font-size: 11.5px;
-  line-height: 20px;
-  color: var(--element-neutral-color, #535353);
-}
-
-.plotRow {
-  position: absolute;
-  top: 41.7px;
-  left: 0;
-}
-
-.yLabels {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 29px;
-  height: 132px;
-  font-size: 11.5px;
-  line-height: 12px;
-  color: var(--element-neutral-color, #535353);
-}
-
-.yLabels span {
-  position: absolute;
-  right: 4px;
-  transform: translateY(-50%);
-}
-
-.plot {
-  position: absolute;
-  top: 0;
-  left: 33px;
-  width: 302px;
-  height: 133px;
   box-sizing: content-box;
+  width: 210px;
+  height: 105px;
+  overflow: hidden;
   border: 1px solid var(--border-divider-color, #dadada);
+  border-radius: 8px;
+  background: var(--container-global-color, #fff);
+}
+
+/* The stretch of the plot above the window, when the sea is in it. */
+.waveAbove {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  background: var(--alert-caution-container-background-color, #fdf2a5);
+  opacity: 0.6;
 }
 
 .plotLayer {
@@ -185,22 +223,46 @@
   bottom: 0;
   z-index: 1;
   width: 1px;
-  background: #b3b3b3;
+  background: var(--instrument-frame-tertiary-color, #b3b3b3);
 }
 
-.windowMark {
+.limitTick {
   position: absolute;
-  right: -11px;
-  width: 4px;
-  border: 1px solid;
-  border-radius: 2px;
+  left: 213px;
+  width: 11px;
+  height: 0;
+  border-top: 1px solid var(--instrument-frame-tertiary-color, #bebebe);
+}
+
+/* A hatched stretch is outside the window: the foils do not work there. */
+.hatch {
+  position: absolute;
+  left: 214px;
+  box-sizing: border-box;
+  width: 10px;
+  border: 1px solid var(--instrument-frame-tertiary-color, #8e8e8e);
+  border-radius: 4px;
+  background: repeating-linear-gradient(
+    135deg,
+    var(--instrument-frame-tertiary-color, #bebebe) 0 2px,
+    var(--container-global-color, #fff) 2px 4px
+  );
+}
+
+.hatchWarn {
+  border-color: var(--element-active-color, #1f1f1f);
+  background: repeating-linear-gradient(
+    135deg,
+    var(--alert-caution-color, #ffce34) 0 2px,
+    var(--element-active-color, #1f1f1f) 2px 4px
+  );
 }
 
 .xLabels {
   position: absolute;
-  top: 191px;
-  left: 33px;
-  width: 304px;
+  top: 114px;
+  left: 1px;
+  width: 210px;
   height: 20px;
   font-size: 11.5px;
   line-height: 20px;
@@ -224,10 +286,24 @@
 
 .legend li {
   display: flex;
-  height: 24px;
+  height: 32px;
   align-items: center;
-  gap: 8px;
-  padding-left: 8px;
+  gap: 6px;
+  padding: 0 8px;
+}
+
+.legend strong {
+  font-weight: 600;
+}
+
+.barEnds {
+  position: absolute;
+  display: flex;
+  justify-content: space-between;
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 16px;
+  color: var(--element-neutral-color, #535353);
 }
 
 .legendLine {
@@ -254,7 +330,7 @@
   position: absolute;
   box-sizing: border-box;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 4px;
   padding: 8px;
   border: 1px solid var(--base-blue-200, #9cc1f5);
@@ -264,10 +340,33 @@
 }
 
 /* With the foils stowed the notes drop back to the neutral colours. */
-.adviceBoxStowed {
+.adviceBoxWarn {
+  border-color: var(--alert-caution-container-border-color, #f5d34a);
+  background: var(--alert-caution-container-background-color, #fdf2a5);
+  color: var(--element-active-color, #1f1f1f);
+}
+
+.adviceBoxNeutral {
   border-color: var(--base-categorical-200, #bebebe);
   background: var(--base-categorical-050, #f0f0f0);
   color: var(--base-categorical-600, #3d3d3d);
+}
+
+.adviceBoxBad {
+  border-color: var(--base-red-100, #fcd2cf);
+  background: var(--base-red-050, #fde9e8);
+  color: var(--base-red-600, #5b2b22);
+}
+
+/* A note that recommends something is also the button that does it. */
+.adviceAction {
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.adviceAction:disabled {
+  cursor: default;
 }
 
 .adviceBox > svg,
@@ -281,7 +380,7 @@
   display: flex;
   min-width: 0;
   flex-direction: column;
-  padding: 0 4px;
+  padding: 0 0 0 4px;
 }
 
 .adviceTitle {
@@ -391,9 +490,10 @@
 
 /* The vessel motion instrument, the size of its frame in the design. */
 .dial {
+  --dial: 172px;
   position: absolute;
-  width: 172px;
-  height: 172px;
+  width: var(--dial);
+  height: var(--dial);
 }
 
 .dialRing {
@@ -409,6 +509,15 @@
 
 .dialRing circle {
   vector-effect: non-scaling-stroke;
+}
+
+.dialRing .dialPill,
+.dialPill {
+  fill: none;
+  stroke: var(--instrument-enhanced-secondary-color, #2d548b);
+  stroke-width: 5px;
+  stroke-linecap: round;
+  vector-effect: none;
 }
 
 .dialLine {
@@ -459,4 +568,60 @@
 
 .controls::part(label) {
   white-space: nowrap;
+}
+
+/* ---- decision support ---- */
+
+.gaugeBox {
+  position: absolute;
+  display: block;
+}
+
+/* The recommended control: the button and a tag under it share one frame. */
+.recommended {
+  position: absolute;
+  top: 15px;
+  width: 200px;
+  overflow: hidden;
+  border: 2px solid var(--base-blue-500, #2d548b);
+  border-radius: 6px;
+  background: var(--base-blue-500, #2d548b);
+  color: var(--element-active-inverted-color, #fff);
+}
+
+.recommendedWarn {
+  border-color: var(--alert-caution-color, #ffce34);
+  background: var(--alert-caution-color, #ffce34);
+  color: var(--element-active-color, #1f1f1f);
+}
+
+.recommended > .rich {
+  position: static;
+  height: 72px;
+}
+
+.recommendedTag {
+  display: flex;
+  height: 24px;
+  align-items: center;
+  gap: 6px;
+  padding: 0 8px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+}
+
+.recommendedMark {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background: currentColor;
+}
+
+.floatingAdvice {
+  position: absolute;
+  top: 4px;
+  left: 142px;
+  z-index: 15;
+  width: 640px;
 }

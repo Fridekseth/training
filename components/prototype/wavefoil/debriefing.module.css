@@ -90,21 +90,32 @@
   color: var(--element-neutral-color, #535353);
 }
 
-.vesselRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
 .tripPicker {
   display: flex;
-  margin: -4px -4px -4px 0;
-  padding: 4px;
+  height: 32px;
+  box-sizing: border-box;
+  align-items: center;
+  gap: 8px;
+  margin: 0 -6px;
+  padding: 0 4px 0 12px;
   border: 0;
   border-radius: 6px;
-  background: none;
+  background: var(--flat-hover-background-color, rgba(0, 0, 0, 0.06));
+  font: inherit;
+  font-size: 16px;
+  line-height: 24px;
   color: var(--element-neutral-color, #535353);
+  text-align: left;
   cursor: pointer;
+}
+
+.tripPickerName {
+  flex: 1;
+  color: var(--element-active-color, #1f1f1f);
+}
+
+.tripPickerName strong {
+  font-weight: 600;
 }
 
 .vessel {
@@ -230,6 +241,11 @@
 .eventCard {
   border-color: var(--base-blue-100, #c9dffb);
   background: var(--base-blue-050, #e6f0fd);
+}
+
+.eventCard .cardName,
+.eventCard .cardStamp strong {
+  color: var(--base-blue-600, #1d3c67);
 }
 
 .cardTitle {
@@ -480,10 +496,10 @@
 
 .yLabels {
   position: absolute;
-  top: 54px;
+  top: 52px;
   left: 0;
-  width: 51px;
-  height: 107px;
+  width: 50px;
+  height: 108px;
   font-size: 11.5px;
   line-height: 16px;
   color: var(--element-neutral-color, #535353);
@@ -502,10 +518,10 @@
 
 .plot {
   position: absolute;
-  top: 54px;
-  left: 56px;
-  width: 210px;
-  height: 107px;
+  top: 52px;
+  left: 54px;
+  width: 358px;
+  height: 108px;
   border-top: 1px solid var(--instrument-frame-tertiary-color, #bebebe);
   border-left: 1px solid var(--instrument-frame-tertiary-color, #bebebe);
   border-bottom: 1px solid var(--instrument-frame-tertiary-color, #bebebe);
@@ -528,73 +544,12 @@
 
 .foilsMark {
   position: absolute;
-  top: 165px;
+  top: 166px;
   box-sizing: border-box;
   height: 4px;
   border: 1px solid var(--base-blue-400, #4271b3);
   border-radius: 2px;
   background: var(--base-blue-100, #c9dffb);
-}
-
-.legend {
-  position: absolute;
-  top: 44px;
-  left: 284px;
-  display: flex;
-  width: 168px;
-  flex-direction: column;
-  gap: 4px;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  /* The design's radio is a size smaller than the component's own. */
-  --ui-components-radio-button-selection-size: 18px;
-  --ui-components-radio-button-thumb-size: 8px;
-}
-
-.legend > div {
-  display: flex;
-  height: 32px;
-  align-items: center;
-  cursor: pointer;
-}
-
-.legend > div > * {
-  white-space: nowrap;
-}
-
-/* ---- docking ---- */
-
-.dockingTitle {
-  min-height: 48px;
-  gap: 8px;
-}
-
-.dockingName,
-.dockingTime {
-  display: flex;
-  flex-direction: column;
-}
-
-.dockingName {
-  flex: 1;
-  color: var(--element-neutral-color, #535353);
-}
-
-.dockingName strong {
-  font-weight: 600;
-  color: var(--element-active-color, #1f1f1f);
-}
-
-.dockingTime {
-  align-items: flex-end;
-  color: var(--element-active-color, #1f1f1f);
-  font-variant-numeric: tabular-nums;
-}
-
-.dockingTime strong {
-  font-weight: 600;
-  color: var(--element-inactive-color, #707070);
 }
 
 /* ---- the trip picker ---- */
@@ -607,12 +562,12 @@
 
 .tripMenu {
   position: absolute;
-  top: 52px;
-  left: 24px;
+  top: 64px;
+  left: 18px;
   z-index: 30;
   box-sizing: border-box;
   display: flex;
-  width: 282px;
+  width: 274px;
   flex-direction: column;
   padding: 4px;
   border-radius: 12px;
@@ -659,4 +614,70 @@
   font-size: 12px;
   line-height: 16px;
   color: var(--element-inactive-color, #707070);
+}
+
+/* ---- the series picker of the analytics ---- */
+
+.seriesPicker {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  display: flex;
+  height: 28px;
+  align-items: center;
+  gap: 6px;
+  padding: 0 2px 0 12px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--flat-hover-background-color, rgba(0, 0, 0, 0.06));
+  font: inherit;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--element-active-color, #1f1f1f);
+  cursor: pointer;
+}
+
+.seriesUnit {
+  font-size: 11.5px;
+  color: var(--element-inactive-color, #707070);
+}
+
+.seriesMenu {
+  position: absolute;
+  top: 38px;
+  left: 6px;
+  z-index: 30;
+  box-sizing: border-box;
+  display: flex;
+  width: 154px;
+  flex-direction: column;
+  padding: 4px;
+  border-radius: 12px;
+  background: var(--container-global-color, #fcfcfc);
+  box-shadow: var(--shadow-floating-x, 0px) var(--shadow-floating-y, 4px)
+    var(--shadow-floating-blur, 16px) var(--shadow-floating-color, rgba(0, 0, 0, 0.32));
+}
+
+.seriesOption {
+  display: flex;
+  height: 32px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: none;
+  font: inherit;
+  font-size: 12px;
+  color: var(--on-flat-active-color, #1f1f1f);
+  cursor: pointer;
+}
+
+.seriesOption.tripOptionCurrent {
+  border-color: var(--base-blue-100, #c9dffb);
+  background: var(--base-blue-050, #e6f0fd);
+}
+
+.seriesOption:hover {
+  background: var(--flat-hover-background-color, rgba(0, 0, 0, 0.06));
 }

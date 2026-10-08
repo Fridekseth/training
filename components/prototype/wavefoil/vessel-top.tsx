@@ -16,6 +16,8 @@ const WING =
 const HINGE = 59.22;
 /** How much of the wing still shows with the foil fully retracted. */
 const WING_RETRACTED = 0.2;
+/** How far the wing is drawn out with the foil fully deployed, against the drawing's own length. */
+const WING_DEPLOYED = 1.69;
 
 const deployed: CSSProperties = {
   fill: "var(--base-blue-050, #e4eefd)",
@@ -30,7 +32,7 @@ const stowed: CSSProperties = {
 };
 
 function Foil({ side, deployment }: { side: "port" | "stbd"; deployment: number }) {
-  const scale = WING_RETRACTED + (1 - WING_RETRACTED) * (deployment / 100);
+  const scale = WING_RETRACTED + (WING_DEPLOYED - WING_RETRACTED) * (deployment / 100);
   // The accent colour is for foils that are out; stowed, they are grey.
   const paint = deployment > 0 ? deployed : stowed;
   return (

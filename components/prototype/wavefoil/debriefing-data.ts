@@ -47,28 +47,34 @@ const BERGEN_BODO_LOG: LogEntry[] = [
   { kind: "docking", at: "16:24", place: "Bodø", ttg: "03:58:25" },
 ];
 
-export type SeriesId = "power" | "speed" | "draft" | "hs";
+export type SeriesId = "speed" | "power" | "pitch" | "pitch-m";
 
 export type Series = {
   id: SeriesId;
   label: string;
+  unit: string;
   /** The top of the axis; the labels are this, half of it and zero. */
   max: number;
   /** Eleven readings across the trip. */
   data: number[];
 };
 
+/**
+ * The four series of the picker, in the order the design lists them. Only the
+ * engine power curve is in the design; the others are stand-ins. The last
+ * entry is labelled "Pitch m" in the design.
+ */
 export const SERIES: Series[] = [
-  { id: "power", label: "Engine power", max: 100, data: [22, 27, 39, 34, 56, 24, 38, 28, 43, 35, 39] },
-  { id: "speed", label: "Speed", max: 20, data: [9, 11, 13.5, 12.5, 16, 11, 13, 12, 14, 13, 13.5] },
-  { id: "draft", label: "Draft", max: 16, data: [11, 11, 10.8, 10.9, 10.7, 11, 10.9, 10.8, 10.7, 10.8, 10.8] },
-  { id: "hs", label: "Hs", max: 8, data: [1.3, 2, 2.6, 2.5, 3.4, 3.9, 3.6, 2.9, 3.1, 2.9, 1.7] },
+  { id: "speed", label: "Speed", unit: "kn", max: 20, data: [9, 11, 13.5, 12.5, 16, 11, 13, 12, 14, 13, 13.5] },
+  { id: "power", label: "Engine power", unit: "kw", max: 100, data: [22, 27, 39, 34, 56, 24, 38, 28, 43, 35, 39] },
+  { id: "pitch", label: "Pitch", unit: "DEG", max: 4, data: [1.2, 1.5, 2.1, 1.8, 2.6, 1.4, 1.9, 1.6, 2.2, 1.7, 1.9] },
+  { id: "pitch-m", label: "Pitch", unit: "m", max: 4, data: [0.6, 0.8, 1.2, 1, 1.6, 0.7, 1.1, 0.9, 1.3, 1, 1.1] },
 ];
 
-/** Where along the graph, in pixels of its 210 wide plot, the foils were out. */
+/** Where along the graph, in pixels of its 358 wide plot, the foils were out. */
 export const FOILS_OUT: [number, number][] = [
-  [98 - 56, 130 - 56],
-  [155 - 56, 218 - 56],
+  [44, 119],
+  [171, 274],
 ];
 
 /** The waypoints on the map, in the map card's own pixels. */
@@ -106,10 +112,11 @@ export type Trip = {
 const VESSEL = "MS Liafjord";
 
 /**
- * The four trips of the picker. Only Bergen to Bodø has a log in the design, so
+ * The five trips of the picker. Only Bergen to Bodø has a log in the design, so
  * the others show their route and date and an empty log.
  */
 export const TRIPS: Trip[] = [
+  { id: "stavanger-bergen", date: "23.06.26", from: "Stavanger", to: "Bergen", vessel: VESSEL, departure: { date: "23.06.26" }, log: [], recorded: false },
   {
     id: "bergen-bodo",
     date: "24.06.26",
@@ -121,7 +128,7 @@ export const TRIPS: Trip[] = [
     log: BERGEN_BODO_LOG,
     recorded: true,
   },
-  { id: "bodo-tromso", date: "31.06.26", from: "Bodø", to: "Tromsø", vessel: VESSEL, departure: { date: "31.06.26" }, log: [], recorded: false },
-  { id: "tromso-harstad", date: "03.07.26", from: "Tromsø", to: "Harstad", vessel: VESSEL, departure: { date: "03.07.26" }, log: [], recorded: false },
-  { id: "harstad-bodo", date: "08.07.26", from: "Harstad", to: "Bodø", vessel: VESSEL, departure: { date: "08.07.26" }, log: [], recorded: false },
+  { id: "bodo-harstad", date: "25.06.26", from: "Bodø", to: "Harstad", vessel: VESSEL, departure: { date: "25.06.26" }, log: [], recorded: false },
+  { id: "harstad-tromso", date: "26.06.26", from: "Harstad", to: "Tromsø", vessel: VESSEL, departure: { date: "26.06.26" }, log: [], recorded: false },
+  { id: "tromso-bodo", date: "27.06.26", from: "Tromsø", to: "Bodø", vessel: VESSEL, departure: { date: "27.06.26" }, log: [], recorded: false },
 ];

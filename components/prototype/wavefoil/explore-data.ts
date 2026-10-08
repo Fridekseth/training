@@ -54,8 +54,8 @@ export const THREADS: Thread[] = [
     title: "Foil controls thread",
     authors: ["VO"],
     unread: true,
-    indicator: { left: 540, top: 470 },
-    target: { left: 602, top: 52, width: 181, height: 533 },
+    indicator: { left: 720, top: 392 },
+    target: { left: 1, top: 439, width: 784, height: 151 },
     messages: [
       {
         id: "foil-controls-1",
@@ -89,8 +89,8 @@ export const THREADS: Thread[] = [
     title: "Thread",
     subject: "Wave conditions",
     authors: ["IM"],
-    indicator: { left: 330, top: 96 },
-    target: { left: 40, top: 130, width: 360, height: 200 },
+    indicator: { left: 230, top: 250 },
+    target: { left: 4, top: 52, width: 297, height: 380 },
     messages: [
       {
         id: "chart-1",
@@ -113,8 +113,8 @@ export const THREADS: Thread[] = [
     title: "Thread",
     subject: "Engine power",
     authors: ["HT", "AR", "KN"],
-    indicator: { left: 690, top: 62 },
-    target: { left: 430, top: 112, width: 340, height: 60 },
+    indicator: { left: 700, top: 250 },
+    target: { left: 542, top: 52, width: 240, height: 380 },
     messages: [
       {
         id: "power-1",

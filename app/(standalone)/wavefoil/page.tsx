@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { WavefoilStage } from "@/components/prototype/wavefoil/wavefoil-stage";
+import { WavefoilStandalone } from "@/components/prototype/wavefoil/wavefoil-standalone";
 
 export const metadata: Metadata = {
   title: "Wavefoil",
@@ -14,11 +14,5 @@ export const metadata: Metadata = {
  * correctly, because there the layout itself is bigger.
  */
 export default function WavefoilPage() {
-  return (
-    <div className="flex min-h-full items-center justify-center">
-      <div style={{ width: 786, height: 590, flexShrink: 0 }}>
-        <WavefoilStage />
-      </div>
-    </div>
-  );
+  return <WavefoilStandalone />;
 }

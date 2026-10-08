@@ -1,52 +1,97 @@
 "use client";
 
 /**
- * Decision support: what the sea is doing against the window the foils work
- * in, what the engine could save, and how the vessel is moving.
+ * Decision support: the sea against the window the foils work in, how the
+ * vessel is moving, and what the engine could save, with the controls for the
+ * foils underneath and the one the page recommends marked. Each note takes its
+ * tone from the state of the sea.
  */
 
-import type { ReactNode } from "react";
-import { ObcBarHorizontal } from "@oicl/openbridge-webcomponents-react/building-blocks/bar-horizontal/bar-horizontal";
+import { useState } from "react";
+import type { CSSProperties, ReactNode } from "react";
+import { ObcAdviceFloatingItem } from "@oicl/openbridge-webcomponents-react/components/advice-floating-item/advice-floating-item";
 import { ObcReadout } from "@oicl/openbridge-webcomponents-react/navigation-instruments/readout/readout";
-import { PitchHeave } from "./pitch-heave";
 import { ObiWave } from "@oicl/openbridge-webcomponents-react/icons/icon-wave";
 import { ObiEnergyFuel } from "@oicl/openbridge-webcomponents-react/icons/icon-energy-fuel";
 import { ObiPitch } from "@oicl/openbridge-webcomponents-react/icons/icon-pitch";
-import { AdvicePosition, ExternalScaleSide, FillMode } from "@oicl/openbridge-webcomponents/dist/building-blocks/external-scale/external-scale";
-import { AdviceType } from "@oicl/openbridge-webcomponents/dist/navigation-instruments/watch/advice";
 import {
   ReadoutSize,
   ReadoutValueType,
 } from "@oicl/openbridge-webcomponents/dist/navigation-instruments/readout/readout";
 import type { VesselImage } from "@oicl/openbridge-webcomponents/dist/navigation-instruments/watch/vessel";
 import { Priority } from "@oicl/openbridge-webcomponents/dist/navigation-instruments/types";
-import { useWavePalette, WaveChart } from "./wave-chart";
+import type { Conditions } from "./conditions";
+import { EngineGauge } from "./engine-gauge";
+import { FoilControls, type Moving } from "./foil-controls";
+import { PitchHeave } from "./pitch-heave";
+import { MEASURED, MEASURED_HARMFUL, useWavePalette, WaveChart } from "./wave-chart";
 import styles from "./pages.module.css";
+
+type Tone = "good" | "warn" | "neutral";
+
+/** What each state of the sea says on the page, as the design words it. */
+const SAY: Record<
+  Conditions,
+  {
+    waves: { tone: Tone; title: string; line: string };
+    motion: { tone: Tone; title: string; line: string };
+    fuel: { tone: Tone; title: string; line: string };
+    /** The control the page recommends. */
+    recommends: "deploy" | "retract";
+    /** The engine load the gauge marks as worth moving to, in per cent of full power. */
+    advice: { min: number; max: number }[];
+  }
+> = {
+  ideal: {
+    waves: { tone: "good", title: "Optimal waves", line: "Wave conditions are within foil operating range." },
+    motion: { tone: "good", title: "40-44%", line: "Potential motion dampening with foils." },
+    fuel: { tone: "good", title: "12-15%", line: "Potential fuel saving with foils." },
+    recommends: "deploy",
+    advice: [{ min: 60, max: 67 }],
+  },
+  harmful: {
+    waves: { tone: "warn", title: "Harmful waves", line: "Current wave conditions are too heavy for foil use." },
+    motion: { tone: "good", title: "40-44%", line: "Potential motion dampening with foils." },
+    fuel: { tone: "good", title: "12-15%", line: "Potential fuel saving with foils." },
+    recommends: "retract",
+    advice: [{ min: 60, max: 67 }],
+  },
+  wicked: {
+    waves: { tone: "neutral", title: "Poor wave conditions", line: "Unclear weather waves are in operating range." },
+    motion: { tone: "neutral", title: "0-8%", line: "Potential motion dampening with foils." },
+    fuel: { tone: "neutral", title: "2-6%", line: "Potential fuel saving with foils." },
+    recommends: "deploy",
+    advice: [{ min: 60, max: 67 }],
+  },
+};
+
+const TONE_CLASS: Record<Tone, string> = {
+  good: "",
+  warn: styles.adviceBoxWarn,
+  neutral: styles.adviceBoxNeutral,
+};
 
 /** The highlighted note under an instrument: an icon, a headline and a line of explanation. */
 function AdviceBox({
-  deployed,
+  tone,
   icon,
   title,
   line,
   style,
 }: {
-  deployed: boolean;
+  tone: Tone;
   icon: ReactNode;
   title: string;
   line: string;
-  style: React.CSSProperties;
+  style: CSSProperties;
 }) {
   return (
-    <div
-      className={`${styles.adviceBox} ${deployed ? "" : styles.adviceBoxStowed}`}
-      style={style}
-    >
+    <div className={`${styles.adviceBox} ${TONE_CLASS[tone]}`} style={style}>
       {icon}
-      <div className={styles.adviceText}>
+      <span className={styles.adviceText}>
         <span className={styles.adviceTitle}>{title}</span>
         <span className={styles.adviceLine}>{line}</span>
-      </div>
+      </span>
     </div>
   );
 }
@@ -55,19 +100,15 @@ function Value({
   label,
   unit,
   value,
-  priority = Priority.regular,
-  size = ReadoutSize.medium,
 }: {
-  size?: ReadoutSize;
   label: string;
   unit: string;
   value: string;
-  priority?: Priority;
 }) {
   return (
     <ObcReadout
-      size={size}
-      priority={priority}
+      size={ReadoutSize.small}
+      priority={Priority.regular}
       valueType={ReadoutValueType.text}
       label={label}
       unit={unit}
@@ -76,106 +117,101 @@ function Value({
   );
 }
 
-/** The accent colour is for foils that are out; with them stowed the page reads grey. */
+/** The advice that comes up over the page when the sea leaves the effect of the foils unclear. */
+function FloatingAdvice({ onDeploy }: { onDeploy: () => void }) {
+  const [open, setOpen] = useState(true);
+  if (!open) return null;
+  return (
+    <ObcAdviceFloatingItem
+      className={styles.floatingAdvice}
+      style={{ ["--instrument-starboard-primary-color" as string]: "var(--instrument-enhanced-secondary-color)" }}
+      hasTimestamp
+      hasDay
+      action
+      action2
+      lineType={"multi-line" as never}
+      onActionClick={() => setOpen(false)}
+      onAction2Click={() => {
+        onDeploy();
+        setOpen(false);
+      }}
+      onDismissClick={() => setOpen(false)}
+    >
+      <span slot="title">Decision support</span>
+      <span slot="description">
+        The effect of wavefoil is unclear. Try the wings for 5 minutes without changing speed and
+        monitor consumption and check the pitching.
+      </span>
+      <span slot="day">Today</span>
+      <span slot="time">09:12</span>
+      <span slot="action">Decline</span>
+      <span slot="action2">Deploy foils</span>
+    </ObcAdviceFloatingItem>
+  );
+}
+
 export function DecisionSupportPage({
   palette,
-  deployed,
+  conditions,
+  deployment,
+  moving,
+  onDeploy,
+  onRetract,
+  onStop,
 }: {
   palette: string;
-  deployed: boolean;
+  conditions: Conditions;
+  /** 0 with the foils in, 100 with them out. */
+  deployment: number;
+  moving: Moving;
+  onDeploy: () => void;
+  onRetract: () => void;
+  onStop: () => void;
 }) {
-  const colour = useWavePalette(deployed, palette);
+  const say = SAY[conditions];
+  // The window is drawn in the accent colour only while the sea is inside it.
+  const colour = useWavePalette(false, palette);
 
   return (
     <div className={styles.page}>
       <section
         className={styles.card}
-        style={{ left: 4, top: 4, width: 403, height: 534 }}
+        style={{ left: 4, top: 4, width: 297, height: 380 }}
         data-comment="Wave conditions"
       >
-        <p className={styles.cardTitle}>Waves condition and operating window</p>
-        <WaveChart inWindow={deployed} palette={palette} />
-
-        <ul className={styles.legend} style={{ left: 29, top: 277 }}>
+        <p className={styles.cardTitle}>Wave conditions</p>
+        <WaveChart
+          palette={palette}
+          measured={conditions === "harmful" ? MEASURED_HARMFUL : MEASURED}
+          harmful={conditions === "harmful"}
+        />
+        <ul className={styles.legend} style={{ left: 30, top: 199 }}>
           <li>
             <span className={styles.legendLine} style={{ color: colour.measured }} />
-            Actual
+            Actual Hs <strong>2,8</strong> m
           </li>
           <li>
             <span className={styles.legendDots} style={{ color: colour.estimated }} />
-            Estimated
-          </li>
-          <li>
-            <span
-              className={styles.legendBox}
-              style={{ background: colour.chip, borderColor: colour.chipEdge }}
-            />
-            Foil window
+            Estimated Hs <strong>3,9</strong> m
           </li>
         </ul>
-        <div className={styles.readoutRow} style={{ left: 155, top: 289 }}>
-          <Value label="Actual Hs" unit="m" value="2,8" priority={deployed ? Priority.enhanced : Priority.regular} />
-          <Value label="Forecasted Hs" unit="m" value="3,9" />
-        </div>
-
         <AdviceBox
-          deployed={deployed}
+          tone={say.waves.tone}
           icon={<ObiWave />}
-          title="Ideal wave conditions"
-          line="Wave conditions are within foil operating range"
-          style={{ left: 29, top: 373, width: 344, height: 59 }}
+          title={say.waves.title}
+          line={say.waves.line}
+          style={{ left: 33, top: 280, width: 228, height: 75 }}
         />
       </section>
 
       <section
         className={styles.card}
-        style={{ left: 411, top: 4, width: 370, height: 217 }}
-        data-comment="Engine power"
-      >
-        <p className={styles.cardTitle}>Engine power</p>
-        <p className={styles.barLabel} style={{ left: 27, top: 39 }}>% MCR</p>
-        <ObcBarHorizontal
-          className={styles.at}
-          style={{ left: 27, top: 64 }}
-          width={320}
-          minValue={0}
-          maxValue={100}
-          value={60}
-          fillMode={FillMode.tint}
-          advicePosition={AdvicePosition.center}
-          barThickness={24}
-          hasBar
-          hasScale
-          scaleBackground={false}
-          showLabels
-          tickThickness={12}
-          labelThickness={20}
-          primaryTickmarkInterval={25}
-          secondaryTickmarkInterval={5}
-          side={ExternalScaleSide.bottom}
-          advices={[
-            { min: 46, max: 58, type: AdviceType.advice, hinted: false },
-            { min: 78, max: 97, type: AdviceType.caution, hinted: true },
-          ]}
-        />
-        <AdviceBox
-          deployed={deployed}
-          icon={<ObiEnergyFuel />}
-          title="12-15%"
-          line="Potential fuel saving with Wavefoil."
-          style={{ left: 25, top: 137, width: 320, height: 56 }}
-        />
-      </section>
-
-      <section
-        className={styles.card}
-        style={{ left: 411, top: 225, width: 370, height: 313 }}
+        style={{ left: 305, top: 4, width: 233, height: 380 }}
         data-comment="Vessel motion"
       >
         <p className={styles.cardTitle}>Vessel motion</p>
         {/* The design's instrument: pitch and heave, with an unbroken ring. */}
-        <div className={styles.dial} style={{ left: 36, top: 41 }}>
-          {/* The ring is drawn here, whole, underneath the instrument. */}
+        <div className={styles.dial} style={{ left: 36, top: 63, ["--dial" as string]: "159px" }}>
           <svg className={styles.dialRing} viewBox="-100 -100 200 200" aria-hidden="true">
             <circle r="92" />
           </svg>
@@ -183,42 +219,66 @@ export function DecisionSupportPage({
             pitch={1.67}
             roll={0}
             heave={0.73}
+            // The tinted stretch around the needle and the heave marker, as in the design.
+            minAvgPitch={-15}
+            maxAvgPitch={15}
+            minTrendHeave={-3}
+            maxTrendHeave={3}
             // No vessel drawing: the readouts take its place.
             vesselImageSide={"none" as VesselImage}
             vesselImageFore={"none" as VesselImage}
-            style={{ width: 172, height: 172 }}
+            style={{ width: 159, height: 159 }}
           />
+          {/* The pitch the advice asks for, as a pill on the outer edge of the pitch band. */}
+          <svg className={styles.dialRing} viewBox="-100 -100 200 200" aria-hidden="true">
+            <path
+              className={styles.dialPill}
+              d="M 88.9 -14.1 A 90 90 0 0 1 88.9 14.1"
+            />
+          </svg>
           <div className={styles.dialReadouts}>
-            <Value
-              label="Pitch"
-              unit="DEG"
-              value="1,67"
-              priority={deployed ? Priority.enhanced : Priority.regular}
-              size={ReadoutSize.small}
-            />
+            <Value label="Pitch" unit="DEG" value="1,67" />
             <span className={styles.dialLine} />
-            <Value
-              label="Heave"
-              unit="m"
-              value="0,73"
-              priority={deployed ? Priority.enhanced : Priority.regular}
-              size={ReadoutSize.small}
-            />
+            <Value label="Heave" unit="m" value="0,73" />
           </div>
         </div>
-        <div className={styles.motionReadouts} style={{ left: 237, top: 41, width: 90 }}>
-          <Value label="Draft fwd" unit="m" value="12" />
-          <Value label="Draft aft" unit="m" value="10" />
-          <Value label="Trim" unit="m" value="10" />
-        </div>
         <AdviceBox
-          deployed={deployed}
+          tone={say.motion.tone}
           icon={<ObiPitch />}
-          title="40-44%"
-          line="Potential motion dampening with Wavefoil."
-          style={{ left: 25, top: 231, width: 320, height: 56 }}
+          title={say.motion.title}
+          line={say.motion.line}
+          style={{ left: 29, top: 280, width: 182, height: 75 }}
         />
       </section>
+
+      <section
+        className={styles.card}
+        style={{ left: 542, top: 4, width: 240, height: 380 }}
+        data-comment="Engine power"
+      >
+        <p className={styles.cardTitle}>Engine power</p>
+        <div className={styles.gaugeBox} style={{ left: 20, top: 100 }}>
+          <EngineGauge value={73} advice={say.advice} label="MCR" unit="%" />
+        </div>
+        <AdviceBox
+          tone={say.fuel.tone}
+          icon={<ObiEnergyFuel />}
+          title={say.fuel.title}
+          line={say.fuel.line}
+          style={{ left: 24, top: 280, width: 191, height: 75 }}
+        />
+      </section>
+
+      <FoilControls
+        deployment={deployment}
+        moving={moving}
+        onDeploy={onDeploy}
+        onRetract={onRetract}
+        onStop={onStop}
+        recommends={say.recommends}
+      />
+
+      {conditions === "wicked" ? <FloatingAdvice key={conditions} onDeploy={onDeploy} /> : null}
     </div>
   );
 }

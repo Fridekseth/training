@@ -7,7 +7,6 @@
 
 import { useMemo, useRef, useState } from "react";
 import { ObcLineGraph } from "@oicl/openbridge-webcomponents-react/bars-graphs/line-graph/line-graph";
-import { ObcRadio } from "@oicl/openbridge-webcomponents-react/components/radio/radio";
 import { ObiDropDownGoogle } from "@oicl/openbridge-webcomponents-react/icons/icon-drop-down-google";
 import { ObiChevronRightGoogle } from "@oicl/openbridge-webcomponents-react/icons/icon-chevron-right-google";
 import { MaskIcon } from "../pieces";
@@ -91,7 +90,7 @@ function WaypointCard({ entry }: { entry: Waypoint }) {
 function EventCard({ entry }: { entry: FoilEvent }) {
   const out = entry.kind === "activated";
   return (
-    <div className={`${styles.card} ${styles.eventCard}`}>
+    <div className={`${styles.card} ${out ? styles.eventCard : ""}`}>
       <div className={styles.cardTitle}>
         <MaskIcon name={out ? "wf-wavefoil" : "wf-circle-alert"} size={16} />
         <span className={styles.cardName}>{out ? "Wavefoil was activated" : "Wavefoil was retracted"}</span>
@@ -188,22 +187,20 @@ function TripCard({ trip, onPick }: { trip: Trip; onPick: (trip: Trip) => void }
   return (
     <section className={styles.trip} data-comment="Voyage">
       <header className={styles.tripHeader}>
-        <div className={styles.vesselRow}>
-          <div className={styles.vessel}>
-            <MaskIcon name="wf-ship" size={21} />
-            <span>{trip.vessel}</span>
-          </div>
-          <button
-            type="button"
-            className={styles.tripPicker}
-            aria-label="Choose trip"
-            aria-haspopup="listbox"
-            aria-expanded={open}
-            onClick={() => setOpen((now) => !now)}
-          >
-            <ObiDropDownGoogle style={{ width: 25, height: 25 }} />
-          </button>
-        </div>
+        <button
+          type="button"
+          className={styles.tripPicker}
+          aria-label="Choose trip"
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          onClick={() => setOpen((now) => !now)}
+        >
+          <MaskIcon name="wf-ship" size={21} />
+          <span className={styles.tripPickerName}>
+            {trip.date} <strong>{trip.from} - {trip.to}</strong>
+          </span>
+          <ObiDropDownGoogle style={{ width: 25, height: 25 }} />
+        </button>
         <div className={styles.tripGrid}>
           <Place place={trip.from} role="Departure" />
           <Place place={trip.to} role="Destination" />
@@ -394,19 +391,22 @@ function RouteMap({ recorded }: { recorded: boolean }) {
   );
 }
 
-const PLOT_WIDTH = 210;
-const PLOT_HEIGHT = 107;
+const PLOT_WIDTH = 358;
+const PLOT_HEIGHT = 108;
 
 function Analytics({ palette, recorded }: { palette: string; recorded: boolean }) {
   const [selected, setSelected] = useState<SeriesId>("power");
-  const series = SERIES.find((item) => item.id === selected) ?? SERIES[0];
+  const [open, setOpen] = useState(false);
+  const series = SERIES.find((item) => item.id === selected) ?? SERIES[1];
   const colour = useWavePalette(false, palette);
 
   const datasets = useMemo(
     () => [
       {
         label: series.label,
-        data: recorded ? series.data.map((value) => (value / series.max) * 100) : series.data.map(() => null as unknown as number),
+        data: recorded
+          ? series.data.map((value) => (value / series.max) * 100)
+          : series.data.map(() => null as unknown as number),
         borderColor: colour.measured,
         backgroundColor: colour.fill,
         borderWidth: 2,
@@ -420,7 +420,40 @@ function Analytics({ palette, recorded }: { palette: string; recorded: boolean }
 
   return (
     <section className={styles.analytics} data-comment="Analytics">
-      <Heading label="Analytics" />
+      <button
+        type="button"
+        className={styles.seriesPicker}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        onClick={() => setOpen((now) => !now)}
+      >
+        <span>{series.label}</span>
+        <span className={styles.seriesUnit}>{series.unit}</span>
+        <ObiDropDownGoogle style={{ width: 25, height: 25 }} />
+      </button>
+      {open ? (
+        <>
+          <div className={styles.menuScrim} onClick={() => setOpen(false)} aria-hidden="true" />
+          <div className={styles.seriesMenu} role="listbox" aria-label="Series">
+            {SERIES.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                role="option"
+                aria-selected={item.id === selected}
+                className={`${styles.seriesOption} ${item.id === selected ? styles.tripOptionCurrent : ""}`}
+                onClick={() => {
+                  setSelected(item.id);
+                  setOpen(false);
+                }}
+              >
+                <span>{item.label}</span>
+                <span className={styles.seriesUnit}>{item.unit}</span>
+              </button>
+            ))}
+          </div>
+        </>
+      ) : null}
 
       <div className={styles.yLabels}>
         {[series.max, series.max / 2, 0].map((value, i) => (
@@ -450,28 +483,15 @@ function Analytics({ palette, recorded }: { palette: string; recorded: boolean }
         <span
           key={from}
           className={styles.foilsMark}
-          style={{ left: 56 + from, width: to - from }}
+          style={{ left: 54 + from, width: to - from }}
         />
       ))}
-
-      <fieldset className={styles.legend}>
-        {SERIES.map((item) => (
-          <div key={item.id} onClick={() => setSelected(item.id)}>
-            <ObcRadio
-              name="analytics-series"
-              value={item.id}
-              label={item.label}
-              checked={item.id === selected}
-            />
-          </div>
-        ))}
-      </fieldset>
     </section>
   );
 }
 
 export function DebriefingPage({ palette }: { palette: string }) {
-  const [trip, setTrip] = useState<Trip>(TRIPS[0]);
+  const [trip, setTrip] = useState<Trip>(TRIPS[1]);
 
   return (
     <div className={styles.page}>

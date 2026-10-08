@@ -51,7 +51,7 @@ export function WavefoilTopBar({
 
   return (
     // A plain wrapper, so explore mode can find the bar to comment on.
-    <div data-comment="Top bar">
+    <div data-comment="Top bar" style={{ position: "relative", zIndex: 2 }}>
       <ObcTopBar
         appTitle="Wavefoil"
         pageName={pageName}

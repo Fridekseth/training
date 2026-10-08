@@ -11,6 +11,7 @@ import { AdviceMenu } from "./advice-menu";
 import { AlarmPage } from "./alarm-page";
 import { WavefoilMenu } from "./app-menu";
 import { DebriefingPage } from "./debriefing-page";
+import type { Conditions } from "./conditions";
 import { DecisionSupportPage } from "./decision-support-page";
 import { ExploreMode } from "./explore-mode";
 import { THREADS, type AppPage, type Thread, type ThreadId } from "./explore-data";
@@ -33,10 +34,13 @@ const PAGE_NAMES: Record<AppPage, string> = {
 
 export function WavefoilApp({
   palette,
+  conditions = "ideal",
   onDim,
   onExploring,
 }: {
   palette: string;
+  /** The state of the sea, which the decision support page reads. */
+  conditions?: Conditions;
   onDim: () => void;
   onExploring?: (exploring: boolean) => void;
 }) {
@@ -55,6 +59,18 @@ export function WavefoilApp({
   /** 0 with the foils drawn in, 100 with them fully out. */
   const [deployment, setDeployment] = useState(0);
   const [moving, setMoving] = useState<Moving>(null);
+
+  /**
+   * The design shows the foils the way each sea state finds them: out when the
+   * waves are harmful, in otherwise. Picking a sea state puts them there, so
+   * the page can be seen as drawn without first moving the foils by hand.
+   */
+  const [seenConditions, setSeenConditions] = useState(conditions);
+  if (seenConditions !== conditions) {
+    setSeenConditions(conditions);
+    setDeployment(conditions === "harmful" ? 100 : 0);
+    setMoving(null);
+  }
 
   useEffect(() => {
     if (!moving) return;
@@ -153,7 +169,15 @@ export function WavefoilApp({
               onStop={() => setMoving(null)}
             />
           ) : null}
-          {page === "decision" ? <DecisionSupportPage palette={palette} deployed={deployment > 0} /> : null}
+          {page === "decision" ? <DecisionSupportPage
+              palette={palette}
+              conditions={conditions}
+              deployment={deployment}
+              moving={moving}
+              onDeploy={deploy}
+              onRetract={() => setMoving("retract")}
+              onStop={() => setMoving(null)}
+            /> : null}
           {page === "alarms" ? <AlarmPage /> : null}
           {page === "debriefing" ? <DebriefingPage palette={palette} /> : null}
         </>

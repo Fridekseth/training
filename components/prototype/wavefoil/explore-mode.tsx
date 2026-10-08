@@ -198,6 +198,36 @@ function ThreadPanel({
   );
 }
 
+/** The screen the tool row snaps around, and the row's own size. */
+const SCREEN = { width: 786, height: 590 };
+const TOOLS = { width: 197, height: 48 };
+
+type Corner = "top-left" | "top-right" | "bottom-left" | "bottom-right";
+
+const cornerPosition = (corner: Corner) => ({
+  left: corner.endsWith("left") ? 0 : SCREEN.width - TOOLS.width,
+  top: corner.startsWith("top") ? 0 : SCREEN.height - TOOLS.height,
+});
+
+/** The corner nearest the middle of the row, for where it was let go. */
+const nearestCorner = (left: number, top: number): Corner => {
+  const x = left + TOOLS.width / 2 < SCREEN.width / 2 ? "left" : "right";
+  const y = top + TOOLS.height / 2 < SCREEN.height / 2 ? "top" : "bottom";
+  return `${y}-${x}`;
+};
+
+const mirror = (corner: Corner): Corner =>
+  corner.endsWith("left")
+    ? (corner.replace("left", "right") as Corner)
+    : (corner.replace("right", "left") as Corner);
+
+const CORNER_CLASS: Record<Corner, string> = {
+  "top-left": styles.toolsTopLeft,
+  "top-right": styles.toolsTopRight,
+  "bottom-left": styles.toolsBottomLeft,
+  "bottom-right": styles.toolsBottomRight,
+};
+
 export function ExploreMode({
   threads,
   onThreads: setThreads,
@@ -219,12 +249,20 @@ export function ExploreMode({
   const [draft, setDraft] = useState("");
   const [typing, setTyping] = useState(false);
   const layer = useRef<HTMLDivElement>(null);
+  /** Where the tool row has been left, and where it is while it is being dragged. */
+  const [corner, setCorner] = useState<Corner>("bottom-right");
+  const [dragAt, setDragAt] = useState<{ left: number; top: number } | null>(null);
+  const grab = useRef<{ x: number; y: number; left: number; top: number; scale: number } | null>(null);
 
   const thread = threads.find((item) => item.id === open) ?? null;
   const target = thread?.target;
   const side = target ? panelSide(target) : "left";
   // A comment about the top bar leaves the bar uncovered.
   const belowBar = !!target && target.top === 0 && target.width >= 780;
+  // An open comment sits on one side, so the tool row steps over to the other rather than cover it.
+  const shown =
+    thread && corner.endsWith(side) ? mirror(corner) : corner;
+  const toolsAt = dragAt ?? cornerPosition(shown);
 
   /** Closes the open thread; one nobody wrote in is dropped rather than left as an empty pin. */
   const close = () => {
@@ -313,6 +351,52 @@ export function ExploreMode({
     setOpen(id);
   };
 
+  const startDrag = (event: React.PointerEvent<HTMLButtonElement>) => {
+    const frame = layer.current?.getBoundingClientRect();
+    if (!frame) return;
+    const from = cornerPosition(shown);
+    grab.current = {
+      x: event.clientX,
+      y: event.clientY,
+      left: from.left,
+      top: from.top,
+      scale: frame.width / SCREEN.width,
+    };
+    event.currentTarget.setPointerCapture(event.pointerId);
+    setDragAt(from);
+  };
+
+  const moveDrag = (event: React.PointerEvent<HTMLButtonElement>) => {
+    const start = grab.current;
+    if (!start) return;
+    const clamp = (value: number, max: number) => Math.min(max, Math.max(0, value));
+    setDragAt({
+      left: clamp(start.left + (event.clientX - start.x) / start.scale, SCREEN.width - TOOLS.width),
+      top: clamp(start.top + (event.clientY - start.y) / start.scale, SCREEN.height - TOOLS.height),
+    });
+  };
+
+  /** Letting go snaps the row to the nearest corner. */
+  const endDrag = () => {
+    grab.current = null;
+    if (dragAt) setCorner(nearestCorner(dragAt.left, dragAt.top));
+    setDragAt(null);
+  };
+
+  /** Without a pointer, the arrow keys step the row between corners. */
+  const stepCorner = (event: React.KeyboardEvent<HTMLButtonElement>) => {
+    const [y, x] = shown.split("-");
+    const next = {
+      ArrowLeft: `${y}-left`,
+      ArrowRight: `${y}-right`,
+      ArrowUp: `top-${x}`,
+      ArrowDown: `bottom-${x}`,
+    }[event.key];
+    if (!next) return;
+    event.preventDefault();
+    setCorner(next as Corner);
+  };
+
   const pick = (next: Tool) => {
     setTool(next);
     if (next === "hand") close();
@@ -366,10 +450,29 @@ export function ExploreMode({
       ) : null}
 
       <div
-        className={`${styles.tools} ${thread && side === "right" ? styles.toolsTop : ""}`}
+        className={`${styles.tools} ${CORNER_CLASS[dragAt ? nearestCorner(dragAt.left, dragAt.top) : shown]} ${dragAt ? styles.toolsDragging : ""}`}
+        style={{ left: toolsAt.left, top: toolsAt.top }}
         role="toolbar"
         aria-label="Explore tools"
       >
+        <button
+          type="button"
+          className={styles.grip}
+          aria-label="Move the tools. Drag, or use the arrow keys."
+          onPointerDown={startDrag}
+          onPointerMove={moveDrag}
+          onPointerUp={endDrag}
+          onPointerCancel={endDrag}
+          onKeyDown={stepCorner}
+        >
+          <svg width="12" height="18" viewBox="0 0 12 18" aria-hidden="true">
+            {[0, 1, 2].flatMap((row) =>
+              [0, 1].map((col) => (
+                <circle key={`${row}${col}`} cx={3 + col * 6} cy={3 + row * 6} r="1.6" fill="currentColor" />
+              )),
+            )}
+          </svg>
+        </button>
         <button
           type="button"
           className={`${styles.tool} ${tool === "hand" ? styles.toolOn : ""}`}

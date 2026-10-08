@@ -22,7 +22,9 @@ import styles from "./pages.module.css";
  * library's graph-node segments, ten of them across the plot, so the readings
  * are spaced to give the same ten bends rather than a finer curve.
  */
-const MEASURED = [0.9, 1.3, 2.9, 2.6, 3.9, 2.8];
+export const MEASURED = [0.9, 1.3, 2.9, 2.6, 3.9, 2.8];
+/** The reading that ends in a spike, as on the page for harmful waves. */
+export const MEASURED_HARMFUL = [0.5, 1.1, 2.6, 2.8, 3.3, 7.3];
 /** The model runs across the whole window, over the past as well. */
 const ESTIMATED = [
   1.3, 2.0, 2.6, 2.5, 3.4, 3.9, 3.6, 2.9, 3.1, 2.9, 1.7,
@@ -34,12 +36,10 @@ const NOW = MEASURED.length - 1;
 /** The wave heights the foils work between, read off the design. */
 const WINDOW_LOW = 1.6;
 const WINDOW_HIGH = 6.3;
-/** The heights the grid is ruled at. */
-const HEIGHTS = [8, 4, 0];
 /** The plot, at the design's own size. The box around it must match, or the
  * chart draws short of its frame. */
-const PLOT_WIDTH = 302;
-const PLOT_HEIGHT = 133;
+const PLOT_WIDTH = 210;
+const PLOT_HEIGHT = 105;
 
 /**
  * A canvas has no CSS to resolve, so the chart cannot be handed a token the
@@ -139,118 +139,100 @@ export function useWavePalette(inWindow: boolean, palette: string): Palette {
 }
 
 export function WaveChart({
-  inWindow,
   palette,
+  measured = MEASURED,
+  harmful = false,
 }: {
-  inWindow: boolean;
   /** Only to re-read the colours when the screen is dimmed. */
   palette: string;
+  /** The readings up to now, in metres. */
+  measured?: number[];
+  /** The sea is above the window: that part of the plot and its marker are drawn as a warning. */
+  harmful?: boolean;
 }) {
-  const colour = useWavePalette(inWindow, palette);
+  const colour = useWavePalette(false, palette);
   const nowAt = (NOW / (POINTS - 1)) * 100;
-  const at = (metres: number) => `${(1 - metres / 8) * 100}%`;
+  const at = (metres: number) => (1 - metres / 8) * PLOT_HEIGHT;
+  const high = at(WINDOW_HIGH);
+  const low = at(WINDOW_LOW);
 
   return (
-    <div className={styles.chart}>
-      <p className={styles.hs}>Hs</p>
-
-      <div className={styles.plotRow}>
-        <div className={styles.yLabels}>
-          {HEIGHTS.map((metres) => (
-            <span key={metres} style={{ top: at(metres) }}>
-              {metres}m
-            </span>
-          ))}
-        </div>
-
-        <div className={styles.plot}>
-          {/*
-            Two layers of the same chart so the grid can sit between them: the
-            window underneath, the grid over it, the readings over that. One
-            chart cannot interleave a grid with its own datasets, and the chart
-            draws no grid of its own at this height.
-          */}
-          <Plot
-            datasets={[
-              {
-                label: "Window low",
-                data: flat(WINDOW_LOW),
-                borderColor: colour.edge,
-                borderDash: [1, 2],
-                borderWidth: 1,
-                pointRadius: 0,
-                fill: false,
-                order: 2,
-              },
-              {
-                label: "Foil window",
-                data: flat(WINDOW_HIGH),
-                borderColor: colour.edge,
-                backgroundColor: colour.fill,
-                borderDash: [1, 2],
-                borderWidth: 1,
-                pointRadius: 0,
-                fill: { target: 0 },
-                order: 1,
-              },
-            ]}
-          />
-
-          {HEIGHTS.map((metres) => (
-            <span
-              key={metres}
-              className={styles.gridLine}
-              style={{ top: at(metres) }}
-            />
-          ))}
-          <span className={styles.nowLine} style={{ left: `${nowAt}%` }} />
-
-          <Plot
-            datasets={[
-              {
-                label: "Estimated",
-                data: ESTIMATED,
-                borderColor: colour.estimated,
-                borderDash: [1, 2],
-                borderWidth: 1.5,
-                pointRadius: 0,
-                fill: false,
-                order: 2,
-              },
-              {
-                label: "Actual",
-                data: [...MEASURED, ...gaps(POINTS - MEASURED.length)],
-                borderColor: colour.measured,
-                backgroundColor: colour.measured,
-                pointBackgroundColor: colour.measured,
-                pointBorderWidth: 0,
-                borderWidth: 2,
-                pointRadius: LAST_POINT,
-                fill: false,
-                order: 1,
-              },
-            ]}
-          />
-
-          {/* The window marked on the height axis, in the operational data colour. */}
-          <span
-            className={styles.windowMark}
-            style={{
-              top: at(WINDOW_HIGH),
-              height: `${((WINDOW_HIGH - WINDOW_LOW) / 8) * 100}%`,
-              background: inWindow ? colour.chipEdge : colour.chip,
-              borderColor: inWindow ? "transparent" : colour.chipEdge,
-            }}
-          />
-        </div>
+    <div className={styles.wave}>
+      <div className={styles.wavePlot}>
+        {harmful ? <span className={styles.waveAbove} style={{ height: high }} /> : null}
+        {/*
+          Two layers of the same chart so the grid can sit between them: the
+          window underneath, the grid over it, the readings over that. One
+          chart cannot interleave a grid with its own datasets.
+        */}
+        <Plot
+          datasets={[
+            {
+              label: "Window low",
+              data: flat(WINDOW_LOW),
+              borderColor: colour.measured,
+              borderDash: [1, 2],
+              borderWidth: 1,
+              pointRadius: 0,
+              fill: false,
+              order: 2,
+            },
+            {
+              label: "Window high",
+              data: flat(WINDOW_HIGH),
+              borderColor: harmful ? colour.measured : colour.estimated,
+              borderDash: [1, 2],
+              borderWidth: 1,
+              pointRadius: 0,
+              fill: false,
+              order: 1,
+            },
+          ]}
+        />
+        <span className={styles.gridLine} style={{ top: at(4) }} />
+        <span className={styles.nowLine} style={{ left: `${nowAt}%` }} />
+        <Plot
+          datasets={[
+            {
+              label: "Estimated",
+              data: ESTIMATED,
+              borderColor: colour.estimated,
+              borderDash: [1, 2],
+              borderWidth: 1.5,
+              pointRadius: 0,
+              fill: false,
+              order: 2,
+            },
+            {
+              label: "Actual",
+              data: [...measured, ...gaps(POINTS - measured.length)],
+              borderColor: colour.measured,
+              backgroundColor: colour.measured,
+              pointBackgroundColor: colour.measured,
+              pointBorderWidth: 0,
+              borderWidth: 2,
+              pointRadius: LAST_POINT,
+              fill: false,
+              order: 1,
+            },
+          ]}
+        />
       </div>
+
+      {/* The limits of the window, ticked out to the side with a hatched stretch beyond each. */}
+      <span className={styles.limitTick} style={{ top: high + 1 }} />
+      <span className={styles.limitTick} style={{ top: low + 1 }} />
+      <span
+        className={`${styles.hatch} ${harmful ? styles.hatchWarn : ""}`}
+        style={{ top: 1, height: high - 3 }}
+      />
+      <span className={styles.hatch} style={{ top: low + 4, height: PLOT_HEIGHT - low - 3 }} />
 
       <div className={styles.xLabels}>
         <span style={{ left: 0 }}>-2h</span>
-        <span style={{ left: "50%" }}>now</span>
+        <span style={{ left: "50%" }}>Now</span>
         <span style={{ left: "100%" }}>2h</span>
       </div>
     </div>
   );
 }
-

@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
+import type { Conditions } from "./conditions";
 import { Noto_Sans } from "next/font/google";
 
 const notoSans = Noto_Sans({ subsets: ["latin"], display: "swap" });
@@ -24,9 +25,11 @@ let mounted = 0;
  */
 export function WavefoilStage({
   theme = "day",
+  conditions,
   onExploring,
 }: {
   theme?: string;
+  conditions?: Conditions;
   /** Called as explore mode is entered and left, for a frame that has to make room for its ring. */
   onExploring?: (exploring: boolean) => void;
 }) {
@@ -64,6 +67,7 @@ export function WavefoilStage({
     <div className={`${notoSans.className} h-full w-full`}>
       <WavefoilApp
         palette={palette}
+        conditions={conditions}
         onDim={dim}
         onExploring={onExploring}
       />

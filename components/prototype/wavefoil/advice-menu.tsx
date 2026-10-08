@@ -96,14 +96,14 @@ export function AdviceMenu({
             >
               <ObiNotificationAdviceActive
                 slot="primary-icon"
-                style={{ color: "var(--instrument-starboard-primary-color)" }}
+                style={{ color: "var(--instrument-enhanced-secondary-color)" }}
               />
             </ObcMessageMenuItem>
           ))}
         </div>
         <div className={styles.adviceFoot}>
           <ObcButton variant={ButtonVariant.flat} showLeadingIcon>
-            <ObiNotificationAdvice slot="leading-icon" />
+            <ObiNotificationAdvice slot="leading-icon" style={{ color: "var(--instrument-enhanced-secondary-color)" }} />
             All advice
           </ObcButton>
         </div>
