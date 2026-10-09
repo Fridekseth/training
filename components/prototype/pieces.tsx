@@ -14,18 +14,21 @@ export function MaskIcon({
   size = 24,
   style,
   slot,
+  className,
 }: {
   name: string;
   size?: number;
   style?: CSSProperties;
   /** Lets the icon be placed in a web component's slot. */
   slot?: string;
+  className?: string;
 }) {
   const url = `url(/prototype/icons/${name}.svg)`;
   return (
     <span
       aria-hidden="true"
       slot={slot}
+      className={className}
       style={{
         display: "inline-block",
         width: size,

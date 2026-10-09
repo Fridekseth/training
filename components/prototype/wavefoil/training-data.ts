@@ -14,7 +14,7 @@ export const PAGES: PageDef[] = [
   },
   {
     id: "getting-started",
-    label: "Getting started",
+    label: "Learning",
     icon: "nav-getting-started",
     description: "Learn the basics, and get familiar with the system.",
   },
@@ -46,8 +46,8 @@ export const SCENARIOS: Chapter[] = [
 ];
 
 export const TRAINING_LOG: LogEntry[] = [
-  { id: "l1", date: "18.08.26", kind: "Getting started", title: "Onboarding refresh", result: 92, status: "in-progress" },
+  { id: "l1", date: "18.08.26", kind: "Learning", title: "Onboarding refresh", result: 92, status: "in-progress" },
   { id: "l2", date: "15.04.26", kind: "Scenario", title: "Alarm", result: 80, status: "completed" },
   { id: "l3", date: "02.01.26", kind: "Scenario", title: "Critical alarm", result: 98, status: "completed" },
-  { id: "l4", date: "23.11.25", kind: "Getting started", title: "Onboarding", result: 96, status: "completed" },
+  { id: "l4", date: "23.11.25", kind: "Learning", title: "Onboarding", result: 96, status: "completed" },
 ];

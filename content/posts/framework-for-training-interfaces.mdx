@@ -1,0 +1,94 @@
+export const metadata = {
+  title: "The beginning of a framework for training interfaces",
+  // Dated the same day as the visual identity post and just after it, so it lists between that post and the prototyping experiments.
+  date: "2026-09-21T12:00",
+  summary:
+    "A first structure for in-system learning, with seven questions to answer, and a closer look at the types of training and when and where it can happen.",
+  stage: "research",
+  tags: ["framework", "training types", "process"],
+};
+
+Having done a visual exploration and research of the state of the art within learning, I began to
+structure my findings into a starting framework for in-system learning. Each part of it is a
+question that a training solution has to answer:
+
+- **Type:** What types of training can we provide?
+- **Time and place:** When and where does the training happen?
+- **Target group:** Is it for the individual, or for the team?
+- **Boundaries, standards and laws:** What are the technical boundaries training must follow?
+- **Visual communication:** How is training communicated?
+- **Goal:** What do we wish to accomplish?
+- **Evaluation:** How do we know that the training is successful?
+
+For my early prototyping and user testing, I focused on exploring the first three points: the
+type of training, the time and place it happens, and who it is for.
+
+## What types of training are there?
+
+The word training covers a lot of different situations, so I started by sorting them into four
+types.
+
+### Initial training
+
+The training you receive when first entering a new workplace: the initial onboarding, and the
+courses one must pass in order to operate the system independently. Refresher courses could also
+fall under this category.
+
+### Further development
+
+There is also a need to develop more advanced skills, going from proficient to professional user.
+This could be scenario based learning, for situations that are rare or critical and so are hard to
+practice in real operation, and free exploring of the interface, where the user can try things
+out without consequences.
+
+### Coaching
+
+Training that is driven through personal feedback on performance. It could give the user:
+
+- Personal feedback on how they operate the system
+- An overview of their personal development and progress
+
+### In-action support
+
+Help that is there while the system is being used, such as a quick help, like a "first aid kit",
+for the moment something goes wrong or is unclear.
+
+## Time and place
+
+The next question is when and where the training happens. I found three main options.
+
+### A separate training menu, for when the system is not running
+
+The training is kept apart from the interface itself, and is used when it is safe to step away
+from operating. It could be reached through:
+
+- A pop-up modal
+- A settings page
+- Its own menu in the corner
+
+It would be used before using the interface, or during breaks and in non-critical states.
+
+### Within the interface, in real time
+
+The training is a part of the interface, and is there in the context of the action it explains:
+
+- Tooltips or toggletips on complex components
+- In the header
+- In the action context
+
+### Outside the system
+
+The training is not on the screen of the system at all:
+
+- An AR overlay
+- A second screen
+
+## Target group
+
+The last of the three points is who the training is for. It can be aimed at the individual, for
+example a personal training log, or at the team, where several people on the same vessel, or on
+different vessels, share what they have learned. The two do not exclude each other, and I wanted
+to keep both open in the prototypes.
+
+In the [first prototyping experiments](/blog/prototyping-experiments) I started trying out some of
+these ideas in code.

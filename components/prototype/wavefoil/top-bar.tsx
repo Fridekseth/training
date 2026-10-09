@@ -61,8 +61,9 @@ export function WavefoilTopBar({
       >
         {/* The alarms and the advice are reachable from every screen, the training section included. */}
         <span slot="alerts" style={{ display: "flex", alignItems: "center" }}>
-          <ObcAlertButton type={ObcAlertButtonType.Flat} onClick={onAlerts} />
+          <ObcAlertButton data-comment="Alert button" type={ObcAlertButtonType.Flat} onClick={onAlerts} />
           <ObcNotificationButton
+            data-comment="Advice button"
             isActive={adviceOpen}
             buttonStyle={NotificationButtonStyle.Normal}
             aria-label="Advice"
@@ -76,6 +77,7 @@ export function WavefoilTopBar({
           </ObcNotificationButton>
         </span>
         <ObcClock
+          data-comment="Clock"
           slot="clock"
           date={now.toISOString()}
           showSeconds

@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * A guided sequence from Getting started, run on the ship screen. The screen is
+ * A guided sequence from Learning, run on the ship screen. The screen is
  * framed in teal and washed, except for the part of it a step explains; the
  * explanation sits beside that part. The steps are listed in a menu that opens
  * from the corner row, and the sequence can be left from there at any time.
@@ -285,14 +285,12 @@ function StepMenu({
   corner,
   onStep,
   onExit,
-  onPointer,
 }: {
   sequence: GuidedSequence;
   step: number;
   corner: Corner;
   onStep: (index: number) => void;
   onExit: () => void;
-  onPointer: (inside: boolean) => void;
 }) {
   const lastIndex = sequence.steps.length - 1;
   const layout = menuLayout(sequence.steps.length, Math.max(step, 0));
@@ -358,8 +356,6 @@ function StepMenu({
       className={`${styles.menu} ${corner.endsWith("left") ? styles.menuLeft : styles.menuRight} ${
         corner.startsWith("top") ? styles.menuTop : styles.menuBottom
       }`}
-      onPointerEnter={() => onPointer(true)}
-      onPointerLeave={() => onPointer(false)}
     >
       <ObcNavigationItem label={sequence.title} hasIcon>
         <MaskIcon slot="icon" name={sequence.icon} style={{ color: "var(--teal-400)" }} />
@@ -402,7 +398,6 @@ export function GuidedMode({
   const [corner, setCorner] = useState<Corner>("bottom-right");
   const [menuOpen, setMenuOpen] = useState(false);
   const layer = useRef<HTMLDivElement>(null);
-  const closing = useRef<number | undefined>(undefined);
 
   // The test: which question is up, which scenario is open, and how each went.
   const questions = sequence.test ?? NO_QUESTIONS;
@@ -552,15 +547,6 @@ export function GuidedMode({
     };
   }, []);
 
-  // The menu opens when the training button is hovered, and stays while the
-  // pointer is on the button or the menu.
-  const hover = (inside: boolean) => {
-    window.clearTimeout(closing.current);
-    if (inside) setMenuOpen(true);
-    else closing.current = window.setTimeout(() => setMenuOpen(false), 160);
-  };
-  useEffect(() => () => window.clearTimeout(closing.current), []);
-
   const current = sequence.steps[step];
   const running = scenario !== null;
   const hole = started && !testing ? current.hole : null;
@@ -667,11 +653,13 @@ export function GuidedMode({
           icon="wf-menu-training"
           on={menuOpen}
           width={ROW_WIDTH - 41}
+          // A press opens the menu and a press again closes it. It is not tied to hovering: a finger has no hover.
           onClick={() => setMenuOpen((open) => !open)}
-          onPointerEnter={() => hover(true)}
-          onPointerLeave={() => hover(false)}
         />
       </CornerTools>
+
+      {/* A press anywhere else closes the menu again, and goes no further. */}
+      {menuOpen ? <div className={styles.menuScrim} onClick={() => setMenuOpen(false)} aria-hidden="true" /> : null}
 
       {menuOpen ? (
         <StepMenu
@@ -681,9 +669,9 @@ export function GuidedMode({
           onStep={(index) => {
             setPhase("steps");
             setStep(index);
+            setMenuOpen(false);
           }}
           onExit={onExit}
-          onPointer={hover}
         />
       ) : null}
     </div>

@@ -44,7 +44,7 @@ const STATUS_ORDER: Record<Status, number> = {
 
 /**
  * A ring plus its percentage, as the Result column shows it. The chapter list
- * of Getting started draws the ring larger and in the neutral dark grey.
+ * of Learning draws the ring larger and in the neutral dark grey.
  */
 function resultCell(value: number, neutral = false) {
   const size = neutral ? 28 : 24;
@@ -115,7 +115,7 @@ export function ChapterTable({
 }: {
   chapters: Chapter[];
   onStart: (chapter: Chapter) => void;
-  /** Getting started's list: a completed chapter is opened rather than started, and the rings are neutral. */
+  /** Learning's list: a completed chapter is opened rather than started, and the rings are neutral. */
   gettingStarted?: boolean;
 }) {
   const find = (id: string) => chapters.find((item) => item.id === id);

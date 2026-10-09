@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * The five pages of the Wavefoil training: Home, Overview, Getting started,
+ * The five pages of the Wavefoil training: Home, Overview, Learning,
  * Explore and Scenarios. Text and numbers are the design's; the pieces are the
  * isometric drawings the Orkla training already uses, placed as this design
  * places them at its smaller size.
@@ -156,7 +156,7 @@ export function GettingStartedPage({
   return (
     <div className={styles.page} style={{ paddingInline: 48 }}>
       <div className={styles.introRow}>
-        <Intro title="Getting started" width={305} top={16}>
+        <Intro title="Learning" width={305} top={16}>
           The onboarding sequence gives an introduction to the system, and all
           features. The whole course takes about 30 minutes to complete. You can
           choose whether to complete the whole in one go, or take breaks. You can

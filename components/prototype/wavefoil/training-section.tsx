@@ -75,7 +75,7 @@ export function TrainingSection({
   /** The comments, for the list on the Explore page. */
   threads: Thread[];
   onExplore: () => void;
-  /** Starts the guided sequence of a chapter in Getting started. */
+  /** Starts the guided sequence of a chapter in Learning. */
   onGuided: (chapterId: string) => void;
   /** How the learner did on the chapter's test, once they have taken it. */
   results: Record<string, TestResult[]>;
@@ -120,7 +120,7 @@ export function TrainingSection({
   };
 
   const move = (delta: number) => {
-    // The results are a page inside Getting started, so back leaves them for the list.
+    // The results are a page inside Learning, so back leaves them for the list.
     if (resultsOpen && delta < 0) {
       setResultsFor(null);
       return;

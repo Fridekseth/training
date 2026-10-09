@@ -40,6 +40,7 @@ function Control({
   const button = (
     <ObcRichButton
       className={styles.rich}
+      data-comment={label}
       style={boxed ? undefined : { left }}
       label={label}
       direction={RichButtonDirection.Horizontal}

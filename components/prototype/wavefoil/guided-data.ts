@@ -1,5 +1,5 @@
 /**
- * The guided sequences of Getting started. Each step lights one part of the
+ * The guided sequences of Learning. Each step lights one part of the
  * screen and explains it. The rectangles and where the explanation sits are the
  * design's own, in the 786 x 590 screen's pixels; the text is the design's too.
  */

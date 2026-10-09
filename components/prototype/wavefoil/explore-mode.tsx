@@ -10,7 +10,6 @@ import { useEffect, useRef, useState } from "react";
 import { ObcIconButton } from "@oicl/openbridge-webcomponents-react/components/icon-button/icon-button";
 import { ObcTextareaField } from "@oicl/openbridge-webcomponents-react/components/textarea-field/textarea-field";
 import { ObcKeyboardFull } from "@oicl/openbridge-webcomponents-react/components/keyboard-full/keyboard-full";
-import { ObiComMessageGoogle } from "@oicl/openbridge-webcomponents-react/icons/icon-com-message-google";
 import { ObiCloseGoogle } from "@oicl/openbridge-webcomponents-react/icons/icon-close-google";
 import { ObiPinGoogle } from "@oicl/openbridge-webcomponents-react/icons/icon-pin-google";
 import { ObiInputKeyboardGoogle } from "@oicl/openbridge-webcomponents-react/icons/icon-input-keyboard-google";
@@ -21,6 +20,7 @@ import {
   type ObcKeyboardFull as ObcKeyboardFullElement,
 } from "@oicl/openbridge-webcomponents/dist/components/keyboard-full/keyboard-full";
 import { MaskIcon } from "../pieces";
+import { noSystemKeyboard } from "./no-system-keyboard";
 import {
   panelSide,
   SELF,
@@ -45,6 +45,8 @@ type Tool = "hand" | "comment";
 let numberKeys: CSSStyleSheet | undefined;
 function tintNumberRow(keyboard: ObcKeyboardFullElement | null) {
   if (!keyboard) return;
+  // The tablet's own keyboard would open over this one.
+  noSystemKeyboard(keyboard);
   void keyboard.updateComplete.then(() => {
     const root = keyboard.shadowRoot;
     if (!root) return;
@@ -182,7 +184,7 @@ function ThreadPanel({
       aria-label={thread.title}
     >
       <header className={styles.panelHeader}>
-        <ObiComMessageGoogle className={styles.panelIcon} />
+        <MaskIcon className={styles.panelIcon} name="wf-explore-notification" />
         <span className={styles.panelTitle}>{thread.subject ?? thread.title}</span>
         <ObcIconButton
           className={styles.panelClose}
@@ -211,6 +213,7 @@ function ThreadPanel({
         }}
       >
         <ObcTextareaField
+          ref={noSystemKeyboard}
           type={TextareaFieldType.Message}
           hasLeadingIcon
           showToolbar
@@ -331,7 +334,9 @@ export function ExploreMode({
       {
         id,
         page,
-        title: `${hit.dataset.comment} thread`,
+        // Named by the component it is about.
+        title: hit.dataset.comment ?? "Thread",
+        subject: hit.dataset.comment,
         authors: [SELF],
         // The pin's tail points at the click, so the pin stands above it, centred (the tail hangs 6px below the pin).
         indicator: {

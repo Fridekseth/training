@@ -59,7 +59,7 @@ export function WavefoilApp({
   const [exploreOn, setExploreOn] = useState<ThreadId | null>(null);
   /** How the learner did on the last test, kept for the results page. */
   const [outcomes, setOutcomes] = useState<Record<string, TestResult[]>>({});
-  /** The chapter whose results Getting started opens on, when it was just left by finishing its test. */
+  /** The chapter whose results Learning opens on, when it was just left by finishing its test. */
   const [resultsFor, setResultsFor] = useState<string | null>(null);
   /** The sea a guided sequence shows decision support in, in the place of the one picked outside the screen. */
   const [shownSea, setShownSea] = useState<Conditions | null>(null);
@@ -242,7 +242,7 @@ export function WavefoilApp({
               goTo("training");
             }}
             onFinish={(results) => {
-              // The test's results are what Getting started opens on.
+              // The test's results are what Learning opens on.
               if (results.length > 0) setOutcomes((now) => ({ ...now, [sequence.id]: results }));
               setResultsFor(results.length > 0 ? sequence.id : null);
               setTrainingStart("getting-started");

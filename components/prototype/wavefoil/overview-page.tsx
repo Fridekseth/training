@@ -36,6 +36,7 @@ function FoilBar({
   return (
     <ObcBarVertical
       className={styles.at}
+      data-comment={side === "port" ? "Port foil" : "Stbd foil"}
       style={{ left, top: 127 }}
       height={210}
       paddingTop={8}
@@ -86,12 +87,14 @@ export function OverviewPage({
 }) {
   return (
     <div className={`${styles.page} ${styles.pageFlat}`} data-comment="Overview">
-      <p className={styles.state}>{status(deployment, moving)}</p>
+      <p className={styles.state} data-comment="Foil status">
+        {status(deployment, moving)}
+      </p>
 
       <Column side="PORT" centre={148} labelCentre={154} />
       <FoilBar side="port" deployment={deployment} left={88} />
 
-      <div className={styles.at} style={{ left: 207, top: 63 }}>
+      <div className={styles.at} style={{ left: 207, top: 63 }} data-comment="Vessel">
         <VesselTop deployment={deployment} dusk={dusk} />
       </div>
 
