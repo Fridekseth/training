@@ -14,7 +14,7 @@ const HEIGHT = 48;
 /** The row's width is the sum of the handle and its tools. */
 export const GRIP_WIDTH = 41;
 
-const position = (corner: Corner, width: number) => ({
+export const cornerPosition = (corner: Corner, width: number) => ({
   left: corner.endsWith("left") ? 0 : SCREEN.width - width,
   top: corner.startsWith("top") ? 0 : SCREEN.height - HEIGHT,
 });
@@ -64,13 +64,13 @@ export function CornerTools({
   const [dragAt, setDragAt] = useState<{ left: number; top: number } | null>(null);
   const grab = useRef<{ x: number; y: number; left: number; top: number; scale: number } | null>(null);
 
-  const at = dragAt ?? position(corner, width);
+  const at = dragAt ?? cornerPosition(corner, width);
   const shown = dragAt ? nearest(dragAt.left, dragAt.top, width) : corner;
 
   const start = (event: React.PointerEvent<HTMLButtonElement>) => {
     const frame = layer.current?.getBoundingClientRect();
     if (!frame) return;
-    const from = position(corner, width);
+    const from = cornerPosition(corner, width);
     grab.current = {
       x: event.clientX,
       y: event.clientY,

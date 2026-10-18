@@ -351,3 +351,54 @@
   left: 48px;
   width: 696px;
 }
+
+/* ---- the menu from the tab ---- */
+
+/* A press outside the menu closes it, and goes no further. */
+.menuScrim {
+  position: absolute;
+  z-index: 4;
+  inset: 0;
+  pointer-events: auto;
+}
+
+.menu {
+  position: absolute;
+  z-index: 7;
+  display: flex;
+  box-sizing: border-box;
+  width: 270px;
+  flex-direction: column;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 6px;
+  background: var(--container-background-color, #f7f7f7);
+  box-shadow: var(--shadow-floating-x, 0px) var(--shadow-floating-y, 4px)
+    var(--shadow-floating-blur, 16px) var(--shadow-floating-color, rgba(0, 0, 0, 0.32));
+  pointer-events: auto;
+}
+
+/* It opens away from the tab, on the side the tab is on, 8px clear of it. */
+.menuRight {
+  right: 8px;
+}
+
+.menuLeft {
+  left: 8px;
+}
+
+.menuBottom {
+  bottom: 56px;
+}
+
+.menuTop {
+  top: 56px;
+}
+
+.menuExit {
+  --raised-enabled-background-color: var(--teal-500);
+  --raised-enabled-border-color: var(--teal-600);
+  --raised-hover-background-color: var(--teal-600);
+  --raised-hover-border-color: var(--teal-600);
+  --on-raised-active-color: var(--teal-050);
+}

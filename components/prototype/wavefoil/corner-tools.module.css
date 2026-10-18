@@ -11,7 +11,7 @@
     var(--shadow-floating-blur, 16px) var(--shadow-floating-color, rgba(0, 0, 0, 0.32));
   pointer-events: auto;
   /* Letting go slides the row into its corner. */
-  transition: left 0.18s ease-out, top 0.18s ease-out;
+  transition: left 0.18s ease-out, top 0.18s ease-out, width 0.25s ease-out;
 }
 
 .toolsDragging {

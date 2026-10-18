@@ -1,0 +1,172 @@
+/*
+  The tab that stands for a training mode in the corner of the screen, and the
+  box that announces the mode and settles into that tab. Sizes are the sketch's
+  own, at the 786 x 590 screen.
+*/
+
+.tabButton {
+  display: flex;
+  min-width: 0;
+  height: 48px;
+  flex: 1;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  font-size: 16px;
+  line-height: 24px;
+  text-align: left;
+  cursor: pointer;
+  transition: padding 0.25s ease-out;
+}
+
+.tabButton:hover {
+  background: color-mix(in srgb, var(--teal-400) 60%, transparent);
+}
+
+/* The tab is darker while its menu is open. */
+.tabButton[aria-expanded="true"] {
+  background: var(--teal-400);
+}
+
+/* Folded, the icon stands in the middle of what is left of the tab, and the words fade as the tab narrows. */
+.tabCompact {
+  padding-right: 10px;
+  padding-left: 10px;
+}
+
+.tabCompact .tabLabel {
+  opacity: 0;
+}
+
+.tabLabel {
+  min-width: 0;
+  transition: opacity 0.2s;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tabLabel strong {
+  font-weight: 600;
+}
+
+/* ---- the announcement ---- */
+
+.intro {
+  --glide: cubic-bezier(0.4, 0, 0.2, 1);
+  position: absolute;
+  z-index: 7;
+  overflow: hidden;
+  background: var(--teal-300);
+  color: #fff;
+  box-shadow: var(--shadow-floating-x, 0px) var(--shadow-floating-y, 4px)
+    var(--shadow-floating-blur, 16px) var(--shadow-floating-color, rgba(0, 0, 0, 0.32));
+  pointer-events: none;
+  transition: left 0.7s var(--glide), top 0.7s var(--glide), width 0.7s var(--glide),
+    height 0.7s var(--glide), border-radius 0.7s var(--glide);
+  animation: intro-in 0.4s var(--glide) both;
+}
+
+@keyframes intro-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.introIcon {
+  position: absolute;
+  transition: left 0.7s var(--glide), top 0.7s var(--glide), width 0.7s var(--glide), height 0.7s var(--glide);
+}
+
+.introText {
+  position: absolute;
+  left: 86px;
+  top: 22px;
+  white-space: nowrap;
+  transition: opacity 0.3s;
+}
+
+.introTitle {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 28px;
+}
+
+.introSubtitle {
+  margin: 0;
+  font-size: 13px;
+  line-height: 18px;
+}
+
+/* What the box reads when it has become the tab. */
+.introDocked {
+  position: absolute;
+  top: 12px;
+  font-size: 16px;
+  line-height: 24px;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.3s 0.35s;
+}
+
+.introDocked strong {
+  font-weight: 600;
+}
+
+/* The handle and its line, which the tab has and the announcement does not. */
+.introGrip {
+  position: absolute;
+  top: 0;
+  display: flex;
+  width: 41px;
+  height: 48px;
+  align-items: center;
+  justify-content: center;
+  color: var(--teal-050);
+  opacity: 0;
+  transition: opacity 0.3s 0.4s;
+}
+
+.introGrip::after {
+  position: absolute;
+  top: 16px;
+  width: 1px;
+  height: 16px;
+  background: color-mix(in srgb, var(--teal-050) 60%, transparent);
+  content: "";
+}
+
+.introGripLeft::after {
+  left: 0;
+}
+
+.introGripRight::after {
+  right: 0;
+}
+
+.settled .introText {
+  opacity: 0;
+}
+
+.settled .introDocked,
+.settled .introGrip {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro,
+  .introIcon {
+    transition: none;
+    animation: none;
+  }
+}

@@ -31,7 +31,7 @@ import styles from "./guided.module.css";
  * with a toolbar that fits it.
  */
 const sheets = new Map<string, CSSStyleSheet>();
-function adopt(element: HTMLElement | null, css: string) {
+export function adopt(element: HTMLElement | null, css: string) {
   const host = element as (HTMLElement & { updateComplete?: Promise<unknown> }) | null;
   if (!host?.updateComplete) return;
   void host.updateComplete.then(() => {

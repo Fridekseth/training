@@ -4,6 +4,7 @@
  * design's own, in the 786 x 590 screen's pixels; the text is the design's too.
  */
 
+import type { Corner } from "./corner-tools";
 import type { Conditions } from "./conditions";
 import type { AppPage } from "./explore-data";
 
@@ -77,6 +78,8 @@ export type GuidedSequence = {
   deployment: number;
   /** The sea the decision support page reads while the steps run. */
   conditions?: Conditions;
+  /** The corner the training tab starts in; the top left unless the steps are about what is under it. */
+  tab?: Corner;
   /** Whether the menu is shown folded to its icons on the first step; some chapters do not point at it. */
   rail?: boolean;
   steps: GuidedStep[];
@@ -495,6 +498,8 @@ export const APPLICATION_PATTERNS: GuidedSequence = {
   deployment: 0,
   // It is about the bar and the controls that every page shares, not about a page in the menu.
   rail: false,
+  // The top left, where the tab usually is, is the menu button and the page name that two of the steps are about.
+  tab: "bottom-left",
   steps: [
     {
       label: "Menu button",
@@ -533,9 +538,9 @@ export const APPLICATION_PATTERNS: GuidedSequence = {
     },
     {
       label: "Greyed out controls",
-      text: "A control that cannot be used in the current state is greyed out. With the foils in, only deploy is available.",
-      hole: { left: 276, top: 464, width: 464, height: 107 },
-      tip: { left: 300, bottom: 142, width: 379 },
+      text: "A control that cannot be used in the current state is greyed out. With the foils in, retract and stop are greyed out, and only deploy is available.",
+      hole: { left: 509, top: 464, width: 231, height: 107 },
+      tip: { left: 491, bottom: 142, width: 262 },
       arrow: "bottom",
     },
     { label: "Test", text: "", hole: null, tip: { left: 0, width: 0 }, arrow: null },

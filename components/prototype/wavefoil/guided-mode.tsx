@@ -7,7 +7,7 @@
  * from the corner row, and the sequence can be left from there at any time.
  */
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { ObcButton } from "@oicl/openbridge-webcomponents-react/components/button/button";
 import { ObcIconButton } from "@oicl/openbridge-webcomponents-react/components/icon-button/icon-button";
 import { ObcNavigationItem } from "@oicl/openbridge-webcomponents-react/components/navigation-item/navigation-item";
@@ -32,7 +32,11 @@ import {
 } from "@oicl/openbridge-webcomponents/dist/components/sequence-step/sequence-step";
 import { MaskIcon } from "../pieces";
 import { WavefoilMenu } from "./app-menu";
-import { CornerTools, SCREEN, ToolButton, type Corner } from "./corner-tools";
+import { SCREEN, type Corner } from "./corner-tools";
+import { ModeIntro, ModeTab } from "./training-tab";
+import { ScreenPreview } from "./screen-preview";
+import { ScenarioChrome, TestScreenIntro, TestScreenQuestion } from "./test-screen";
+import { CHAPTERS } from "./training-data";
 import type { Conditions } from "./conditions";
 import type { GuidedSequence, GuidedStep, TestQuestion, TestResult } from "./guided-data";
 import { TestIntro, TestModal } from "./test-modal";
@@ -43,13 +47,8 @@ import styles from "./guided.module.css";
 const noop = () => {};
 const NO_QUESTIONS: TestQuestion[] = [];
 
-/** The frame draws itself first, and a beat after it closes the toast says the sequence is starting. */
+/** The frame draws itself first, and a beat after it closes the box that announces the mode appears. */
 const FRAME_MS = 1500;
-/** How long the toast stays before the first step. */
-const STARTING_MS = 2600;
-
-/** The row in the corner: the handle and the one button that opens the step menu. */
-const ROW_WIDTH = 85;
 
 /** The arrow's own size, which the pointer is centred on the part it explains by. */
 const ARROW = { long: 20, short: 12 };
@@ -179,6 +178,7 @@ function Tip({
   step,
   index,
   last,
+  nextLabel = "Next",
   onPrevious,
   onNext,
   onFinish,
@@ -186,6 +186,8 @@ function Tip({
   step: GuidedStep;
   index: number;
   last: boolean;
+  /** What the button that goes on says, when it leads to the test and not to another step. */
+  nextLabel?: string;
   onPrevious: () => void;
   onNext: () => void;
   onFinish: () => void;
@@ -248,7 +250,7 @@ function Tip({
             showTrailingIcon={!last}
             onClick={last ? onFinish : onNext}
           >
-            {last ? "Finish" : "Next"}
+            {last ? "Finish" : nextLabel}
             {last ? null : <ObiChevronRightGoogle slot="trailing-icon" />}
           </ObcButton>
         </div>
@@ -373,6 +375,8 @@ export function GuidedMode({
   sequence,
   deployment,
   moving,
+  palette,
+  conditions,
   onFoils,
   onConditions,
   onExit,
@@ -382,6 +386,10 @@ export function GuidedMode({
   /** How far out the foils are, which a test scenario watches. */
   deployment: number;
   moving: "deploy" | "retract" | null;
+  /** The palette the screen is in, for the small pictures of it. */
+  palette: string;
+  /** The sea the decision support page reads outside a sequence, for the small pictures. */
+  conditions: Conditions;
   /** Puts the foils at a position, or with null stops them where they are; with a move, they set off at once. */
   onFoils: (deployment: number | null, move?: "deploy") => void;
   /** Sets the sea the decision support page reads while the sequence runs; null gives it back. */
@@ -391,11 +399,16 @@ export function GuidedMode({
   /** Leaves it having been through every step, with how the test went. */
   onFinish: (results: TestResult[]) => void;
 }) {
-  /** The frame is drawn, then the toast shows, then the steps begin. */
-  const [phase, setPhase] = useState<"frame" | "toast" | "steps">("frame");
+  /** The frame is drawn, then the box announces the mode and settles into its tab, then the steps begin. */
+  const [phase, setPhase] = useState<"frame" | "intro" | "steps">("frame");
   const started = phase === "steps";
   const [step, setStep] = useState(0);
-  const [corner, setCorner] = useState<Corner>("bottom-right");
+  /**
+   * The test has two looks: its questions on a page of their own, with the scenario opened from a small picture,
+   * and the first one, a modal over the screen. The page is the default; ?test=classic gives the modal.
+   */
+  const [onPage] = useState(() => new URLSearchParams(window.location.search).get("test") !== "classic");
+  const [corner, setCorner] = useState<Corner>(sequence.tab ?? "top-left");
   const [menuOpen, setMenuOpen] = useState(false);
   const layer = useRef<HTMLDivElement>(null);
 
@@ -415,7 +428,7 @@ export function GuidedMode({
   const scripted = useRef(false);
   const ending = useRef<number | undefined>(undefined);
   /** Where the task toast stands, which the learner can move off whatever it covers. */
-  const [toastAt, setToastAt] = useState({ left: 162, top: 8 });
+  const [toastAt, setToastAt] = useState({ left: 153, top: onPage ? 8 : 56 });
 
   const openScenario = () => {
     const question = questions[testIndex];
@@ -436,6 +449,13 @@ export function GuidedMode({
     setScenario(null);
   };
   useEffect(() => () => window.clearTimeout(ending.current), []);
+
+  /** Leaves a scenario that is running without it counting, for the question's page or another question. */
+  const leaveScenario = () => {
+    if (scenario === null) return;
+    onFoils(null);
+    endScenario(scenario, false);
+  };
 
   // The first question finds the foils in.
   const entered = useRef(false);
@@ -539,16 +559,19 @@ export function GuidedMode({
     );
 
   useEffect(() => {
-    const toast = window.setTimeout(() => setPhase((now) => (now === "frame" ? "toast" : now)), FRAME_MS);
-    const steps = window.setTimeout(() => setPhase("steps"), FRAME_MS + STARTING_MS);
-    return () => {
-      window.clearTimeout(toast);
-      window.clearTimeout(steps);
-    };
+    const intro = window.setTimeout(() => setPhase((now) => (now === "frame" ? "intro" : now)), FRAME_MS);
+    return () => window.clearTimeout(intro);
   }, []);
+  const settled = useCallback(() => setPhase("steps"), []);
+
+  /** The chapter's place in the list, which the announcement names. */
+  const chapter = CHAPTERS.findIndex((item) => item.id === sequence.id) + 1;
+  const name = sequence.title.charAt(0).toLowerCase() + sequence.title.slice(1);
 
   const current = sequence.steps[step];
   const running = scenario !== null;
+  /** The tab folds to its icon while the questions are up, and keeps its words on the page that introduces the test. */
+  const folded = onPage && testing && testBegun;
   const hole = started && !testing ? current.hole : null;
   // With nothing to leave clear the wash closes over the middle, and opens from there to the first step.
   const frame = hole ?? { left: SCREEN.width / 2, top: SCREEN.height / 2, width: 0, height: 0 };
@@ -605,17 +628,62 @@ export function GuidedMode({
             at={toastAt}
             onMove={setToastAt}
             layer={layer}
-            onCancel={() => {
-              onFoils(null);
-              endScenario(scenario, false);
-            }}
+            onCancel={leaveScenario}
           />
+          {onPage ? (
+            <ScenarioChrome
+              count={questions.length}
+              index={testIndex}
+              layer={layer}
+              tabCorner={corner}
+              onGo={(at) => {
+                leaveScenario();
+                setTestIndex(at);
+              }}
+              onFinish={() => {
+                leaveScenario();
+                finishTest();
+              }}
+              onLeave={leaveScenario}
+            />
+          ) : null}
         </>
       ) : testing && !testBegun ? (
-        <TestIntro
-          questions={questions.length}
-          kinds={new Set(questions.map((question) => question.kind))}
-          onStart={() => setTestBegun(true)}
+        onPage ? (
+          <TestScreenIntro
+            questions={questions.length}
+            kinds={new Set(questions.map((question) => question.kind))}
+            raised={corner.startsWith("bottom")}
+            onBack={() => setStep((value) => Math.max(0, value - 1))}
+            onStart={() => setTestBegun(true)}
+          />
+        ) : (
+          <TestIntro
+            questions={questions.length}
+            kinds={new Set(questions.map((question) => question.kind))}
+            onStart={() => setTestBegun(true)}
+          />
+        )
+      ) : testing && onPage ? (
+        <TestScreenQuestion
+          questions={questions}
+          index={testIndex}
+          passed={passed}
+          answers={answers}
+          preview={(question) => (
+            <ScreenPreview
+              page={sequence.page}
+              palette={palette}
+              deployment={question.kind === "ask" ? 0 : (question.start ?? 0)}
+              conditions={question.conditions ?? sequence.conditions ?? conditions}
+              scale={0.322}
+            />
+          )}
+          onOpenScenario={openScenario}
+          onAnswer={answer}
+          onGo={setTestIndex}
+          onBack={() => setTestBegun(false)}
+          onFinish={finishTest}
         />
       ) : testing ? (
         <TestModal
@@ -633,30 +701,39 @@ export function GuidedMode({
           step={current}
           index={step}
           last={step === sequence.steps.length - 1}
+          nextLabel={onPage && questions.length > 0 && step === sequence.steps.length - 2 ? "To test" : "Next"}
           onPrevious={() => setStep((value) => Math.max(0, value - 1))}
           onNext={() => setStep((value) => Math.min(sequence.steps.length - 1, value + 1))}
           onFinish={() => onFinish([])}
         />
-      ) : phase === "toast" ? (
-        <Toast icon={sequence.icon} title={sequence.title} subtitle="Starting..." onCancel={onExit} />
       ) : null}
 
-      <CornerTools
-        corner={corner}
-        onCorner={setCorner}
-        width={ROW_WIDTH}
-        label="Training"
-        layer={layer}
-      >
-        <ToolButton
-          label="Training steps"
+      {phase === "intro" ? (
+        <ModeIntro
+          corner={corner}
           icon="wf-menu-training"
-          on={menuOpen}
-          width={ROW_WIDTH - 41}
-          // A press opens the menu and a press again closes it. It is not tied to hovering: a finger has no hover.
-          onClick={() => setMenuOpen((open) => !open)}
+          title="Learning mode started"
+          subtitle={chapter > 0 ? `Chapter ${chapter}: ${sequence.title}` : sequence.title}
+          label="Learning"
+          rest={name}
+          onSettled={settled}
         />
-      </CornerTools>
+      ) : null}
+
+      {started ? (
+        <ModeTab
+          corner={corner}
+          onCorner={setCorner}
+          layer={layer}
+          icon="wf-menu-training"
+          label="Learning"
+          rest={name}
+          open={menuOpen}
+          compact={folded}
+          // A press opens the menu and a press again closes it. It is not tied to hovering: a finger has no hover.
+          onToggle={() => setMenuOpen((open) => !open)}
+        />
+      ) : null}
 
       {/* A press anywhere else closes the menu again, and goes no further. */}
       {menuOpen ? <div className={styles.menuScrim} onClick={() => setMenuOpen(false)} aria-hidden="true" /> : null}
@@ -670,6 +747,8 @@ export function GuidedMode({
             setPhase("steps");
             setStep(index);
             setMenuOpen(false);
+            // The page that introduces the test is where it begins, however it is reached.
+            if (onPage && index !== sequence.steps.length - 1) setTestBegun(false);
           }}
           onExit={onExit}
         />

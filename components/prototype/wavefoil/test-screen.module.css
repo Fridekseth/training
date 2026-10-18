@@ -1,0 +1,247 @@
+/*
+  The test, drawn over the whole screen. Sizes are the design's own, measured
+  off the Figma file at the 786 x 590 screen.
+*/
+
+/* The library's blues are teal here, as in the step menu: step lines, finished steps and Next. */
+.theme {
+  --base-blue-200: var(--teal-400);
+  --element-neutral-enhanced-color: var(--teal-400);
+  --selected-enabled-background-color: var(--teal-600);
+  --selected-enabled-border-color: var(--teal-600);
+  --selected-hover-background-color: color-mix(in srgb, var(--teal-600) 85%, black);
+  --selected-hover-border-color: color-mix(in srgb, var(--teal-600) 85%, black);
+  --selected-pressed-background-color: color-mix(in srgb, var(--teal-600) 70%, black);
+  --selected-pressed-border-color: color-mix(in srgb, var(--teal-600) 70%, black);
+  --selected-activated-background-color: var(--teal-600);
+  --selected-activated-border-color: var(--teal-600);
+  --on-selected-active-color: var(--teal-050);
+}
+
+/* A page of its own, which takes the place of the ship screen while the learner reads. */
+.screen {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--container-global-color, #fcfcfc);
+  color: var(--element-active-color, #1f1f1f);
+  pointer-events: auto;
+}
+
+/* ---- before the first question ---- */
+
+.introTitle {
+  position: absolute;
+  top: 221px;
+  left: 168px;
+  width: 469px;
+  margin: 0;
+  padding-bottom: 2px;
+  font-size: 34px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  line-height: 32px;
+  text-align: center;
+}
+
+.introText {
+  position: absolute;
+  top: 273px;
+  left: 175px;
+  width: 455px;
+  margin: 0;
+  color: var(--element-neutral-color, #525252);
+  font-size: 16px;
+  line-height: 24px;
+  text-align: center;
+}
+
+/* ---- a question ---- */
+
+.column {
+  position: absolute;
+  top: 115px;
+  left: 107px;
+  display: flex;
+  width: 572px;
+  flex-direction: column;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+}
+
+.indicator {
+  display: flex;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+.title {
+  margin: 0;
+  padding: 0 4px 2px 8px;
+  font-size: 22px;
+  letter-spacing: -0.5px;
+  line-height: 24px;
+}
+
+.text {
+  margin: 8px 0 0 45px;
+  width: 455px;
+  color: var(--element-neutral-color, #525252);
+  font-size: 16px;
+  line-height: 24px;
+}
+
+/* The scenario in small, to be opened. */
+.previewWrap {
+  position: relative;
+  width: 261px;
+  height: 195.75px;
+  flex-shrink: 0;
+  align-self: center;
+  margin-top: 40px;
+}
+
+.preview {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border: 4px solid var(--teal-300);
+  border-radius: 2px;
+  background: #e0e0e0;
+}
+
+/* A scenario that has been carried out is left as a picture. */
+.previewDone .preview {
+  opacity: 0.6;
+}
+
+.expand {
+  --raised-enabled-background-color: var(--teal-500);
+  --raised-enabled-border-color: var(--teal-600);
+  --raised-hover-background-color: var(--teal-600);
+  --raised-hover-border-color: var(--teal-600);
+  --on-raised-active-color: var(--teal-050);
+  position: absolute;
+  top: -3px;
+  right: 0;
+}
+
+.passed {
+  position: absolute;
+  top: 5px;
+  right: 8px;
+  display: flex;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background: var(--container-global-color, #fcfcfc);
+  color: var(--teal-400);
+}
+
+.choices {
+  display: flex;
+  margin: 24px 0 0 45px;
+  flex-direction: column;
+  font-size: 14px;
+}
+
+.choice {
+  cursor: pointer;
+}
+
+.choice * {
+  font-size: inherit;
+}
+
+/* The chosen answer is set in bold. */
+.choiceOn label {
+  font-weight: 600;
+}
+
+/* ---- the toolbar ---- */
+
+.bar {
+  position: absolute;
+  z-index: 3;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: auto;
+}
+
+/* With the tab along the bottom, the bar stands above it. */
+.barRaised {
+  bottom: 63px;
+}
+
+/* In a scenario the bar is moved by a handle, and keeps its place. */
+.barDrag {
+  --toolbar-lead: 58px;
+  position: absolute;
+  z-index: 3;
+  pointer-events: auto;
+  /* A box-shadow, not a filter: a filter on something that moves leaves a smeared trail behind it on a touch screen. */
+  border-radius: 100px;
+  box-shadow: var(--shadow-floating-x, 0px) var(--shadow-floating-y, 4px)
+    var(--shadow-floating-blur, 16px) var(--shadow-floating-color, rgba(0, 0, 0, 0.32));
+}
+
+.grip {
+  position: absolute;
+  top: 0;
+  left: 4px;
+  display: flex;
+  width: 40px;
+  height: 48px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  color: var(--element-neutral-color, #535353);
+  cursor: grab;
+  touch-action: none;
+}
+
+.grip:active {
+  cursor: grabbing;
+}
+
+.gripLine {
+  position: absolute;
+  top: 12px;
+  left: 50px;
+  width: 1px;
+  height: 24px;
+  background: var(--border-divider-color, #c4c4c4);
+}
+
+/* The way back from the full screen to the question, in the corner the tab is not in. */
+.shrink {
+  --raised-enabled-background-color: var(--teal-500);
+  --raised-enabled-border-color: var(--teal-600);
+  --raised-hover-background-color: var(--teal-600);
+  --raised-hover-border-color: var(--teal-600);
+  --on-raised-active-color: var(--teal-050);
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  right: 0;
+  pointer-events: auto;
+}
+
+.shrinkLeft {
+  right: auto;
+  left: 0;
+}

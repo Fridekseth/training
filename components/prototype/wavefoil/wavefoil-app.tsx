@@ -234,6 +234,8 @@ export function WavefoilApp({
             sequence={sequence}
             deployment={deployment}
             moving={moving}
+            palette={palette}
+            conditions={conditions}
             onFoils={placeFoils}
             onConditions={setShownSea}
             onExit={() => {

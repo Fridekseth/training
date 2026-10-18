@@ -6,13 +6,16 @@
  * here is drawn over the ship screen, which stays as it is underneath.
  */
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { ObcButton } from "@oicl/openbridge-webcomponents-react/components/button/button";
+import { ObcNavigationItem } from "@oicl/openbridge-webcomponents-react/components/navigation-item/navigation-item";
 import { ObcIconButton } from "@oicl/openbridge-webcomponents-react/components/icon-button/icon-button";
 import { ObcTextareaField } from "@oicl/openbridge-webcomponents-react/components/textarea-field/textarea-field";
 import { ObcKeyboardFull } from "@oicl/openbridge-webcomponents-react/components/keyboard-full/keyboard-full";
 import { ObiCloseGoogle } from "@oicl/openbridge-webcomponents-react/icons/icon-close-google";
 import { ObiPinGoogle } from "@oicl/openbridge-webcomponents-react/icons/icon-pin-google";
 import { ObiInputKeyboardGoogle } from "@oicl/openbridge-webcomponents-react/icons/icon-input-keyboard-google";
+import { ButtonVariant } from "@oicl/openbridge-webcomponents/dist/components/button/button";
 import { IconButtonVariant } from "@oicl/openbridge-webcomponents/dist/components/icon-button/icon-button";
 import { TextareaFieldType } from "@oicl/openbridge-webcomponents/dist/components/textarea-field/textarea-field";
 import {
@@ -30,7 +33,8 @@ import {
   type Thread,
   type ThreadId,
 } from "./explore-data";
-import { CornerTools, SCREEN, ToolButton, type Corner } from "./corner-tools";
+import { SCREEN, type Corner } from "./corner-tools";
+import { ModeIntro, ModeTab } from "./training-tab";
 import { TrainingFrame } from "./training-frame";
 import tealStyles from "./teal-scope.module.css";
 import styles from "./explore.module.css";
@@ -237,6 +241,40 @@ const mirror = (corner: Corner): Corner =>
     ? (corner.replace("left", "right") as Corner)
     : (corner.replace("right", "left") as Corner);
 
+/** What explore mode offers, in a menu from its tab: how a press on the screen is read, and the way out. */
+function ExploreMenu({
+  corner,
+  tool,
+  onPick,
+  onExit,
+}: {
+  corner: Corner;
+  tool: Tool;
+  onPick: (tool: Tool) => void;
+  onExit: () => void;
+}) {
+  return (
+    <div
+      className={`${styles.menu} ${corner.endsWith("left") ? styles.menuLeft : styles.menuRight} ${
+        corner.startsWith("top") ? styles.menuTop : styles.menuBottom
+      }`}
+      role="menu"
+      aria-label="Explore mode"
+    >
+      <ObcNavigationItem label="Look around" hasIcon checked={tool === "hand"} onClick={() => onPick("hand")}>
+        <MaskIcon slot="icon" name="wf-explore-hand" style={{ color: "var(--teal-500)" }} />
+      </ObcNavigationItem>
+      <ObcNavigationItem label="Comments" hasIcon checked={tool === "comment"} onClick={() => onPick("comment")}>
+        <MaskIcon slot="icon" name="wf-explore-notification" style={{ color: "var(--teal-500)" }} />
+      </ObcNavigationItem>
+      <ObcButton className={styles.menuExit} variant={ButtonVariant.raised} fullWidth showTrailingIcon onClick={onExit}>
+        Leave explore mode
+        <ObiCloseGoogle slot="trailing-icon" />
+      </ObcButton>
+    </div>
+  );
+}
+
 export function ExploreMode({
   threads,
   onThreads: setThreads,
@@ -258,15 +296,23 @@ export function ExploreMode({
   const [draft, setDraft] = useState("");
   const [typing, setTyping] = useState(false);
   const layer = useRef<HTMLDivElement>(null);
-  /** Where the tool row has been left, and where it is while it is being dragged. */
-  const [corner, setCorner] = useState<Corner>("bottom-right");
+  /** The corner the tab has been left in. */
+  const [corner, setCorner] = useState<Corner>("top-left");
+  /** The frame is drawn, then the box announces the mode and settles into the tab. */
+  const [phase, setPhase] = useState<"frame" | "intro" | "ready">("frame");
+  const [menuOpen, setMenuOpen] = useState(false);
+  useEffect(() => {
+    const intro = window.setTimeout(() => setPhase((now) => (now === "frame" ? "intro" : now)), 1500);
+    return () => window.clearTimeout(intro);
+  }, []);
+  const settled = useCallback(() => setPhase("ready"), []);
 
   const thread = threads.find((item) => item.id === open) ?? null;
   const target = thread?.target;
   const side = target ? panelSide(target) : "left";
   // A comment about the top bar leaves the bar uncovered.
   const belowBar = !!target && target.top === 0 && target.width >= 780;
-  // An open comment sits on one side, so the tool row steps over to the other rather than cover it.
+  // An open comment sits on one side, so the tab steps over to the other rather than cover it.
   const shown =
     thread && corner.endsWith(side) ? mirror(corner) : corner;
 
@@ -407,24 +453,47 @@ export function ExploreMode({
         />
       ) : null}
 
-      <CornerTools
-        corner={shown}
-        onCorner={setCorner}
-        width={197}
-        label="Explore tools"
-        layer={layer}
-      >
-        <ToolButton label="Look around" icon="wf-explore-hand" on={tool === "hand"} onClick={() => pick("hand")} />
-        <ToolButton label="Comments" icon="wf-explore-notification" on={tool === "comment"} onClick={() => pick("comment")} />
-        <ToolButton
-          label="Leave explore mode"
-          icon="wf-explore-training"
-          onClick={() => {
+      {phase === "intro" ? (
+        <ModeIntro
+          corner={shown}
+          icon="wf-menu-training"
+          title="Explore mode started"
+          subtitle="Look around without affecting the system."
+          label="Explore"
+          rest="the interface"
+          onSettled={settled}
+        />
+      ) : null}
+
+      {phase === "ready" ? (
+        <ModeTab
+          corner={shown}
+          onCorner={setCorner}
+          layer={layer}
+          icon="wf-menu-training"
+          label="Explore"
+          rest="the interface"
+          open={menuOpen}
+          onToggle={() => setMenuOpen((now) => !now)}
+        />
+      ) : null}
+
+      {/* A press anywhere else closes the menu again, and goes no further. */}
+      {menuOpen ? <div className={styles.menuScrim} onClick={() => setMenuOpen(false)} aria-hidden="true" /> : null}
+      {menuOpen ? (
+        <ExploreMenu
+          corner={shown}
+          tool={tool}
+          onPick={(next) => {
+            pick(next);
+            setMenuOpen(false);
+          }}
+          onExit={() => {
             if (open) close();
             onExit();
           }}
         />
-      </CornerTools>
+      ) : null}
 
       {typing ? (
         <div className={styles.keyboardLayer}>
