@@ -3,8 +3,8 @@
 /**
  * The five pages of the Wavefoil training: Home, Overview, Learning,
  * Explore and Scenarios. Text and numbers are the design's; the pieces are the
- * isometric drawings the Orkla training already uses, placed as this design
- * places them at its smaller size.
+ * isometric drawings made for this prototype, each a sheet that is cropped to
+ * the plate or tile it sits on.
  */
 
 import type { ReactNode } from "react";
@@ -45,15 +45,8 @@ function Plate({ children, width }: { children: ReactNode; width: number }) {
 function Collage() {
   return (
     <Plate width={284}>
-      <Piece src="home-piece-20" left={-24} top={77.8} width={100.3} height={51.87} />
-      <Piece src="home-piece-17" left={55.95} top={16.4} width={81.9} height={56.16} />
-      <Piece src="home-piece-19" left={155.9} top={-5} width={70.63} height={73.09} />
-      <Piece src="home-piece-30" left={14.55} top={139.9} width={70.64} height={73.09} />
-      <Piece src="home-piece-18" left={-12.58} top={-3.57} width={49.59} height={64.95} />
-      <Piece src="home-piece-13" left={182.3} top={72.8} width={46.01} height={63.53} />
-      <Piece src="home-piece-27" left={96.64} top={89.23} width={63.1} height={65.14} />
-      <Piece src="home-piece-26" left={234.4} top={20.7} width={70.9} height={50.29} />
-      <Piece src="home-piece-20" left={240.1} top={109.2} width={100.3} height={51.87} />
+      {/* The drawing is a larger sheet, cropped to the plate the way a cover fit does it. */}
+      <Piece src="wf-home" left={0} top={-1.55} width={284} height={151.6} />
     </Plate>
   );
 }
@@ -163,7 +156,7 @@ export function GettingStartedPage({
           leave the course at any time, and your progress will be saved.
         </Intro>
         <Plate width={283.75}>
-          <Piece src="getting-started-book" left={56.9} top={16.26} width={169.71} height={116.37} />
+          <Piece src="wf-learning" left={0} top={-17.83} width={283.75} height={184.15} />
         </Plate>
       </div>
 
@@ -234,7 +227,7 @@ export function ExplorePage({
             descriptionSize={SMALL_TEXT}
             onClick={onEnter}
             illustration={
-              <Piece src="overview-group13" left={16} top={8} width={54} height={74.561} />
+              <Piece src="wf-explore" left={-9} top={10.9} width={105.2} height={68.3} />
             }
           />
         </div>
@@ -258,7 +251,7 @@ export function ScenariosPage({ onStart }: { onStart: (title: string) => void })
           of critical situations.
         </Intro>
         <Plate width={283.75}>
-          <Piece src="scenarios-alarm-clock" left={97.75} top={13} width={88.24} height={121.84} />
+          <Piece src="wf-scenarios" left={0} top={-17.83} width={283.75} height={184.15} />
         </Plate>
       </div>
 

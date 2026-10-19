@@ -99,7 +99,8 @@ export function Piece({
       src={`/prototype/illustrations/${src}.svg`}
       width={width}
       height={height}
-      style={{ position: "absolute", left, top, width, height, display: "block" }}
+      // Without a limit, the page's own rule that an image is never wider than its container would squeeze a drawing that is cropped by one.
+      style={{ position: "absolute", left, top, width, height, maxWidth: "none", display: "block" }}
     />
   );
 }

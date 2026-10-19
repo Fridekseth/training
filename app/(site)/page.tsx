@@ -16,8 +16,8 @@ export default async function HomePage() {
         <div className="overflow-hidden rounded-2xl bg-accent-soft">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/hero/training-layer.svg"
-            alt="Isometric drawings of a book, a dumbbell, an alarm clock, puzzle pieces, speech bubbles and a bar chart"
+            src="/hero/application-layers.svg"
+            alt="Isometric drawings of puzzle pieces, speech bubbles, a warning triangle, a dumbbell, a book, a bar chart and a magnifying glass"
             className="block h-[clamp(180px,30vw,340px)] w-full object-cover"
           />
         </div>
