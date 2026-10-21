@@ -51,8 +51,8 @@ export function WavefoilTopBar({
   const now = useNow();
 
   return (
-    // A plain wrapper, so explore mode can find the bar to comment on.
-    <div data-comment="Top bar" style={{ position: "relative", zIndex: 2 }}>
+    // A plain wrapper, so explore mode can find the bar to comment on. It stands above the application menu, so the menu slides out from under the bar and the bar's shadow falls on it.
+    <div data-comment="Top bar" style={{ position: "relative", zIndex: 21 }}>
       <ObcTopBar
         appTitle="Wavefoil"
         pageName={pageName}

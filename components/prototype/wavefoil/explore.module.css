@@ -6,7 +6,8 @@
 
 .layer {
   position: absolute;
-  z-index: 8;
+  /* Above the top bar, so a comment pinned on the bar stands on it. */
+  z-index: 22;
   inset: 0;
   /* Only the controls take clicks; the screen underneath stays out of reach. */
   pointer-events: none;
