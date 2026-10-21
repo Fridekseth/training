@@ -1,0 +1,106 @@
+/*
+  A scenario, drawn over the ship screen: the caution that comes up when the
+  weather turns, the steps in the menu from the tab, and the card that closes it.
+  Sizes are the design's own, measured off the Figma file at the 786 x 590 screen.
+*/
+
+/* The caution floats under the top bar, and stays while the learner moves between pages. */
+.message {
+  position: absolute;
+  z-index: 3;
+  top: 51px;
+  left: 137px;
+  width: 640px;
+  pointer-events: auto;
+  animation: message-in 0.3s ease-out both;
+}
+
+@keyframes message-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* The menu is the light teal of the design, with rounder corners than the learning menu. */
+.menu {
+  border-radius: 12px;
+  background: var(--teal-050);
+}
+
+/* A step in the menu is a card that shows what to do, with the icon of the thing it is done with. */
+.card {
+  display: flex;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 32px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px;
+  border: 1px solid var(--border-outline-color, #ddd);
+  border-radius: 12px;
+  background: var(--container-background-color, #f7f7f7);
+  box-shadow: var(--shadow-flat-x, 0px) var(--shadow-flat-y, 1px) var(--shadow-flat-blur, 2px)
+    var(--shadow-flat-color, rgba(0, 0, 0, 0.23));
+  color: var(--element-neutral-color, #535353);
+  font-size: 11.5px;
+  line-height: 16px;
+  text-align: left;
+}
+
+.card svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.cardDone {
+  color: var(--element-active-color, #1f1f1f);
+}
+
+/* ---- the end of the scenario ---- */
+
+.result {
+  position: absolute;
+  z-index: 7;
+  top: 231px;
+  left: 204px;
+  display: flex;
+  box-sizing: border-box;
+  width: 377px;
+  flex-direction: column;
+  gap: 12px;
+  padding: 22px 24px 16px;
+  border-radius: 6px;
+  background: var(--teal-300);
+  box-shadow: var(--shadow-floating-x, 0px) var(--shadow-floating-y, 4px)
+    var(--shadow-floating-blur, 16px) var(--shadow-floating-color, rgba(0, 0, 0, 0.32));
+  color: #fff;
+  pointer-events: auto;
+  animation: message-in 0.4s ease-out both;
+}
+
+.resultTitle {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 28px;
+}
+
+.resultText {
+  margin: 0;
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.resultAction {
+  --raised-enabled-background-color: var(--teal-500);
+  --raised-enabled-border-color: var(--teal-600);
+  --raised-hover-background-color: var(--teal-600);
+  --raised-hover-border-color: var(--teal-600);
+  --on-raised-active-color: var(--teal-050);
+}

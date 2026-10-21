@@ -23,18 +23,18 @@ export default async function HomePage() {
         </div>
 
         <p className="mt-10 text-xl leading-snug tracking-tight text-muted sm:text-2xl">
-          OpenBridge training layer:
+          OpenBridge for learning:
         </p>
         <h1 className="mt-1 max-w-4xl text-3xl leading-tight font-semibold tracking-tight text-balance text-foreground sm:text-[2.6rem]">
-          How might training live inside OpenBridge interfaces?
+          How can high complexity work environments be taught through the systems themselves?
         </h1>
 
         <div className="mt-8 flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
           <p className="max-w-xl text-[1.05rem] leading-8 text-muted">
-            Exploring how training in complex workplaces can move from the
-            classroom into the interface, where the work actually happens. This
-            page documents the project as it goes, with design decisions,
-            research notes and the reasoning in between.
+            Exploring how documentation, learning and training in complex
+            workplaces can move from the classroom into the interface, where the
+            work actually happens. This page documents the project as it goes,
+            with design decisions, research notes and the reasoning in between.
           </p>
 
           <div className="flex shrink-0 flex-col items-stretch gap-3">

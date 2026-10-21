@@ -7,6 +7,7 @@
 import type { Corner } from "./corner-tools";
 import type { Conditions } from "./conditions";
 import type { AppPage } from "./explore-data";
+import { CHAPTERS } from "./training-data";
 
 export type Rect = { left: number; top: number; width: number; height: number };
 
@@ -21,8 +22,17 @@ export type GuidedStep = {
   arrow: "left" | "right" | "top" | "bottom" | null;
 };
 
+/** What a question carries when it is drawn from a chapter into a test of its own. */
+type TestQuestionOrigin = {
+  /** The page the question's scenario runs on, when it is not the page of the sequence the question is asked in. */
+  page?: AppPage;
+  /** The chapter the question comes from. */
+  chapter?: string;
+};
+
 /** A question of a chapter's test: something to do on the screen, or a scenario to watch and describe. */
-export type TestQuestion =
+export type TestQuestion = TestQuestionOrigin &
+  (
   | {
       kind: "scenario";
       title: string;
@@ -63,10 +73,11 @@ export type TestQuestion =
       /** The index of the right option. */
       correct: number;
       conditions?: Conditions;
-    };
+    }
+  );
 
 /** What the learner did on a question, for the results. */
-export type TestResult = { question: string; answer: string; correct: boolean };
+export type TestResult = { question: string; answer: string; correct: boolean; chapter?: string };
 
 export type GuidedSequence = {
   id: string;
@@ -85,6 +96,10 @@ export type GuidedSequence = {
   steps: GuidedStep[];
   /** The questions of the last step, which is the chapter's test. */
   test?: TestQuestion[];
+  /** A chapter of Learn, or a test across the chapters. */
+  mode?: "learn" | "test";
+  /** What the tab says after the mode, in the place of the title. */
+  tabName?: string;
 };
 
 const DESCRIPTIONS = [
@@ -600,3 +615,71 @@ export const SEQUENCES: Record<string, GuidedSequence> = {
   [DEBRIEFING.id]: DEBRIEFING,
   [ALARMS.id]: ALARMS,
 };
+
+/** The id of the test that draws its questions from every chapter. */
+export const MIXED_TEST_ID = "mixed-test";
+
+/** How much of the mixed test a chapter gets: the further its score is from full the more, and a chapter not yet taken as much as a middling one. */
+export const weightOf = (score: number | undefined) => (score === undefined ? 50 : 100 - score + 10);
+
+/** How the learner stands in each chapter, as a share of right answers; undefined for one not yet taken. The latest mixed test counts over the chapter's own. */
+export function chapterScores(outcomes: Record<string, TestResult[]>): Record<string, number | undefined> {
+  const share = (results: TestResult[]) =>
+    Math.round((results.filter((item) => item.correct).length / results.length) * 100);
+  const mixed = outcomes[MIXED_TEST_ID] ?? [];
+  const scores: Record<string, number | undefined> = {};
+  for (const chapter of CHAPTERS) {
+    const fromMixed = mixed.filter((item) => item.chapter === chapter.id);
+    const taken = fromMixed.length > 0 ? fromMixed : outcomes[chapter.id];
+    scores[chapter.id] = taken && taken.length > 0 ? share(taken) : chapter.status !== "not-started" ? chapter.result : undefined;
+  }
+  return scores;
+}
+
+const shuffled = <T,>(items: T[]) => {
+  const out = [...items];
+  for (let at = out.length - 1; at > 0; at -= 1) {
+    const to = Math.floor(Math.random() * (at + 1));
+    [out[at], out[to]] = [out[to], out[at]];
+  }
+  return out;
+};
+
+/**
+ * A test across the chapters, which are mixed rather than taken one at a time.
+ * More of the questions come from the chapters the learner is weakest in: a
+ * chapter's weight is how far its score is from full, with a chapter not yet
+ * taken weighing as much as a middling one. No two questions in a row come from
+ * the same chapter while another has some left.
+ */
+export function buildMixedTest(scores: Record<string, number | undefined>, count = 6): GuidedSequence {
+  const pools = Object.values(SEQUENCES)
+    .map((sequence) => ({ sequence, left: shuffled(sequence.test ?? []) }))
+    .filter((pool) => pool.left.length > 0);
+  const weight = (id: string) => weightOf(scores[id]);
+
+  const questions: TestQuestion[] = [];
+  let last: string | null = null;
+  while (questions.length < count && pools.some((pool) => pool.left.length > 0)) {
+    const open = pools.filter((pool) => pool.left.length > 0);
+    const apart = open.filter((pool) => pool.sequence.id !== last);
+    const from = apart.length > 0 ? apart : open;
+    let pick = Math.random() * from.reduce((sum, pool) => sum + weight(pool.sequence.id), 0);
+    const chosen = from.find((pool) => (pick -= weight(pool.sequence.id)) < 0) ?? from[from.length - 1];
+    questions.push({ ...(chosen.left.pop() as TestQuestion), chapter: chosen.sequence.id, page: chosen.sequence.page });
+    last = chosen.sequence.id;
+  }
+
+  return {
+    id: MIXED_TEST_ID,
+    title: "Mixed test",
+    icon: "wf-nav-test",
+    page: "overview",
+    deployment: 0,
+    rail: false,
+    mode: "test",
+    tabName: "all chapters",
+    steps: [{ label: "Test", text: "", hole: null, tip: { left: 0, width: 0 }, arrow: null }],
+    test: questions,
+  };
+}

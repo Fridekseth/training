@@ -15,11 +15,22 @@ import type { Conditions } from "./conditions";
 import { DecisionSupportPage } from "./decision-support-page";
 import { ExploreMode } from "./explore-mode";
 import { GuidedMode } from "./guided-mode";
-import { OPERATING_THE_FOILS, SEQUENCES, type GuidedSequence, type TestResult } from "./guided-data";
+import { ScenarioMode } from "./scenario-mode";
+import { PLAYABLE_SCENARIOS, type ScenarioDef } from "./scenario-data";
+import {
+  buildMixedTest,
+  chapterScores,
+  MIXED_TEST_ID,
+  OPERATING_THE_FOILS,
+  SEQUENCES,
+  type GuidedSequence,
+  type TestResult,
+} from "./guided-data";
 import { THREADS, type AppPage, type Thread, type ThreadId } from "./explore-data";
 import { OverviewPage, type Moving } from "./overview-page";
 import { WavefoilTopBar } from "./top-bar";
-import type { PageId } from "../training-data";
+import type { LogEntry } from "../training-data";
+import { TRAINING_LOG, type WfPageId } from "./training-data";
 import { TrainingSection } from "./training-section";
 import styles from "./wavefoil.module.css";
 
@@ -48,11 +59,21 @@ export function WavefoilApp({
 }) {
   const [page, setPage] = useState<AppPage>("overview");
   /** The pages, or the training section the menu leads to. */
-  const [layer, setLayer] = useState<"app" | "training" | "explore" | "guided">("app");
+  const [layer, setLayer] = useState<"app" | "training" | "explore" | "collaborate" | "guided" | "scenario">("app");
   /** The guided sequence that is running, when the layer is "guided". */
   const [sequence, setSequence] = useState<GuidedSequence>(OPERATING_THE_FOILS);
+  /** The scenario that is running, when the layer is "scenario". */
+  const [scenario, setScenario] = useState<ScenarioDef | null>(null);
+  /** The tests taken in this visit, as entries for the training log. */
+  const [testLog, setTestLog] = useState<LogEntry[]>([]);
+  /** How each scenario went, as the share of its steps done right, for the Scenarios page. */
+  const [scenarioResults, setScenarioResults] = useState<Record<string, number>>({});
+  /** The cautions waiting in the top bar while a scenario runs. */
+  const [alerts, setAlerts] = useState(0);
+  /** How many times the alert button was pressed during a scenario, so the caution can come back. */
+  const [bellPresses, setBellPresses] = useState(0);
   /** Which training page to open on, so explore mode returns to where it began. */
-  const [trainingStart, setTrainingStart] = useState<PageId>("home");
+  const [trainingStart, setTrainingStart] = useState<WfPageId>("home");
   /** The comments left on the screen, shared by explore mode and the Explore page's list. */
   const [threads, setThreads] = useState<Thread[]>(THREADS);
   /** The comment explore mode opens on, when it was reached from the list. */
@@ -101,14 +122,14 @@ export function WavefoilApp({
    * foil position from before is kept here and put back when they leave, so
    * nothing carries over to the system aboard. Both are framed in teal.
    */
-  const sandbox = layer === "explore" || layer === "guided";
+  const sandbox = layer === "explore" || layer === "collaborate" || layer === "guided" || layer === "scenario";
   useEffect(() => {
     onExploring?.(sandbox);
   }, [sandbox, onExploring]);
 
   const real = useRef(0);
-  const goTo = (next: "app" | "training" | "explore" | "guided") => {
-    const entering = next === "explore" || next === "guided";
+  const goTo = (next: "app" | "training" | "explore" | "collaborate" | "guided" | "scenario") => {
+    const entering = next === "explore" || next === "collaborate" || next === "guided" || next === "scenario";
     if (entering && !sandbox) real.current = deployment;
     if (sandbox && !entering) {
       setDeployment(real.current);
@@ -129,10 +150,24 @@ export function WavefoilApp({
     goTo("guided");
   };
 
+  /** Starts the test across the chapters, with the questions drawn from where the learner is weakest. */
+  const startMixedTest = () => startGuided(buildMixedTest(chapterScores(outcomes)));
+
+  /** Plays a scenario on the overview, with the foils out. */
+  const startScenario = (next: ScenarioDef) => {
+    setScenario(next);
+    setPage("overview");
+    setDeployment(100);
+    setMoving(null);
+    setMenuOpen(false);
+    setAlerts(0);
+    goTo("scenario");
+  };
+
   const showPage = (next: AppPage) => {
     setPage(next);
-    // Explore mode is a sandbox over the pages, so moving between them stays inside it.
-    setLayer((now) => (now === "explore" ? now : "app"));
+    // Explore mode and the scenarios are sandboxes over the pages, so moving between them stays inside them.
+    setLayer((now) => (now === "explore" || now === "collaborate" || now === "scenario" ? now : "app"));
     setMenuOpen(false);
     setAdviceOpen(false);
   };
@@ -148,7 +183,7 @@ export function WavefoilApp({
   return (
     <div className={styles.screen}>
       <WavefoilTopBar
-        pageName={layer === "app" || layer === "guided" ? PAGE_NAMES[page] : "Training"}
+        pageName={layer === "app" || layer === "guided" || layer === "scenario" ? PAGE_NAMES[page] : "Training"}
         palette={palette}
         onDim={onDim}
         menuOpen={menuOpen}
@@ -161,7 +196,12 @@ export function WavefoilApp({
           setMenuOpen(false);
           setAdviceOpen((open) => !open);
         }}
-        onAlerts={() => showPage("alarms")}
+        alerts={alerts}
+        onAlerts={() => {
+          // In a scenario with a caution waiting, the alert button brings the caution up.
+          if (layer === "scenario" && alerts > 0) setBellPresses((n) => n + 1);
+          else showPage("alarms");
+        }}
       />
 
       {layer === "training" ? (
@@ -169,26 +209,34 @@ export function WavefoilApp({
           key={trainingStart}
           start={trainingStart}
           threads={threads}
-          onExplore={() => {
+          onExplore={() => goTo("explore")}
+          onCollaborate={() => {
             setExploreOn(null);
-            goTo("explore");
+            goTo("collaborate");
           }}
+          onTest={startMixedTest}
+          log={[...testLog, ...TRAINING_LOG]}
           onGuided={(id) => {
             const next = SEQUENCES[id];
             if (next) startGuided(next);
           }}
+          onScenario={(id) => {
+            const next = PLAYABLE_SCENARIOS[id];
+            if (next) startScenario(next);
+          }}
+          scenarioResults={scenarioResults}
           results={outcomes}
           openResults={resultsFor}
           onOpenThread={(id) => {
             const thread = threads.find((item) => item.id === id);
             if (thread && thread.page !== "all") setPage(thread.page);
             setExploreOn(id);
-            goTo("explore");
+            goTo("collaborate");
           }}
         />
       ) : null}
 
-      {layer === "app" || layer === "explore" || layer === "guided" ? (
+      {layer === "app" || layer === "explore" || layer === "collaborate" || layer === "guided" || layer === "scenario" ? (
         <>
           {page === "overview" ? (
             <OverviewPage
@@ -214,14 +262,16 @@ export function WavefoilApp({
         </>
       ) : null}
 
-      {layer === "explore" ? (
+      {layer === "explore" || layer === "collaborate" ? (
         <ExploreMode
+          key={layer}
+          variant={layer}
           threads={threads}
           onThreads={setThreads}
-          initialOpen={exploreOn}
+          initialOpen={layer === "collaborate" ? exploreOn : null}
           page={page}
           onExit={() => {
-            setTrainingStart("explore");
+            setTrainingStart(layer);
             goTo("training");
           }}
         />
@@ -237,21 +287,62 @@ export function WavefoilApp({
             palette={palette}
             conditions={conditions}
             onFoils={placeFoils}
+            onShowPage={setPage}
             onConditions={setShownSea}
             onExit={() => {
               setResultsFor(null);
-              setTrainingStart("getting-started");
+              setTrainingStart(sequence.id === MIXED_TEST_ID ? "test" : "getting-started");
               goTo("training");
             }}
             onFinish={(results) => {
-              // The test's results are what Learning opens on.
               if (results.length > 0) setOutcomes((now) => ({ ...now, [sequence.id]: results }));
-              setResultsFor(results.length > 0 ? sequence.id : null);
-              setTrainingStart("getting-started");
+              // The results of a chapter's test are what Learn opens on, and those of the mixed test are on the Test page.
+              const mixed = sequence.id === MIXED_TEST_ID;
+              if (mixed && results.length > 0) {
+                // A test taken now goes at the top of the log, with its score.
+                const now = new Date();
+                const two = (n: number) => String(n).padStart(2, "0");
+                setTestLog((all) => [
+                  {
+                    id: `test-${all.length + 1}`,
+                    date: `${two(now.getDate())}.${two(now.getMonth() + 1)}.${String(now.getFullYear()).slice(2)}`,
+                    kind: "Test",
+                    title: "Mixed test",
+                    result: Math.round((results.filter((item) => item.correct).length / results.length) * 100),
+                    status: "completed",
+                  },
+                  ...all,
+                ]);
+              }
+              setResultsFor(!mixed && results.length > 0 ? sequence.id : null);
+              setTrainingStart(mixed ? "test" : "getting-started");
               goTo("training");
             }}
           />
         </>
+      ) : null}
+
+      {layer === "scenario" && scenario ? (
+        <ScenarioMode
+          key={scenario.id}
+          scenario={scenario}
+          page={page}
+          deployment={deployment}
+          moving={moving}
+          bellPresses={bellPresses}
+          onConditions={setShownSea}
+          onAlerts={setAlerts}
+          onOpenPage={showPage}
+          onExit={() => {
+            setTrainingStart("scenarios");
+            goTo("training");
+          }}
+          onFinish={(result) => {
+            setScenarioResults((now) => ({ ...now, [scenario.id]: result }));
+            setTrainingStart("scenarios");
+            goTo("training");
+          }}
+        />
       ) : null}
 
       {menuOpen ? (

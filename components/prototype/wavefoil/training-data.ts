@@ -3,9 +3,16 @@
  * types are the ones the Orkla training already uses; only the content differs.
  */
 
-import type { Chapter, LogEntry, PageDef } from "../training-data";
+import type { Chapter, LogEntry, PageDef, PageId } from "../training-data";
 
-export const PAGES: PageDef[] = [
+/**
+ * The Wavefoil training has two pages the Orkla one does not, one for working
+ * with the team and one for the mixed test, so its pages have their own ids.
+ */
+export type WfPageId = PageId | "collaborate" | "test";
+export type WfPageDef = Omit<PageDef, "id"> & { id: WfPageId };
+
+export const PAGES: WfPageDef[] = [
   {
     id: "overview",
     label: "Overview",
@@ -14,22 +21,37 @@ export const PAGES: PageDef[] = [
   },
   {
     id: "getting-started",
-    label: "Learning",
+    label: "Learn",
     icon: "nav-getting-started",
     description: "Learn the basics, and get familiar with the system.",
   },
   {
     id: "explore",
     label: "Explore",
-    icon: "nav-explore",
+    icon: "wf-nav-explore",
     description: "Explore the application freely, without affecting the system.",
+  },  {
+    id: "collaborate",
+    label: "Collaborate",
+    icon: "wf-nav-collaborate",
+    description: "Share tips and experiences with your team, and read theirs.",
   },
   {
     id: "scenarios",
-    label: "Scenarios",
-    icon: "nav-scenarios",
+    label: "Practice",
+    icon: "wf-menu-training",
     description: "Practice critical situations in simulated scenarios.",
   },
+  {
+    id: "test",
+    label: "Test",
+    icon: "wf-nav-test",
+    description: "Test yourself on all the chapters, with the questions mixed.",
+  },
+
+
+
+
 ];
 
 export const CHAPTERS: Chapter[] = [
@@ -46,8 +68,11 @@ export const SCENARIOS: Chapter[] = [
 ];
 
 export const TRAINING_LOG: LogEntry[] = [
-  { id: "l1", date: "18.08.26", kind: "Learning", title: "Onboarding refresh", result: 92, status: "in-progress" },
-  { id: "l2", date: "15.04.26", kind: "Scenario", title: "Alarm", result: 80, status: "completed" },
-  { id: "l3", date: "02.01.26", kind: "Scenario", title: "Critical alarm", result: 98, status: "completed" },
-  { id: "l4", date: "23.11.25", kind: "Learning", title: "Onboarding", result: 96, status: "completed" },
+  { id: "t3", date: "29.09.26", kind: "Test", title: "Mixed test", result: 74, status: "completed" },
+  { id: "l1", date: "18.08.26", kind: "Learn", title: "Onboarding refresh", result: 92, status: "in-progress" },
+  { id: "t2", date: "11.06.26", kind: "Test", title: "Mixed test", result: 68, status: "completed" },
+  { id: "l2", date: "15.04.26", kind: "Practice", title: "Alarm", result: 80, status: "completed" },
+  { id: "t1", date: "07.02.26", kind: "Test", title: "Mixed test", result: 61, status: "completed" },
+  { id: "l3", date: "02.01.26", kind: "Practice", title: "Critical alarm", result: 98, status: "completed" },
+  { id: "l4", date: "23.11.25", kind: "Learn", title: "Onboarding", result: 96, status: "completed" },
 ];

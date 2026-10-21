@@ -309,10 +309,11 @@
   z-index: 6;
   display: flex;
   box-sizing: border-box;
-  width: 270px;
+  width: 286px;
   flex-direction: column;
   gap: 0;
-  padding: 4px;
+  /* The sides are as far from the content as the top and bottom are, where the buttons' own space adds to the 4px. */
+  padding: 4px 12px;
   border-radius: 6px;
   background: var(--container-background-color, #f7f7f7);
   box-shadow: var(--shadow-floating-x, 0px) var(--shadow-floating-y, 4px)

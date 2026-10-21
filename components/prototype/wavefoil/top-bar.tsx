@@ -9,6 +9,7 @@ import { ObiNotificationAdvice } from "@oicl/openbridge-webcomponents-react/icon
 import { ObiNotificationAdviceActive } from "@oicl/openbridge-webcomponents-react/icons/icon-notification-advice-active";
 import { NotificationButtonStyle } from "@oicl/openbridge-webcomponents/dist/components/notification-button/notification-button";
 import { ObcAlertButtonType } from "@oicl/openbridge-webcomponents/dist/components/alert-button/alert-button";
+import { AlertType } from "@oicl/openbridge-webcomponents/dist/types";
 
 /** The time, ticking each second. The clock component shows the date it is given. */
 function useNow() {
@@ -33,6 +34,7 @@ export function WavefoilTopBar({
   adviceOpen = false,
   onAdvice,
   onAlerts,
+  alerts = 0,
 }: {
   pageName: string;
   palette: string;
@@ -43,6 +45,8 @@ export function WavefoilTopBar({
   adviceOpen?: boolean;
   onAdvice?: () => void;
   onAlerts?: () => void;
+  /** How many cautions are waiting; with none the button is the plain bell. */
+  alerts?: number;
 }) {
   const now = useNow();
 
@@ -61,7 +65,15 @@ export function WavefoilTopBar({
       >
         {/* The alarms and the advice are reachable from every screen, the training section included. */}
         <span slot="alerts" style={{ display: "flex", alignItems: "center" }}>
-          <ObcAlertButton data-comment="Alert button" type={ObcAlertButtonType.Flat} onClick={onAlerts} />
+          <ObcAlertButton
+            data-comment="Alert button"
+            // A waiting caution turns the bell yellow, with the count beside it.
+            type={alerts > 0 ? ObcAlertButtonType.Normal : ObcAlertButtonType.Flat}
+            nAlerts={alerts}
+            alertType={alerts > 0 ? AlertType.Caution : undefined}
+            counter={alerts > 0}
+            onClick={onAlerts}
+          />
           <ObcNotificationButton
             data-comment="Advice button"
             isActive={adviceOpen}

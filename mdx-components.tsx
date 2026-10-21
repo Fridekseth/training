@@ -2,6 +2,7 @@ import type { MDXComponents } from "mdx/types";
 import Link from "next/link";
 import { Carousel } from "@/components/carousel";
 import { PromptBox } from "@/components/prompt-box";
+import { Shot, Table, Td, Th } from "@/components/post-table";
 import { PrototypeEmbed } from "@/components/prototype-embed";
 import { SourcePill } from "@/components/source-pill";
 
@@ -15,6 +16,10 @@ const components: MDXComponents = {
   SourcePill,
   PromptBox,
   PrototypeEmbed,
+  Table,
+  Th,
+  Td,
+  Shot,
   h1: (props) => (
     <h1
       className="mt-12 mb-4 text-3xl font-semibold tracking-tight text-foreground first:mt-0"

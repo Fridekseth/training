@@ -13,8 +13,8 @@ import { ObcElevatedCardSize } from "@oicl/openbridge-webcomponents/dist/compone
 import { ObiChevronRightGoogle } from "@oicl/openbridge-webcomponents-react/icons/icon-chevron-right-google";
 import { MaskIcon, Piece, SymbolCard } from "../pieces";
 import { TrainingRichButton } from "../training-rich-button";
-import type { Chapter, PageId } from "../training-data";
-import { PAGES, SCENARIOS, TRAINING_LOG } from "./training-data";
+import type { Chapter, LogEntry } from "../training-data";
+import { PAGES, type WfPageId } from "./training-data";
 import { ChapterTable, ResultsTable, TrainingLogTable } from "./training-tables";
 import type { TestResult } from "./guided-data";
 import { CommentList } from "./comment-list";
@@ -73,7 +73,7 @@ function Intro({
   );
 }
 
-export function HomePage({ onOpen }: { onOpen: (id: PageId) => void }) {
+export function HomePage({ onOpen }: { onOpen: (id: WfPageId) => void }) {
   return (
     <div className={styles.page} style={{ paddingInline: 50 }}>
       <div className={`${styles.introRow} ${styles.introRowTall}`}>
@@ -109,7 +109,7 @@ export function HomePage({ onOpen }: { onOpen: (id: PageId) => void }) {
   );
 }
 
-export function OverviewPage({ onOpen }: { onOpen: (id: PageId) => void }) {
+export function OverviewPage({ log, onOpen }: { log: LogEntry[]; onOpen: (id: WfPageId) => void }) {
   return (
     <div className={styles.page} style={{ paddingInline: 48 }}>
       <p className={styles.heading}>Welcome back!</p>
@@ -133,7 +133,7 @@ export function OverviewPage({ onOpen }: { onOpen: (id: PageId) => void }) {
         Training log:
       </p>
       <div className={styles.tableBlock}>
-        <TrainingLogTable entries={TRAINING_LOG} />
+        <TrainingLogTable entries={log} />
       </div>
     </div>
   );
@@ -149,7 +149,7 @@ export function GettingStartedPage({
   return (
     <div className={styles.page} style={{ paddingInline: 48 }}>
       <div className={styles.introRow}>
-        <Intro title="Learning" width={305} top={16}>
+        <Intro title="Learn" width={305} top={16}>
           The onboarding sequence gives an introduction to the system, and all
           features. The whole course takes about 30 minutes to complete. You can
           choose whether to complete the whole in one go, or take breaks. You can
@@ -203,7 +203,32 @@ export function ChapterResultsPage({
   );
 }
 
-export function ExplorePage({
+export function ExplorePage({ onEnter }: { onEnter: () => void }) {
+  return (
+    <div className={styles.page} style={{ paddingInline: 50 }}>
+      <div className={styles.introRow} style={{ alignItems: "center" }}>
+        <Intro title="Explore" width={260}>
+          When explore mode is activated, you can click around in the interface
+          without controlling the system.
+        </Intro>
+        <div style={{ flex: "0 1 322px" }}>
+          <TrainingRichButton
+            label="Start explore mode"
+            description="This function is only available when system is not in use."
+            descriptionSize={SMALL_TEXT}
+            onClick={onEnter}
+            illustration={
+              <Piece src="wf-explore" left={-34.4} top={-7.1} width={159.6} height={103.6} />
+            }
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** The comments of the team, to read and add to, and the way into collaborate mode. */
+export function CollaboratePage({
   threads,
   onEnter,
   onOpen,
@@ -215,20 +240,17 @@ export function ExplorePage({
   return (
     <div className={styles.page} style={{ paddingInline: 50 }}>
       <div className={styles.introRow} style={{ alignItems: "center" }}>
-        <Intro title="Explore" width={260}>
-          When explore mode is activated, you can click around in the interface
-          without controlling the system. You can add comments to your team, and
-          read others tips and tricks.
+        <Intro title="Collaborate" width={260}>
+          When collaborate mode is activated, you can add comments to your team,
+          and read others tips and tricks.
         </Intro>
         <div style={{ flex: "0 1 322px" }}>
           <TrainingRichButton
-            label="Start explore mode"
+            label="Start collaborate mode"
             description="This function is only available when system is not in use."
             descriptionSize={SMALL_TEXT}
             onClick={onEnter}
-            illustration={
-              <Piece src="wf-explore" left={-9} top={10.9} width={105.2} height={68.3} />
-            }
+            illustration={<Piece src="wf-illo-bubbles" left={13.3} top={10} width={63.4} height={70} />}
           />
         </div>
       </div>
@@ -241,22 +263,89 @@ export function ExplorePage({
   );
 }
 
-export function ScenariosPage({ onStart }: { onStart: (title: string) => void }) {
+/**
+ * The test across all the chapters, with the questions mixed. It says where the
+ * questions will come from, and shows how the last one went.
+ */
+export function TestPage({
+  focus,
+  log,
+  results,
+  onStart,
+}: {
+  /** The chapters the next test will draw most from, weakest first. */
+  focus: string[];
+  /** The tests that have been taken, newest first, with the score of each. */
+  log: LogEntry[];
+  /** How the last test went, once one has been taken. */
+  results: TestResult[] | null;
+  onStart: () => void;
+}) {
+  return (
+    <div className={styles.page} style={{ paddingInline: 50 }}>
+      <div className={styles.introRow} style={{ alignItems: "center" }}>
+        <Intro title="Test" width={260}>
+          Test yourself on all the chapters at once. The questions are mixed, and
+          more of them come from the chapters where your results are lowest.
+        </Intro>
+        <div style={{ flex: "0 1 322px" }}>
+          <TrainingRichButton
+            label="Start test"
+            description={
+              focus.length > 0
+                ? `Most questions will be from ${focus.join(" and ")}.`
+                : "Questions from all the chapters, mixed."
+            }
+            descriptionSize={SMALL_TEXT}
+            onClick={onStart}
+            illustration={<Piece src="wf-illo-puzzle" left={9} top={25.9} width={72} height={38.1} />}
+          />
+        </div>
+      </div>
+
+      <p className={styles.heading} style={{ marginTop: 20 }}>
+        Training log:
+      </p>
+      <div className={styles.tableBlock}>
+        <TrainingLogTable entries={log} />
+      </div>
+
+      {results ? (
+        <>
+          <p className={styles.heading} style={{ marginTop: 32 }}>
+            Last test:
+          </p>
+          <div className={styles.tableBlock}>
+            <ResultsTable results={results} />
+          </div>
+        </>
+      ) : null}
+    </div>
+  );
+}
+
+export function ScenariosPage({
+  scenarios,
+  onStart,
+}: {
+  scenarios: Chapter[];
+  onStart: (scenario: Chapter) => void;
+}) {
   return (
     <div className={styles.page} style={{ paddingInline: 48 }}>
       <div className={styles.introRow}>
-        <Intro title="Scenarios" width={305} top={16}>
+        <Intro title="Practice" width={305} top={16}>
           Practice critical situations in simulated scenarios. It is recommended to
           practice scenarios on a regular basis in order to keep routines in case
           of critical situations.
         </Intro>
         <Plate width={283.75}>
-          <Piece src="wf-scenarios" left={0} top={-17.83} width={283.75} height={184.15} />
+          <Piece src="wf-illo-dumbbell" left={84.5} top={24.2} width={114.7} height={100} />
         </Plate>
       </div>
 
       <div className={styles.tableBlock} style={{ marginTop: 32 }}>
-        <ChapterTable chapters={SCENARIOS} onStart={(chapter) => onStart(chapter.title)} />
+        <ChapterTable chapters={scenarios} onStart={onStart} />
       </div>
     </div>
   );

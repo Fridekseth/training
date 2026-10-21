@@ -16,17 +16,20 @@ import { ObiArrowRightGoogle } from "@oicl/openbridge-webcomponents-react/icons/
 import { ObcNavigationMenuVariant } from "@oicl/openbridge-webcomponents/dist/components/navigation-menu/navigation-menu";
 import { IconButtonVariant } from "@oicl/openbridge-webcomponents/dist/components/icon-button/icon-button";
 import { MaskIcon } from "../pieces";
-import { HOME, type PageDef, type PageId } from "../training-data";
-import { CHAPTERS, PAGES } from "./training-data";
-import { SEQUENCES, type TestResult } from "./guided-data";
+import { HOME, type LogEntry } from "../training-data";
+import { CHAPTERS, PAGES, SCENARIOS, type WfPageDef, type WfPageId } from "./training-data";
+import { PLAYABLE_SCENARIOS } from "./scenario-data";
+import { chapterScores, MIXED_TEST_ID, SEQUENCES, weightOf, type TestResult } from "./guided-data";
 import type { Thread } from "./explore-data";
 import {
   ChapterResultsPage,
+  CollaboratePage,
   ExplorePage,
   GettingStartedPage,
   HomePage,
   OverviewPage,
   ScenariosPage,
+  TestPage,
 } from "./training-pages";
 import styles from "./training.module.css";
 
@@ -39,10 +42,10 @@ function MenuItem({
   iconOnly,
   onSelect,
 }: {
-  page: PageDef;
+  page: WfPageDef;
   active: boolean;
   iconOnly: boolean;
-  onSelect: (id: PageId) => void;
+  onSelect: (id: WfPageId) => void;
 }) {
   return (
     <ObcNavigationItem
@@ -65,26 +68,41 @@ export function TrainingSection({
   start = "home",
   threads,
   onExplore,
+  onCollaborate,
+  onTest,
+  log,
   onGuided,
+  onScenario,
+  scenarioResults,
   results,
   openResults = null,
   onOpenThread,
 }: {
   /** The page to open on, so leaving explore mode lands back on Explore. */
-  start?: PageId;
+  start?: WfPageId;
   /** The comments, for the list on the Explore page. */
   threads: Thread[];
   onExplore: () => void;
+  /** Starts collaborate mode, which is explore mode with the comments of the team. */
+  onCollaborate: () => void;
+  /** Starts the test across the chapters. */
+  onTest: () => void;
+  /** Everything the learner has done, newest first. */
+  log: LogEntry[];
   /** Starts the guided sequence of a chapter in Learning. */
   onGuided: (chapterId: string) => void;
+  /** Starts a scenario on the Scenarios page, if it can be played. */
+  onScenario: (scenarioId: string) => void;
+  /** How the scenarios that have been played went. */
+  scenarioResults: Record<string, number>;
   /** How the learner did on the chapter's test, once they have taken it. */
   results: Record<string, TestResult[]>;
   /** Opens on that chapter's results rather than the list of chapters. */
   openResults?: string | null;
   onOpenThread: (id: string) => void;
 }) {
-  const [page, setPage] = useState<PageId>(start);
-  const [history, setHistory] = useState<PageId[]>([start]);
+  const [page, setPage] = useState<WfPageId>(start);
+  const [history, setHistory] = useState<WfPageId[]>([start]);
   const [step, setStep] = useState(0);
   // Folded to icons until the panel button opens it.
   const [folded, setFolded] = useState(true);
@@ -107,7 +125,21 @@ export function TrainingSection({
       : chapter;
   });
 
-  const go = (id: PageId) => {
+  // A scenario that has been played is completed, with the share of its steps done right as its result.
+  const scenarios = SCENARIOS.map((scenario) =>
+    scenarioResults[scenario.id] !== undefined
+      ? { ...scenario, status: "completed" as const, result: scenarioResults[scenario.id] }
+      : scenario,
+  );
+
+  // The chapters the next mixed test draws most from: the two with the highest weight.
+  const scores = chapterScores(results);
+  const focus = [...CHAPTERS]
+    .sort((a, b) => weightOf(scores[b.id]) - weightOf(scores[a.id]))
+    .slice(0, 2)
+    .map((chapter) => chapter.title);
+
+  const go = (id: WfPageId) => {
     if (id === page) return;
     // The pages are drawn for the folded menu, so leaving Home folds it away.
     if (id !== "home") setFolded(true);
@@ -132,7 +164,7 @@ export function TrainingSection({
     setMessage(null);
   };
 
-  const current: PageDef = page === "home" ? HOME : PAGES.find((p) => p.id === page)!;
+  const current: WfPageDef = page === "home" ? HOME : PAGES.find((p) => p.id === page)!;
 
   return (
     <div className={styles.training}>
@@ -197,7 +229,7 @@ export function TrainingSection({
 
         <div className={styles.scroll}>
           {page === "home" ? <HomePage onOpen={go} /> : null}
-          {page === "overview" ? <OverviewPage onOpen={go} /> : null}
+          {page === "overview" ? <OverviewPage log={log} onOpen={go} /> : null}
           {page === "getting-started" && resultsFor && results[resultsFor] ? (
             <ChapterResultsPage
               title={CHAPTERS.find((chapter) => chapter.id === resultsFor)?.title ?? ""}
@@ -217,11 +249,26 @@ export function TrainingSection({
               }}
             />
           ) : null}
-          {page === "explore" ? (
-            <ExplorePage threads={threads} onEnter={onExplore} onOpen={onOpenThread} />
+          {page === "explore" ? <ExplorePage onEnter={onExplore} /> : null}
+          {page === "collaborate" ? (
+            <CollaboratePage threads={threads} onEnter={onCollaborate} onOpen={onOpenThread} />
+          ) : null}
+          {page === "test" ? (
+            <TestPage
+              focus={focus}
+              log={log.filter((entry) => entry.kind === "Test")}
+              results={results[MIXED_TEST_ID] ?? null}
+              onStart={onTest}
+            />
           ) : null}
           {page === "scenarios" ? (
-            <ScenariosPage onStart={(title) => setMessage(`Starting scenario: ${title}`)} />
+            <ScenariosPage
+              scenarios={scenarios}
+              onStart={(scenario) => {
+                if (PLAYABLE_SCENARIOS[scenario.id]) onScenario(scenario.id);
+                else setMessage(`Starting scenario: ${scenario.title}`);
+              }}
+            />
           ) : null}
 
           {message ? <p className={styles.message}>{message}</p> : null}

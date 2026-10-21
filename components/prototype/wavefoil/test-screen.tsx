@@ -63,6 +63,7 @@ export function TestScreenIntro({
   questions,
   kinds,
   raised,
+  mixed = false,
   onBack,
   onStart,
 }: {
@@ -71,6 +72,8 @@ export function TestScreenIntro({
   kinds: Set<string>;
   /** Set when the tab is along the bottom, so the toolbar stands clear of it. */
   raised: boolean;
+  /** A test across the chapters, where nothing has just been gone through. */
+  mixed?: boolean;
   onBack: () => void;
   onStart: () => void;
 }) {
@@ -78,7 +81,9 @@ export function TestScreenIntro({
     <div className={`${styles.screen} ${styles.theme}`}>
       <h2 className={styles.introTitle}>Test what you remember</h2>
       <p className={styles.introText}>
-        You have been through all the steps. Next is a test of what you have learned, with {questions} questions.{" "}
+        {mixed
+          ? `This test mixes questions from all the chapters, with ${questions} questions, and takes more of them from where your results are lowest.`
+          : `You have been through all the steps. Next is a test of what you have learned, with ${questions} questions.`}{" "}
         {kinds.has("scenario")
           ? "Some are tasks to carry out on the screen, and others are questions to answer."
           : kinds.has("watch")

@@ -38,6 +38,7 @@ import { ScreenPreview } from "./screen-preview";
 import { ScenarioChrome, TestScreenIntro, TestScreenQuestion } from "./test-screen";
 import { CHAPTERS } from "./training-data";
 import type { Conditions } from "./conditions";
+import type { AppPage } from "./explore-data";
 import type { GuidedSequence, GuidedStep, TestQuestion, TestResult } from "./guided-data";
 import { TestIntro, TestModal } from "./test-modal";
 import { TrainingFrame } from "./training-frame";
@@ -378,6 +379,7 @@ export function GuidedMode({
   palette,
   conditions,
   onFoils,
+  onShowPage,
   onConditions,
   onExit,
   onFinish,
@@ -392,6 +394,8 @@ export function GuidedMode({
   conditions: Conditions;
   /** Puts the foils at a position, or with null stops them where they are; with a move, they set off at once. */
   onFoils: (deployment: number | null, move?: "deploy") => void;
+  /** Shows a page of the app, for a question whose scenario runs on another page than the sequence does. */
+  onShowPage: (page: AppPage) => void;
   /** Sets the sea the decision support page reads while the sequence runs; null gives it back. */
   onConditions: (conditions: Conditions | null) => void;
   /** Leaves the sequence part way. */
@@ -437,6 +441,8 @@ export function GuidedMode({
     halfway.current = false;
     scripted.current = false;
     // A scenario to watch begins with the foils coming out on their own, or only with the page to look at.
+    // A question drawn in from another chapter runs on that chapter's page.
+    onShowPage(question.page ?? sequence.page);
     if (question.kind === "watch" && question.script !== "look") onFoils(0, "deploy");
     else onFoils(question.start ?? 0);
     setRemaining(100);
@@ -548,9 +554,10 @@ export function GuidedMode({
     onFinish(
       questions.map((question, at) =>
         question.kind === "scenario"
-          ? { question: question.title, answer: "-", correct: Boolean(passed[at]) }
+          ? { question: question.title, answer: "-", correct: Boolean(passed[at]), chapter: question.chapter }
           : {
               question: question.title,
+              chapter: question.chapter,
               // The answer is given by its number in the list.
               answer: answers[at] === undefined ? "-" : String(answers[at] + 1),
               correct: answers[at] === question.correct,
@@ -566,7 +573,9 @@ export function GuidedMode({
 
   /** The chapter's place in the list, which the announcement names. */
   const chapter = CHAPTERS.findIndex((item) => item.id === sequence.id) + 1;
-  const name = sequence.title.charAt(0).toLowerCase() + sequence.title.slice(1);
+  const name = sequence.tabName ?? sequence.title.charAt(0).toLowerCase() + sequence.title.slice(1);
+  /** What the mode is called in the tab and the announcement. */
+  const mode = sequence.mode === "test" ? "Test" : "Learn";
 
   const current = sequence.steps[step];
   const running = scenario !== null;
@@ -654,7 +663,9 @@ export function GuidedMode({
             questions={questions.length}
             kinds={new Set(questions.map((question) => question.kind))}
             raised={corner.startsWith("bottom")}
-            onBack={() => setStep((value) => Math.max(0, value - 1))}
+            mixed={sequence.mode === "test"}
+            // Back from a test of its own leaves the test, and from a chapter's returns to its last step.
+            onBack={() => (sequence.mode === "test" ? onExit() : setStep((value) => Math.max(0, value - 1)))}
             onStart={() => setTestBegun(true)}
           />
         ) : (
@@ -672,7 +683,7 @@ export function GuidedMode({
           answers={answers}
           preview={(question) => (
             <ScreenPreview
-              page={sequence.page}
+              page={question.page ?? sequence.page}
               palette={palette}
               deployment={question.kind === "ask" ? 0 : (question.start ?? 0)}
               conditions={question.conditions ?? sequence.conditions ?? conditions}
@@ -711,10 +722,10 @@ export function GuidedMode({
       {phase === "intro" ? (
         <ModeIntro
           corner={corner}
-          icon="wf-menu-training"
-          title="Learning mode started"
+          icon={sequence.mode === "test" ? "wf-nav-test" : "nav-getting-started"}
+          title={`${mode} mode started`}
           subtitle={chapter > 0 ? `Chapter ${chapter}: ${sequence.title}` : sequence.title}
-          label="Learning"
+          label={mode}
           rest={name}
           onSettled={settled}
         />
@@ -725,8 +736,8 @@ export function GuidedMode({
           corner={corner}
           onCorner={setCorner}
           layer={layer}
-          icon="wf-menu-training"
-          label="Learning"
+          icon={sequence.mode === "test" ? "wf-nav-test" : "nav-getting-started"}
+          label={mode}
           rest={name}
           open={menuOpen}
           compact={folded}

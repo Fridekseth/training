@@ -1,9 +1,10 @@
 "use client";
 
 /**
- * Explore mode: the learner looks around the screen without controlling it,
- * and reads or adds to the comments other crew have left on it. Everything
- * here is drawn over the ship screen, which stays as it is underneath.
+ * Explore and collaborate mode. In explore mode the learner looks around the
+ * screen without controlling it. Collaborate mode is the same screen with the
+ * comments other crew have left on it, to read and add to. Everything here is
+ * drawn over the ship screen, which stays as it is underneath.
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -39,7 +40,11 @@ import { TrainingFrame } from "./training-frame";
 import tealStyles from "./teal-scope.module.css";
 import styles from "./explore.module.css";
 
+/** The tab is only the name of the mode, so it is narrower than the learning tab. */
+const TAB_WIDTH = 220;
+
 type Tool = "hand" | "comment";
+type Variant = "explore" | "collaborate";
 
 /**
  * The design draws the number keys in a light teal and DONE in the dark one,
@@ -241,14 +246,20 @@ const mirror = (corner: Corner): Corner =>
     ? (corner.replace("left", "right") as Corner)
     : (corner.replace("right", "left") as Corner);
 
-/** What explore mode offers, in a menu from its tab: how a press on the screen is read, and the way out. */
-function ExploreMenu({
+/**
+ * What the mode offers, in a menu from its tab: in collaborate mode how a press
+ * on the screen is read, and in both the way out. Explore mode has only one way
+ * to press, so its menu is only the way out.
+ */
+function ModeMenu({
   corner,
+  variant,
   tool,
   onPick,
   onExit,
 }: {
   corner: Corner;
+  variant: Variant;
   tool: Tool;
   onPick: (tool: Tool) => void;
   onExit: () => void;
@@ -259,16 +270,20 @@ function ExploreMenu({
         corner.startsWith("top") ? styles.menuTop : styles.menuBottom
       }`}
       role="menu"
-      aria-label="Explore mode"
+      aria-label={variant === "explore" ? "Explore mode" : "Collaborate mode"}
     >
-      <ObcNavigationItem label="Look around" hasIcon checked={tool === "hand"} onClick={() => onPick("hand")}>
-        <MaskIcon slot="icon" name="wf-explore-hand" style={{ color: "var(--teal-500)" }} />
-      </ObcNavigationItem>
-      <ObcNavigationItem label="Comments" hasIcon checked={tool === "comment"} onClick={() => onPick("comment")}>
-        <MaskIcon slot="icon" name="wf-explore-notification" style={{ color: "var(--teal-500)" }} />
-      </ObcNavigationItem>
+      {variant === "collaborate" ? (
+        <>
+          <ObcNavigationItem label="Look around" hasIcon checked={tool === "hand"} onClick={() => onPick("hand")}>
+            <MaskIcon slot="icon" name="wf-explore-hand" style={{ color: "var(--teal-500)" }} />
+          </ObcNavigationItem>
+          <ObcNavigationItem label="Comments" hasIcon checked={tool === "comment"} onClick={() => onPick("comment")}>
+            <MaskIcon slot="icon" name="wf-explore-notification" style={{ color: "var(--teal-500)" }} />
+          </ObcNavigationItem>
+        </>
+      ) : null}
       <ObcButton className={styles.menuExit} variant={ButtonVariant.raised} fullWidth showTrailingIcon onClick={onExit}>
-        Leave explore mode
+        {variant === "explore" ? "Leave explore mode" : "Leave collaborate mode"}
         <ObiCloseGoogle slot="trailing-icon" />
       </ObcButton>
     </div>
@@ -276,12 +291,15 @@ function ExploreMenu({
 }
 
 export function ExploreMode({
+  variant,
   threads,
   onThreads: setThreads,
   initialOpen = null,
   page,
   onExit,
 }: {
+  /** Exploring only, or exploring with the comments of the team. */
+  variant: Variant;
   /** The page being explored; its comments are the ones shown. */
   page: AppPage;
   /** Kept by the app, so the Explore page can list the same comments. */
@@ -291,7 +309,8 @@ export function ExploreMode({
   initialOpen?: ThreadId | null;
   onExit: () => void;
 }) {
-  const [tool, setTool] = useState<Tool>("comment");
+  // Exploring has only the one way to press; collaborating starts on the comments.
+  const [tool, setTool] = useState<Tool>(variant === "explore" ? "hand" : "comment");
   const [open, setOpen] = useState<ThreadId | null>(initialOpen);
   const [draft, setDraft] = useState("");
   const [typing, setTyping] = useState(false);
@@ -456,11 +475,10 @@ export function ExploreMode({
       {phase === "intro" ? (
         <ModeIntro
           corner={shown}
-          icon="wf-menu-training"
-          title="Explore mode started"
-          subtitle="Look around without affecting the system."
-          label="Explore"
-          rest="the interface"
+          icon={variant === "explore" ? "wf-nav-explore" : "wf-nav-collaborate"}
+          title={variant === "explore" ? "Explore mode started" : "Collaborate mode started"}
+          label={variant === "explore" ? "Explore" : "Collaborate"}
+          width={TAB_WIDTH}
           onSettled={settled}
         />
       ) : null}
@@ -470,9 +488,9 @@ export function ExploreMode({
           corner={shown}
           onCorner={setCorner}
           layer={layer}
-          icon="wf-menu-training"
-          label="Explore"
-          rest="the interface"
+          icon={variant === "explore" ? "wf-nav-explore" : "wf-nav-collaborate"}
+          label={variant === "explore" ? "Explore" : "Collaborate"}
+          width={TAB_WIDTH}
           open={menuOpen}
           onToggle={() => setMenuOpen((now) => !now)}
         />
@@ -481,8 +499,9 @@ export function ExploreMode({
       {/* A press anywhere else closes the menu again, and goes no further. */}
       {menuOpen ? <div className={styles.menuScrim} onClick={() => setMenuOpen(false)} aria-hidden="true" /> : null}
       {menuOpen ? (
-        <ExploreMenu
+        <ModeMenu
           corner={shown}
+          variant={variant}
           tool={tool}
           onPick={(next) => {
             pick(next);

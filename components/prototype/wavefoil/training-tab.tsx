@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { RefObject } from "react";
 import { MaskIcon } from "../pieces";
 import { CornerTools, cornerPosition, GRIP_WIDTH, type Corner } from "./corner-tools";
@@ -41,6 +41,8 @@ export function ModeTab({
   rest,
   open,
   compact: folded = false,
+  width = TAB_WIDTH,
+  onFold,
   onToggle,
 }: {
   corner: Corner;
@@ -49,17 +51,28 @@ export function ModeTab({
   icon: string;
   /** The mode, in bold. */
   label: string;
-  /** What it is about, after it. */
-  rest: string;
+  /** What it is about, after it; a mode that is only its name leaves it out. */
+  rest?: string;
   open: boolean;
   /** Only the icon and the handle, with the words left out, whatever the time. */
   compact?: boolean;
+  /** Wider than the usual tab, for a longer name. */
+  width?: number;
+  /** Told when the tab folds to its icon by itself, after its words have been up a few seconds. */
+  onFold?: () => void;
   onToggle: () => void;
 }) {
+  const told = useRef(onFold);
+  useEffect(() => {
+    told.current = onFold;
+  });
   // The words are there for a few seconds, so it is clear what the tab is, and then it folds to the icon.
   const [timedOut, setTimedOut] = useState(false);
   useEffect(() => {
-    const fold = window.setTimeout(() => setTimedOut(true), WORDS_MS);
+    const fold = window.setTimeout(() => {
+      setTimedOut(true);
+      told.current?.();
+    }, WORDS_MS);
     return () => window.clearTimeout(fold);
   }, []);
   // Under the pointer it shows its words again, whatever the time.
@@ -70,7 +83,7 @@ export function ModeTab({
     <CornerTools
       corner={corner}
       onCorner={onCorner}
-      width={compact ? COMPACT_WIDTH : TAB_WIDTH}
+      width={compact ? COMPACT_WIDTH : width}
       label="Training"
       layer={layer}
     >
@@ -86,7 +99,8 @@ export function ModeTab({
       >
         <MaskIcon name={icon} size={24} />
         <span className={styles.tabLabel}>
-          <strong>{label}</strong> {rest}
+          <strong>{label}</strong>
+          {rest ? ` ${rest}` : null}
         </span>
       </button>
     </CornerTools>
@@ -105,15 +119,19 @@ export function ModeIntro({
   subtitle,
   label,
   rest,
+  width = TAB_WIDTH,
   onSettled,
 }: {
   /** The corner it settles into. */
   corner: Corner;
   icon: string;
   title: string;
-  subtitle: string;
+  /** A second line under the title; a mode that needs none leaves it out. */
+  subtitle?: string;
   label: string;
-  rest: string;
+  rest?: string;
+  /** The width of the tab it settles into. */
+  width?: number;
   onSettled: () => void;
 }) {
   const [settling, setSettling] = useState(false);
@@ -129,13 +147,13 @@ export function ModeIntro({
     return () => window.clearTimeout(done);
   }, [settling, onSettled]);
 
-  const target = cornerPosition(corner, TAB_WIDTH);
+  const target = cornerPosition(corner, width);
   const right = corner.endsWith("right");
   // The handle stands on the inner edge, which is the right of a tab in a left corner.
   const inset = right ? GRIP_WIDTH : 0;
 
   const box = settling
-    ? { left: target.left, top: target.top, width: TAB_WIDTH, height: TAB_HEIGHT, borderRadius: RADIUS[corner] }
+    ? { left: target.left, top: target.top, width, height: TAB_HEIGHT, borderRadius: RADIUS[corner] }
     : { left: 204, top: 231, width: 377, height: 91, borderRadius: 6 };
 
   return (
@@ -150,16 +168,17 @@ export function ModeIntro({
             : { left: 24, top: 22.5, width: 46, height: 46 }
         }
       />
-      <div className={styles.introText}>
+      <div className={styles.introText} style={subtitle ? undefined : { top: 31 }}>
         <p className={styles.introTitle}>{title}</p>
-        <p className={styles.introSubtitle}>{subtitle}</p>
+        {subtitle ? <p className={styles.introSubtitle}>{subtitle}</p> : null}
       </div>
       <span className={styles.introDocked} style={{ left: inset + 44 }}>
-        <strong>{label}</strong> {rest}
+        <strong>{label}</strong>
+        {rest ? ` ${rest}` : null}
       </span>
       <span
         className={`${styles.introGrip} ${right ? styles.introGripRight : styles.introGripLeft}`}
-        style={right ? { left: 0 } : { left: TAB_WIDTH - GRIP_WIDTH }}
+        style={right ? { left: 0 } : { left: width - GRIP_WIDTH }}
         aria-hidden="true"
       >
         <svg width="12" height="18" viewBox="0 0 12 18">

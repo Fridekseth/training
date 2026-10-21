@@ -1,0 +1,140 @@
+export const metadata = {
+  title: "Connecting the prototype to the learning theory",
+  date: "2026-10-20",
+  summary:
+    "The Wavefoil prototype held up against the learning science and interface research from the first rounds of source searching: what the theory supports, and where it pushes back.",
+  stage: "research",
+  tags: ["literature review", "learning", "Wavefoil", "process"],
+  draft: true,
+};
+
+So far the project has run on two tracks. On one I have been reading about how people learn, in
+[the first round of source searching](/blog/grunnleggende-laeringsprinsipper) and in
+[the look at training inside interfaces](/blog/opplaering-i-grensesnittet). On the other I have been
+building the [Wavefoil prototype](/blog/introducing-training-in-wavefoil). This post puts the two side by
+side: what in the prototype has support in the theory, and where the theory suggests I have got it wrong
+or left something out.
+
+The connections are my own reading. The sources are mostly from education labs and from software like
+word processors, drones and Blender, not from bridges, so moving their findings onto a ship is an
+assumption I am making, not something they have shown.
+
+## What the theory supports
+
+<Table>
+<thead>
+<tr>
+<Th>What I built</Th>
+<Th>Theory</Th>
+<Th>The connection</Th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<Td><Shot src="/posts/connecting-prototype-to-learning-theory/guided-step-deploy.png" alt="A step in the Operating the foils chapter, with the deploy button lit, the rest of the screen washed, and the explanation just above the button" />Guided chapters: the screen is washed, one part is lit, and the text stands right next to it</Td>
+<Td><SourcePill href="/research#sweller-cognitive-load">Sweller (1994)</SourcePill></Td>
+<Td>The split-attention effect: related information shown apart has to be pieced together, which is extraneous load. Short texts avoid the redundancy effect. One of the captains can only look at the screen for a couple of seconds at a time, so attention that does not teach anything is expensive.</Td>
+</tr>
+<tr>
+<Td><Shot src="/posts/connecting-prototype-to-learning-theory/guided-step-one.png" alt="The first step of the Operating the foils chapter, pointing at the Overview item in the menu, with Next as the only way on" />One step at a time, in a chapter</Td>
+<Td><SourcePill href="/research#duolingo-onboarding">Duolingo</SourcePill> <SourcePill href="/research#figma-onboarding">Figma</SourcePill> <SourcePill href="/research#forsey-et-al-designing-for-learnability">Forsey et al. (2024)</SourcePill> <SourcePill href="/research#liu-sra-tasklens">Liu & Sra (2026)</SourcePill></Td>
+<Td>Progressive disclosure. Forsey and TaskLens both find the same split: beginners gain from it, experienced users feel boxed in.</Td>
+</tr>
+<tr>
+<Td><Shot src="/posts/connecting-prototype-to-learning-theory/step-menu.png" alt="The step menu open from the tab in the corner, with the eight steps along a line and a button to exit training mode" />A chapter can be left or jumped around in from the corner menu at any time</Td>
+<Td><SourcePill href="/research#carroll-rosson-active-user">Carroll & Rosson (1987)</SourcePill> <SourcePill href="/research#liu-sra-tasklens">Liu & Sra (2026)</SourcePill></Td>
+<Td>The production bias: people who want to get a task done skip anything that looks like instruction. An easy way out means the ones who are already competent do not have to fight the training.</Td>
+</tr>
+<tr>
+<Td><Shot src="/posts/connecting-prototype-to-learning-theory/mode-intro.png" alt="The box that announces Learning mode started in the middle of the screen, inside the teal frame" />Training mode in teal, where nothing affects the real system</Td>
+<Td><SourcePill href="/research#stripe-sandbox">Stripe</SourcePill> <SourcePill href="/research#carroll-carrithers-training-wheels">Carroll & Carrithers (1984)</SourcePill></Td>
+<Td>A system with real consequences can be learned by trying things out, if the practice space is clearly separate. Crew are often afraid to make mistakes at first, and the person from Wavefoil said a big part of introducing the foils is to make them feel safe. Training wheels block the parts that cause errors, which my wash does only in part, since the full interface is still behind it.</Td>
+</tr>
+<tr>
+<Td><Shot src="/posts/connecting-prototype-to-learning-theory/test-scenario.png" alt="A test scenario running on the full screen, with a toast saying Deploy the foils and the test toolbar floating over the bottom" />A test at the end of each chapter, with scenarios the learner carries out</Td>
+<Td><SourcePill href="/research#roediger-karpicke-testing">Roediger & Karpicke (2006)</SourcePill> <SourcePill href="/research#bjork-bjork-desirable-difficulties">Bjork & Bjork (2011)</SourcePill></Td>
+<Td>The testing effect and the generation effect: retrieving an answer, or producing an action yourself, lasts longer than being shown it.</Td>
+</tr>
+<tr>
+<Td><Shot src="/posts/connecting-prototype-to-learning-theory/training-log.png" alt="The Overview page, with the Recurrent training and Recommended practice cards and a training log" />The Recommended practice card on the Overview page, and the Scenarios page</Td>
+<Td><SourcePill href="/research#ebbinghaus-memory">Ebbinghaus (1885)</SourcePill> <SourcePill href="/research#carpenter-spacing">Carpenter et al. (2012)</SourcePill></Td>
+<Td>The spacing effect. The card asks for a scenario when it has been four months since a critical alarm, which is a nudge based on the time since the last practice. Carpenter et al. find the right gap depends on how long the knowledge has to last. This is my reading.</Td>
+</tr>
+<tr>
+<Td><Shot src="/posts/connecting-prototype-to-learning-theory/decision-support.png" alt="The decision support page, with wave conditions, vessel motion and engine power, each with an advice frame, and the deploy foils control marked as recommended" />Decision support and Debriefing</Td>
+<Td><SourcePill href="/research#endsley-situation-awareness">Endsley (1995)</SourcePill></Td>
+<Td>My reading: the wave data is perception, the advice frames are comprehension, and the potential savings and the recommendation come close to projection. Debriefing is the look back afterwards. I designed these pages for support in the moment, and only now see how they map onto the three levels.</Td>
+</tr>
+<tr>
+<Td>One captain could imagine using the training at home</Td>
+<Td><SourcePill href="/research#vervaeke-memory">Vervaeke (2026)</SourcePill> <SourcePill href="/research#bjork-bjork-desirable-difficulties">Bjork & Bjork (2011)</SourcePill></Td>
+<Td>The two pull against each other. Context helps memory, which favours learning inside the real interface. Varying the conditions of practice helps later recall and transfer, which favours more than one place. Training both on the bridge and at home may be a strength.</Td>
+</tr>
+<tr>
+<Td><Shot src="/posts/connecting-prototype-to-learning-theory/training-home.png" alt="The training home page, with the teal plate of isometric illustrations and cards for Overview, Learning, Explore and Scenarios" />The teal identity and the illustrations</Td>
+<Td><SourcePill href="/research#vervaeke-memory">Vervaeke (2026)</SourcePill> <SourcePill href="/research#figma-onboarding">Figma</SourcePill></Td>
+<Td>Salience and emotional tagging help learning stick, and Figma's green dev mode is an example of showing the user they are in a different mode.</Td>
+</tr>
+</tbody>
+</Table>
+
+## Where the theory pushes back
+
+The screenshots show the parts of the prototype I question. Click one to see it full size.
+
+<Table>
+<thead>
+<tr>
+<Th>The feature</Th>
+<Th>What the theory says</Th>
+<Th>The problem</Th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<Td><Shot src="/posts/connecting-prototype-to-learning-theory/last-tip.png" alt="The last step of the Operating the foils chapter, with the button that leads to the test" />The test comes right after the walkthrough</Td>
+<Td>Restudying did better after five minutes, testing only won after two days and a week. <SourcePill href="/research#roediger-karpicke-testing">Roediger & Karpicke (2006)</SourcePill></Td>
+<Td>The value of the test shows up when it is repeated later. The prototype tests once, straight after the chapter. The Recommended practice card nudges a scenario, but nothing re-tests what a chapter taught.</Td>
+</tr>
+<tr>
+<Td><Shot src="/posts/connecting-prototype-to-learning-theory/learning-chapters.png" alt="The Learning page, with the chapters listed one by one with a result, a status and a start button" />Everything is taught and tested one chapter at a time</Td>
+<Td>Mixing topics gives worse performance during practice but better retention afterwards. <SourcePill href="/research#bjork-bjork-desirable-difficulties">Bjork & Bjork (2011)</SourcePill></Td>
+<Td>The questions are blocked by chapter. A review that mixes questions from several chapters would be the interleaved version, and it would feel harder.</Td>
+</tr>
+<tr>
+<Td><Shot src="/posts/connecting-prototype-to-learning-theory/test-question.png" alt="The first question of the Operating the foils test, on a page of its own, with the scenario as a small picture" />The questions check what the learner can do on the interface</Td>
+<Td>Situation awareness is perception, comprehension and projection. <SourcePill href="/research#endsley-situation-awareness">Endsley (1995)</SourcePill></Td>
+<Td>In the post on training inside interfaces I argued that situation awareness is what the training should build. A question like "deploy the foils" is level 1. Questions about what a reading means, or what happens if you wait, would test levels 2 and 3.</Td>
+</tr>
+<tr>
+<Td><Shot src="/posts/connecting-prototype-to-learning-theory/test-results.png" alt="The results of the Application patterns test, with a correct or incorrect mark for each question and a total score of 75 percent" />The results page shows correct or incorrect, and a score</Td>
+<Td>Learners think the easier conditions work better, even when they do not. <SourcePill href="/research#bjork-bjork-desirable-difficulties">Bjork & Bjork (2011)</SourcePill></Td>
+<Td>My question from the research page still stands: how do I make things hard in a good way without hurting the confidence of someone who is already afraid of making mistakes? The page says which answers were wrong, but not what was right, and ends on a percentage. How that is shown may matter more than the questions.</Td>
+</tr>
+<tr>
+<Td><Shot src="/posts/connecting-prototype-to-learning-theory/training-log.png" alt="The Overview page, with the Recurrent training and Recommended practice cards and a training log with date, title, result and progress" />The training log and the recurrent training card</Td>
+<Td>The amount of practice is a weak predictor of expert performance. <SourcePill href="/research#macnamara-maitra-deliberate-practice">Macnamara & Maitra (2019)</SourcePill></Td>
+<Td>The log shows a result for each entry and not hours, which is good. But the status is about finishing, and the Recurrent training card asks for the course to be completed before a date. That rewards completing, when the research says the amount of practice is not the whole story.</Td>
+</tr>
+<tr>
+<Td>The research behind all of it</Td>
+<Td><SourcePill href="/research#forsey-et-al-designing-for-learnability">Forsey et al. (2024)</SourcePill> <SourcePill href="/research#liu-sra-tasklens">Liu & Sra (2026)</SourcePill></Td>
+<Td>Forsey et al. found no significant difference in task performance, only more even performance across users, and TaskLens was tested in one program. With none of it from a bridge, I should be careful not to claim more than the studies show.</Td>
+</tr>
+</tbody>
+</Table>
+
+## A gap in the sources
+
+![Explore mode with a comment thread open on the left, next to the component it is about](/posts/connecting-prototype-to-learning-theory/explore-thread.png)
+*A comment thread in Explore mode.*
+
+The comments that captains can leave for each other have nothing behind them in what I have collected.
+Vervaeke touches on emotion and context, but nothing I have read covers learning from peers. If comments
+stay a central part of the concept, I will need to look for literature on social learning.
+
+## What this suggests trying next
+
+Reading the two tracks together points at a few things to test: repeating the test later, mixing questions
+from different chapters, adding questions about meaning and consequence and not only about the interface,
+and thinking carefully about how results are shown. None of these are built yet.

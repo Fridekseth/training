@@ -102,7 +102,7 @@ export function WavefoilMenu({
             checked={!inTraining && page === "alarms"}
             onClick={() => onPage("alarms")}
           />
-          <Item iconOnly={rail} label="Training" icon="wf-menu-training" checked={inTraining} onClick={onTraining} />
+          <Item iconOnly={rail} label="Training" icon="wf-training-guide" checked={inTraining} onClick={onTraining} />
           <Item iconOnly={rail} label="Settings" icon="wf-menu-settings" />
         </div>
       </nav>
