@@ -2,8 +2,9 @@ import type { ComponentPropsWithoutRef } from "react";
 
 /*
   A table for posts that need to set things side by side. Markdown tables are
-  not parsed here, so a post writes the table out with these, one cell to a
-  line of its own.
+  not parsed here, so a post writes the table out with these. A cell holds
+  plain markdown over as many lines as it likes; its text comes out as a
+  paragraph, sized like the cell's own text.
 */
 
 /** Scrolls sideways on a narrow screen rather than squeezing the columns. */
@@ -30,7 +31,7 @@ export function Th(props: ComponentPropsWithoutRef<"th">) {
 export function Td(props: ComponentPropsWithoutRef<"td">) {
   return (
     <td
-      className="border-b border-border px-4 py-3 align-top text-muted [tr:last-child_&]:border-b-0"
+      className="border-b border-border px-4 py-3 align-top text-muted [&_p]:my-0 [&_p]:text-sm [&_p]:leading-6 [&_p]:text-inherit [tr:last-child_&]:border-b-0"
       {...props}
     />
   );
