@@ -9,6 +9,7 @@ const NAV = [
   { href: "/prototype", label: "Demo" },
   { href: "/blog", label: "Process" },
   { href: "/research", label: "Research" },
+  { href: "/documentation", label: "Documentation" },
   { href: "/about", label: "About" },
 ] as const;
 
@@ -20,7 +21,7 @@ export function SiteHeader() {
       {/* The same container as the page content, so the pill lines up with it. */}
       <div className={PAGE_CONTAINER}>
         {/* A single pill, so the navigation reads as one object on the page. */}
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-full border border-accent/30 bg-accent-soft/80 px-4 py-2 backdrop-blur-sm sm:gap-x-6 sm:px-5">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-full max-[479px]:rounded-3xl border border-accent/30 bg-accent-soft/80 px-4 py-2 backdrop-blur-sm sm:gap-x-6 sm:px-5">
           <Link
             href="/"
             className="group flex shrink-0 items-center"
@@ -40,7 +41,8 @@ export function SiteHeader() {
             />
           </Link>
 
-          <nav className="flex flex-1 items-center justify-center gap-4 sm:gap-7">
+          {/* Below 480px the five links do not fit beside the logo, so they sit on a row of their own, under the logo and the toggle. */}
+          <nav className="order-last flex w-full flex-1 items-center justify-center gap-4 min-[480px]:order-none min-[480px]:w-auto min-[480px]:gap-3 sm:gap-7">
             {NAV.map(({ href, label }) => {
               const active =
                 pathname === href || pathname.startsWith(`${href}/`);
@@ -61,7 +63,7 @@ export function SiteHeader() {
             })}
           </nav>
 
-          <div className="flex shrink-0 items-center text-accent">
+          <div className="flex shrink-0 items-center text-accent max-[479px]:ml-auto">
             <ThemeToggle />
           </div>
         </div>

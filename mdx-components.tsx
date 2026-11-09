@@ -1,10 +1,29 @@
 import type { MDXComponents } from "mdx/types";
 import Link from "next/link";
 import { Carousel } from "@/components/carousel";
+import {
+  Anatomy,
+  Do,
+  DoDont,
+  Dont,
+  Figure,
+  PropTable,
+  SpecTable,
+  State,
+  States,
+  Todo,
+} from "@/components/docs/doc-parts";
 import { PromptBox } from "@/components/prompt-box";
 import { Shot, Table, Td, Th } from "@/components/post-table";
 import { PrototypeEmbed } from "@/components/prototype-embed";
 import { SourcePill } from "@/components/source-pill";
+
+/** The text of a heading as an address, so a link can point at it. */
+const slugify = (text: string) =>
+  text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
 
 /*
   Styles for elements produced by markdown. Applied here rather than via a
@@ -20,23 +39,41 @@ const components: MDXComponents = {
   Th,
   Td,
   Shot,
+  // The parts a component page is written with.
+  Anatomy,
+  Do,
+  DoDont,
+  Dont,
+  Figure,
+  PropTable,
+  SpecTable,
+  State,
+  States,
+  Todo,
   h1: (props) => (
     <h1
       className="mt-12 mb-4 text-3xl font-semibold tracking-tight text-foreground first:mt-0"
       {...props}
     />
   ),
-  h2: (props) => (
+  // Headings get an address, and room above them for the bars that stay under the header.
+  h2: ({ children, ...props }) => (
     <h2
-      className="mt-12 mb-3 text-xl font-semibold tracking-tight text-foreground"
+      id={typeof children === "string" ? slugify(children) : undefined}
+      className="mt-12 mb-3 scroll-mt-32 text-xl font-semibold tracking-tight text-foreground"
       {...props}
-    />
+    >
+      {children}
+    </h2>
   ),
-  h3: (props) => (
+  h3: ({ children, ...props }) => (
     <h3
-      className="mt-8 mb-2 text-base font-semibold tracking-tight text-foreground"
+      id={typeof children === "string" ? slugify(children) : undefined}
+      className="mt-8 mb-2 scroll-mt-32 text-base font-semibold tracking-tight text-foreground"
       {...props}
-    />
+    >
+      {children}
+    </h3>
   ),
   p: (props) => (
     <p className="my-4 text-[0.975rem] leading-7 text-muted" {...props} />
