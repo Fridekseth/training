@@ -1,0 +1,728 @@
+/*
+  The second screen as a phone app: a teal title bar, the page, and a row of four
+  places at the bottom. Sizes are from the design, which is drawn 402 px wide.
+*/
+
+.app {
+  display: flex;
+  height: 100%;
+  min-height: 0;
+  flex-direction: column;
+  background: var(--container-background-color, #f7f7f7);
+  color: var(--on-normal-active-color, #1f1f1f);
+  font-size: 16px;
+  line-height: 24px;
+  /* The teal of the training pattern. */
+  --teal-300: var(--base-teal-300, #1d9da1);
+  --teal-400: var(--base-teal-400, #007d81);
+  --teal-500: var(--base-teal-500, #005d61);
+  --teal-600: var(--base-teal-600, #004346);
+}
+
+/* ---- the title bar ---- */
+
+.bar {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8px;
+  padding: calc(14.5px + env(safe-area-inset-top, 0px)) 16px 14.5px;
+  background: var(--teal-600);
+  color: #fff;
+}
+
+/* Under the status bar, which has the room at the top. */
+.barBelowStatus {
+  padding-top: 14.5px;
+}
+
+.barIcon {
+  display: block;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.barIcon > * {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
+.barBack {
+  display: flex;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.barBack > * {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
+.barTitle {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 24px;
+}
+
+/* ---- the page ---- */
+
+.page {
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.section {
+  padding: 24px 32px;
+}
+
+.divider {
+  height: 1px;
+  margin: 0 12px;
+  background: var(--border-divider-color, #d0d0d0);
+}
+
+.label {
+  margin: 0 0 16px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  line-height: 16px;
+  color: var(--on-normal-neutral-color, #535353);
+}
+
+.labelRow {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.labelRow > * {
+  display: block;
+  width: 14px;
+  height: 14px;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ---- the agenda ---- */
+
+.agendaTitle {
+  margin: 8px 0 8px;
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 32px;
+  color: var(--on-normal-neutral-color, #535353);
+}
+
+.agendaText {
+  margin: 0;
+  color: var(--on-normal-neutral-color, #535353);
+}
+
+.trip {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 20px 0 24px;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.trip b {
+  display: block;
+  font-weight: 600;
+}
+
+.trip span {
+  display: block;
+  color: var(--on-normal-neutral-color, #535353);
+}
+
+.trip em {
+  font-style: normal;
+}
+
+.trip .time {
+  margin-top: 8px;
+  color: var(--on-normal-active-color, #1f1f1f);
+}
+
+/* ---- a button that is a card, from the library, and the one in teal ---- */
+
+.card {
+  display: block;
+  width: 100%;
+  --ui-components-rich-button-width-max-horizontal: 100%;
+}
+
+.tealCard {
+  --normal-enabled-background-color: var(--teal-500);
+  --normal-enabled-border-color: var(--teal-500);
+  --normal-hover-background-color: var(--teal-400);
+  --normal-hover-border-color: var(--teal-400);
+  --normal-pressed-background-color: var(--teal-600);
+  --normal-pressed-border-color: var(--teal-600);
+  --on-normal-active-color: #fff;
+  --on-normal-neutral-color: #fff;
+}
+
+/* A drawing in the 40 px place at the front of a card, fitted whole inside 32 px whatever its shape. */
+.icon {
+  display: block;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  margin: 4px;
+  background-color: currentColor;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+  color: var(--on-normal-neutral-color, #535353);
+}
+
+.tealCard .icon {
+  color: #fff;
+}
+
+.libraryIcon {
+  display: block;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+/* ---- the training log ---- */
+
+.log {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--container-background-color, #fcfcfc);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12);
+}
+
+.logRow {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 12px 8px 16px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.logRow:hover {
+  background: var(--normal-hover-background-color, #f0f0f0);
+}
+
+.logDate {
+  width: 72px;
+  flex-shrink: 0;
+}
+
+.logText {
+  min-width: 0;
+  flex: 1;
+}
+
+.logText strong {
+  display: block;
+  font-weight: 600;
+}
+
+.logChevron {
+  display: block;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  color: var(--on-normal-neutral-color, #535353);
+}
+
+/* ---- the notifications ---- */
+
+.notice {
+  display: block;
+  width: 100%;
+  padding: 8px 16px;
+  border: 0;
+  border-bottom: 1px solid var(--border-divider-color, #d0d0d0);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+
+.noticeHead {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.noticeIcon {
+  display: block;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  color: var(--teal-400);
+}
+
+.noticeBody {
+  min-width: 0;
+  flex: 1;
+}
+
+.noticeTop {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.noticeTitle {
+  font-weight: 600;
+}
+
+.noticeWhen {
+  flex-shrink: 0;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--on-normal-neutral-color, #535353);
+  white-space: pre;
+}
+
+.noticeText {
+  margin: 0;
+}
+
+.noticeText.clamped {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.noticeChevron {
+  display: block;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  color: var(--on-normal-neutral-color, #535353);
+}
+
+.noticeActions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 8px 16px;
+}
+
+/* ---- the profile ---- */
+
+.person {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 32px;
+}
+
+.avatar {
+  display: flex;
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-divider-color, #c4c4c4);
+  border-radius: 50%;
+  background: var(--container-global-color, #fcfcfc);
+  color: var(--on-normal-neutral-color, #535353);
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.personName {
+  display: block;
+  font-weight: 600;
+}
+
+.personRole {
+  display: block;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.menu {
+  margin: 0;
+  padding: 16px 20px;
+  list-style: none;
+}
+
+.menuRow {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.menuRow > span:nth-child(2) {
+  flex: 1;
+}
+
+.menuIcon {
+  display: block;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  color: var(--on-normal-neutral-color, #535353);
+}
+
+/* ---- the row of places at the bottom ---- */
+
+.tabs {
+  display: grid;
+  flex-shrink: 0;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid var(--border-divider-color, #d0d0d0);
+  background: var(--container-background-color, #f7f7f7);
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 8px);
+}
+
+.tab {
+  display: flex;
+  height: 48px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  color: var(--on-normal-neutral-color, #535353);
+  cursor: pointer;
+}
+
+.tab[aria-current="page"] {
+  color: var(--teal-400);
+}
+
+.tab > * {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
+.tab:focus-visible,
+.noticeHead:focus-visible,
+.logRow:focus-visible,
+.menuRow:focus-visible {
+  outline: 2px solid var(--teal-300);
+  outline-offset: -2px;
+}
+
+/* A drawing from a file in the row at the bottom, or in the bar on top. */
+.masked,
+.tabMask {
+  background-color: currentColor;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+}
+
+/* ---- the sync page ---- */
+
+.cardWrap {
+  position: relative;
+}
+
+.badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  pointer-events: none;
+}
+
+.tripFlat {
+  margin: 0;
+}
+
+.crew {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.crewRow {
+  display: grid;
+  grid-template-columns: repeat(4, 53px);
+  justify-content: space-between;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.crewMember {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 12px;
+  line-height: 16px;
+  text-align: center;
+}
+
+.crewMember b {
+  font-weight: 600;
+}
+
+.crewLeaving {
+  opacity: 0.4;
+}
+
+.crewAvatar {
+  display: block;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 4px;
+  overflow: hidden;
+  border: 1px solid var(--border-divider-color, #c4c4c4);
+  border-radius: 50%;
+  background: var(--container-global-color, #fcfcfc);
+}
+
+.crewAvatar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(1);
+}
+
+.logFooter {
+  border-top: 1px solid var(--border-divider-color, #d0d0d0);
+}
+
+/* ---- the Wavefoil window ---- */
+
+.fullPage {
+  position: relative;
+  min-height: 0;
+  flex: 1;
+}
+
+.window {
+  position: relative;
+  height: 100%;
+  overflow-y: auto;
+  padding: 92px 16px 48px;
+  background: var(--container-global-color, #fcfcfc);
+}
+
+.windowClose {
+  position: absolute;
+  top: 48px;
+  right: 8px;
+}
+
+.windowCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 12px 12px;
+  border-radius: 6px;
+  background: var(--container-background-color, #f7f7f7);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12);
+}
+
+.windowTitle {
+  margin: 0 0 12px;
+  font-size: 11.5px;
+  line-height: 16px;
+  letter-spacing: 0.05em;
+  color: var(--on-normal-neutral-color, #535353);
+}
+
+/* The chart is placed by its own page in the interface; here it simply stands in the card. */
+.chartHolder {
+  position: relative;
+  width: 212px;
+  height: 140px;
+}
+
+.chartHolder > div {
+  top: 0;
+  left: 0;
+}
+
+.windowLegend {
+  align-self: flex-start;
+  margin: 8px 0 12px 28px;
+  padding: 0;
+  list-style: none;
+  font-size: 11.5px;
+  line-height: 18px;
+  color: var(--on-normal-neutral-color, #535353);
+}
+
+.windowLegend li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legendSolid,
+.legendDotted {
+  display: inline-block;
+  width: 14px;
+  border-top: 2px solid #535353;
+}
+
+.legendDotted {
+  border-top: 1.5px dotted #8e8e8e;
+}
+
+.advice {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid;
+  border-radius: 2px;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.advice strong {
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+}
+
+.adviceIcon {
+  display: block;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  background-color: currentColor;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+}
+
+.advice_poor {
+  border-color: #cfcfcf;
+  background: #ececec;
+  color: #3d3d3d;
+}
+
+.advice_optimal {
+  border-color: #6c9ae0;
+  background: #dce8fa;
+  color: #1d3c67;
+}
+
+.advice_harmful {
+  border-color: #d6c04a;
+  background: #faf0c4;
+  color: #3d3500;
+}
+
+.windowSet {
+  margin-top: 28px;
+  padding: 0 4px;
+}
+
+.setTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 24px;
+}
+
+.setTitle .adviceIcon {
+  width: 20px;
+  height: 20px;
+}
+
+.setRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--on-normal-neutral-color, #535353);
+}
+
+.slider {
+  flex: 1;
+  min-width: 0;
+}
+
+.setValue {
+  margin: 8px 0 0;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.band {
+  position: absolute;
+  left: 1px;
+  width: 210px;
+  pointer-events: none;
+}
+
+.bandWindow {
+  background: rgba(93, 143, 213, 0.14);
+}
+
+.bandCalm {
+  background: rgba(230, 194, 0, 0.22);
+}

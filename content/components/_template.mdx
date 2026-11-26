@@ -1,44 +1,32 @@
 export const metadata = {
   title: "Component name",
-  // One sentence. It is the line on the index card and the first line of the page.
+  // One sentence. It is the line on the card on the index.
   summary: "What it is and what it is for.",
   // One of: Action, Communication, Navigation.
   category: "Communication",
   // planned (only the structure), draft (some sections written) or documented (all of them).
   status: "planned",
-  // The modes it appears in. Leave out when it is not set.
-  usedIn: ["Learn", "Explore"],
-  // An OpenBridge component, or "Custom".
-  builtFrom: "Custom",
-  // The file it lives in, from the project root.
-  source: "components/prototype/wavefoil/the-file.tsx",
-  // A picture for the index card and the top of the page, saved in public/components/<slug>/.
+  // A picture for the card on the index, saved in public/components/<slug>/.
   preview: "/components/<slug>/preview.png",
-  previewAlt: "What the picture shows.",
   // Its place within its category on the index and in the side menu.
   order: 1,
 };
 
 {/*
   Copy this file to content/components/<slug>.mdx. The file name is the address of the page.
-  Keep the sections and their order, so every page reads the same way. A section that is not
+
+  Under the title the page shows a live preview of the component, so it can be tried. The
+  preview is a React component in components/docs/previews/, added to the list in
+  components/docs/previews/index.tsx under the same name as the file. A page without one
+  shows an empty box.
+
+  Keep the five sections and their order, so every page reads the same way. A section that is not
   written yet holds <Todo for="..." />, which says what it asks for.
 
   The parts a page is written with:
 
-  <Figure src="/components/<slug>/a.png" alt="..." caption="..." />
-
-  <Anatomy
-    src="/components/<slug>/anatomy.png"
-    alt="..."
-    parts={[
-      { name: "Container", text: "What it is.", x: 50, y: 75 },
-    ]}
-  />
-  (x and y place the marker, as percentages of the picture's width and height)
-
   <States>
-    <State name="Hovered" src="/components/<slug>/hover.png" alt="...">One line.</State>
+    <State name="Folded" src="/components/<slug>/folded.png" alt="...">One line.</State>
   </States>
 
   <DoDont>
@@ -47,29 +35,19 @@ export const metadata = {
   </DoDont>
 
   <SpecTable rows={[["Height", "48 px", "A note, if one is needed."]]} />
-
-  <PropTable rows={[["label", "string", "What it does."]]} />
 */}
 
 ## Overview
 
 <Todo for="overview" />
 
-## Anatomy
+## Features
 
-<Todo for="anatomy" />
+<Todo for="features" />
 
 ## Variants
 
 <Todo for="variants" />
-
-## States
-
-<Todo for="states" />
-
-## Behaviour
-
-<Todo for="behaviour" />
 
 ## Specs
 
@@ -78,19 +56,3 @@ export const metadata = {
 ## Guidelines
 
 <Todo for="guidelines" />
-
-## Accessibility
-
-<Todo for="accessibility" />
-
-## Theory
-
-<Todo for="theory" />
-
-## Implementation
-
-<Todo for="implementation" />
-
-## Open questions
-
-<Todo for="questions" />

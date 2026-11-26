@@ -54,7 +54,7 @@ const FRAME_MS = 1500;
 /** The arrow's own size, which the pointer is centred on the part it explains by. */
 const ARROW = { long: 20, short: 12 };
 
-function Toast({
+export function Toast({
   icon,
   title,
   subtitle,
@@ -175,7 +175,7 @@ function Toast({
   );
 }
 
-function Tip({
+export function Tip({
   step,
   index,
   last,
@@ -282,7 +282,7 @@ function menuLayout(count: number, current: number) {
   return { first: dropped, packedFrom: packed > 0 ? count - 1 - packed : -1, packed };
 }
 
-function StepMenu({
+export function StepMenu({
   sequence,
   step,
   corner,

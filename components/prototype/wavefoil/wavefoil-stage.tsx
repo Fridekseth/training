@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import type { Conditions } from "./conditions";
+import type { WfPageId } from "./training-data";
 import { Noto_Sans } from "next/font/google";
 
 const notoSans = Noto_Sans({ subsets: ["latin"], display: "swap" });
@@ -27,11 +28,14 @@ export function WavefoilStage({
   theme = "day",
   conditions,
   onExploring,
+  shortcut,
 }: {
   theme?: string;
   conditions?: Conditions;
   /** Called as explore mode is entered and left, for a frame that has to make room for its ring. */
   onExploring?: (exploring: boolean) => void;
+  /** Opens a page of the training from outside the screen. */
+  shortcut?: { page: WfPageId; id: number } | null;
 }) {
   const [palette, setPalette] = useState(theme);
 
@@ -70,6 +74,7 @@ export function WavefoilStage({
         conditions={conditions}
         onDim={dim}
         onExploring={onExploring}
+        shortcut={shortcut}
       />
     </div>
   );

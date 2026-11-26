@@ -34,8 +34,8 @@ const POINTS = ESTIMATED.length;
 const NOW = MEASURED.length - 1;
 
 /** The wave heights the foils work between, read off the design. */
-const WINDOW_LOW = 1.6;
-const WINDOW_HIGH = 6.3;
+export const WINDOW_LOW = 1.6;
+export const WINDOW_HIGH = 6.3;
 /** The plot, at the design's own size. The box around it must match, or the
  * chart draws short of its frame. */
 const PLOT_WIDTH = 210;

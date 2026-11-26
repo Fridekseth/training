@@ -1,16 +1,22 @@
 import Link from "next/link";
 import { SectionMenu } from "@/components/docs/section-menu";
 import { Todo } from "@/components/docs/doc-parts";
-import { ArrowBack } from "@/components/icons";
 import { Pill } from "@/components/pill";
-import { getDocumentationSection, getSectionItems, type SectionKey } from "@/lib/documentation";
+import {
+  ITEM_STATUS_LABEL,
+  getDocumentationSection,
+  getSectionItemContent,
+  getSectionItems,
+  type SectionKey,
+} from "@/lib/documentation";
 import { PAGE_CONTAINER } from "@/lib/layout";
 
 /** The page of one item in a section that is not components, with the menu of the section at the side. */
-export function SectionItemPage({ section: key, slug }: { section: SectionKey; slug: string }) {
+export async function SectionItemPage({ section: key, slug }: { section: SectionKey; slug: string }) {
   const section = getDocumentationSection(key);
   const items = getSectionItems(key);
   const item = items.find((candidate) => candidate.slug === slug)!;
+  const Content = await getSectionItemContent(key, slug);
 
   return (
     <div className={`${PAGE_CONTAINER} py-10`}>
@@ -36,7 +42,6 @@ export function SectionItemPage({ section: key, slug }: { section: SectionKey; s
               aria-label="Breadcrumb"
               className="flex flex-wrap items-center gap-1.5 text-sm text-muted"
             >
-              <ArrowBack className="size-3.5" />
               <Link href="/documentation" className="transition-colors hover:text-accent">
                 Documentation
               </Link>
@@ -55,13 +60,13 @@ export function SectionItemPage({ section: key, slug }: { section: SectionKey; s
               <h1 className="text-3xl font-semibold tracking-tight text-foreground">
                 {item.title}
               </h1>
-              <Pill>Planned</Pill>
+              <Pill>{ITEM_STATUS_LABEL[item.status]}</Pill>
             </div>
           </header>
 
-          <div className="mt-8 max-w-[46rem]">
-            <Todo>This page is not written yet.</Todo>
-          </div>
+          <article className="mt-8 max-w-[46rem]">
+            {Content ? <Content /> : <Todo>This page is not written yet.</Todo>}
+          </article>
         </div>
       </div>
     </div>

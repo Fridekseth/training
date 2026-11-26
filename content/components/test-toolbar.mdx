@@ -3,51 +3,44 @@ export const metadata = {
   summary:
     "The toolbar along the bottom of a test, with a step for each question.",
   category: "Action",
-  status: "planned",
+  status: "draft",
+  preview: "/components/test-toolbar/card.png",
   order: 1,
-  source: "components/prototype/wavefoil/test-screen.tsx",
 };
 
 ## Overview
 
-<Todo for="overview" />
+The test toolbar is the toolbar along the bottom of a test. It has a step for each question, and it moves between them.
 
-## Anatomy
+## Features
 
-<Todo for="anatomy" />
+- Has Previous on the left, a step for each question, and Next on the right.
+- Marks the steps: completed for the questions before the one being answered, active for that one, and not started for those after it.
+- Goes to a question when its step is pressed.
+- Says Back instead of Previous on the first question, which leads to the page that introduces the test.
+- Says Finish instead of Next on the last question.
+- Grows when there are more questions than fit.
 
 ## Variants
 
-<Todo for="variants" />
-
-## States
-
-<Todo for="states" />
-
-## Behaviour
-
-<Todo for="behaviour" />
+- **On the question page.** Along the bottom of the screen, where it stays.
+- **Over a scenario.** Floats over the screen while a task is carried out, with a handle to move it off whatever it covers. The arrow keys move it too. A button in the corner takes the screen back to the question without finishing the scenario.
 
 ## Specs
 
-<Todo for="specs" />
+<SpecTable
+  rows={[
+    ["Height", "48 px"],
+    ["Width", "542 px", "At least. It grows with the number of questions when they do not fit."],
+    ["Step", "112 px wide"],
+    ["Distance to the bottom", "15 px", "Where it floats from, over a scenario. It is centred."],
+    ["Step of the arrow keys", "16 px", "When it is moved without a pointer."],
+  ]}
+/>
 
 ## Guidelines
 
-<Todo for="guidelines" />
-
-## Accessibility
-
-<Todo for="accessibility" />
-
-## Theory
-
-<Todo for="theory" />
-
-## Implementation
-
-<Todo for="implementation" />
-
-## Open questions
-
-<Todo for="questions" />
+<DoDont>
+  <Do>To write.</Do>
+  <Dont>To write.</Dont>
+</DoDont>

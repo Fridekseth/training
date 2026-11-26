@@ -10,21 +10,34 @@ const STAGE = "rounded-lg border border-border bg-accent-soft";
 /** Text inside a part. A paragraph written there comes out of markdown with its own spacing, which is taken off. */
 const BODY = "text-sm leading-6 text-muted [&_p]:m-0 [&_p]:text-sm [&_p]:leading-6 [&_p+p]:mt-2";
 
-/** A picture on a tinted stage, with room for a caption. */
+/**
+ * A picture on a tinted stage, with room for a caption. A picture that has its own white
+ * background, such as an annotated drawing, is set on white with no stage with `plain`.
+ */
 export function Figure({
   src,
   alt,
   caption,
+  plain = false,
 }: {
   src: string;
   alt: string;
   caption?: string;
+  plain?: boolean;
 }) {
   return (
     <figure className="my-6">
-      <div className={`${STAGE} p-4`}>
+      <div
+        className={
+          plain ? "overflow-hidden rounded-lg border border-border bg-white" : `${STAGE} p-4`
+        }
+      >
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={src} alt={alt} className="mx-auto block max-w-full rounded-md" />
+        <img
+          src={src}
+          alt={alt}
+          className={plain ? "block w-full" : "mx-auto block max-w-full rounded-md"}
+        />
       </div>
       {caption ? (
         <figcaption className="mt-2 text-sm leading-6 text-faint">{caption}</figcaption>
@@ -33,52 +46,89 @@ export function Figure({
   );
 }
 
-/* ---- anatomy ---- */
+/* ---- colors, illustrations and icons ---- */
 
-export type Part = {
-  name: string;
-  text: string;
-  /** Where its marker goes on the picture, as a percentage of the width and the height. */
-  x: number;
-  y: number;
-};
+/** The colors of a ramp as swatches: the name, the value and the token it is set by. */
+export function Swatches({ rows }: { rows: [name: string, value: string, token: string][] }) {
+  return (
+    // Two columns that are filled down, so the first half of the list is on the left and the rest on the right.
+    <div
+      className="my-6 grid gap-4 sm:grid-flow-col sm:grid-cols-2 sm:[grid-template-rows:repeat(var(--rows),auto)]"
+      style={{ "--rows": Math.ceil(rows.length / 2) } as React.CSSProperties}
+    >
+      {rows.map(([name, value, token]) => (
+        <div key={name} className="flex items-center gap-4 rounded-lg border border-border bg-surface p-3">
+          <span
+            aria-hidden="true"
+            className="size-16 shrink-0 rounded-md border border-black/10"
+            style={{ background: value }}
+          />
+          <div className="min-w-0">
+            <p className="m-0 text-sm font-semibold text-foreground">{name}</p>
+            <p className="m-0 font-mono text-[0.75rem] leading-5 break-words text-muted">{value}</p>
+            <p className="m-0 font-mono text-[0.75rem] leading-5 text-muted">{token}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 /**
- * A picture with a numbered marker on each part, and the parts listed under it
- * in the same order. A marker is placed on the part it names, not beside it.
+ * A set of pictures, each on a tile with its name: illustrations on the teal plate, and icons on a
+ * grey one. The icons are drawn in one color whatever color their file has, so they match.
  */
-export function Anatomy({ src, alt, parts }: { src: string; alt: string; parts: Part[] }) {
+export function Gallery({
+  items,
+  kind = "illustration",
+}: {
+  items: [src: string, name: string][];
+  kind?: "illustration" | "icon";
+}) {
+  const icon = kind === "icon";
   return (
-    <div className="my-6">
-      <div className={`${STAGE} p-4`}>
-        <div className="relative mx-auto w-full max-w-[42.5rem]">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={src} alt={alt} className="block w-full rounded-md" />
-          {parts.map((part, at) => (
-            <span
-              key={part.name}
-              aria-hidden="true"
-              className="absolute grid size-5 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-foreground text-[0.7rem] font-semibold text-background ring-2 ring-background"
-              style={{ left: `${part.x}%`, top: `${part.y}%` }}
-            >
-              {at + 1}
-            </span>
-          ))}
-        </div>
-      </div>
-      <ol className="mt-4 grid gap-x-8 gap-y-3 sm:grid-cols-2">
-        {parts.map((part, at) => (
-          <li key={part.name} className="flex gap-3 text-[0.9rem] leading-6 text-muted">
-            <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-foreground text-[0.7rem] font-semibold text-background">
-              {at + 1}
-            </span>
-            <span>
-              <strong className="font-medium text-foreground">{part.name}.</strong> {part.text}
-            </span>
-          </li>
-        ))}
-      </ol>
-    </div>
+    <ul
+      className={`my-6 grid list-none gap-4 p-0 ${
+        icon ? "grid-cols-2 sm:grid-cols-4" : "grid-cols-2 sm:grid-cols-3"
+      }`}
+    >
+      {items.map(([src, name]) => (
+        <li key={src} className="m-0 p-0">
+          <div
+            className={`relative flex items-center justify-center overflow-hidden rounded-lg border border-black/10 ${
+              icon ? "h-28" : "aspect-[4/3]"
+            }`}
+            style={{ background: icon ? "#f1f1f1" : "#e2f2f3" }}
+          >
+            {icon ? (
+              <span
+                aria-hidden="true"
+                className="block size-12"
+                style={{
+                  backgroundColor: "#535353",
+                  maskImage: `url(${src})`,
+                  WebkitMaskImage: `url(${src})`,
+                  maskSize: "contain",
+                  WebkitMaskSize: "contain",
+                  maskRepeat: "no-repeat",
+                  WebkitMaskRepeat: "no-repeat",
+                  maskPosition: "center",
+                  WebkitMaskPosition: "center",
+                }}
+              />
+            ) : (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={src}
+                alt=""
+                className="absolute inset-4 size-[calc(100%-2rem)] object-contain"
+              />
+            )}
+          </div>
+          <p className="m-0 mt-2 text-sm leading-5 text-muted">{name}</p>
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -164,7 +214,7 @@ export const Dont = (props: { src?: string; alt?: string; children: ReactNode })
   <Guideline kind="dont" {...props} />
 );
 
-/* ---- numbers and inputs ---- */
+/* ---- numbers ---- */
 
 const TABLE = "my-6 overflow-x-auto rounded-lg border border-border";
 const HEAD = "border-b border-border bg-surface px-4 py-2.5 text-left font-medium text-foreground";
@@ -196,49 +246,15 @@ export function SpecTable({ rows }: { rows: [name: string, value: string, note?:
   );
 }
 
-/** What a component takes as input: the name, the type and what it does. */
-export function PropTable({ rows }: { rows: [name: string, type: string, text: string][] }) {
-  return (
-    <div className={TABLE}>
-      <table className="w-full min-w-[34rem] border-collapse text-left text-sm leading-6">
-        <thead>
-          <tr>
-            <th className={HEAD}>Prop</th>
-            <th className={HEAD}>Type</th>
-            <th className={HEAD}>What it does</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map(([name, type, text]) => (
-            <tr key={name} className="[&:last-child>td]:border-b-0">
-              <td className={`${CELL} font-mono text-[0.8125rem] whitespace-nowrap text-foreground`}>
-                {name}
-              </td>
-              <td className={`${CELL} font-mono text-[0.8125rem]`}>{type}</td>
-              <td className={CELL}>{text}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
 /* ---- what is left to write ---- */
 
 /** What each section asks for, shown in a section that has not been written yet. */
 const HINTS: Record<string, string> = {
-  overview: "One or two sentences: what it is, and what it is for in the training pattern. Then the modes it is used in.",
-  anatomy: "A picture of the component with a numbered marker on each part, and a line on what each part is.",
+  overview: "One or two sentences: what it is, and what it is for in the training pattern.",
+  features: "What it does, as a short list.",
   variants: "The forms it comes in, each with a picture and when to choose it.",
-  states: "How it looks while it is used: resting, hovered, pressed, open, disabled. One picture each.",
-  behaviour: "What it does, in the order it happens, with the timing and the motion.",
   specs: "Sizes, positions and timings as numbers, in a table.",
   guidelines: "Two or three do and don't pairs, each with a picture and one sentence.",
-  accessibility: "How it works with a keyboard and a screen reader, and what has been checked.",
-  theory: "Why it is built this way: the sources and the feedback behind it, linked.",
-  implementation: "What it is built from, the file it lives in, and what it takes as input.",
-  questions: "What is still undecided, and what would settle it.",
 };
 
 /** A dashed box that marks a section, or a part of one, that is still to be written. */

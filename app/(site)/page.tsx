@@ -1,13 +1,17 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowForward } from "@/components/icons";
-import { formatDate, getPosts } from "@/lib/posts";
+import { PostCard } from "@/components/post-card";
+import { getPosts } from "@/lib/posts";
 import { papers } from "@/content/papers";
-import { PAGE_CONTAINER, PROSE_WIDTH } from "@/lib/layout";
+import { PAGE_CONTAINER } from "@/lib/layout";
 
 export default async function HomePage() {
   const posts = await getPosts();
-  const recent = posts.slice(0, 3);
+  // The entries marked `highlight: true` in their front matter, newest first.
+  const highlighted = posts.filter((post) => post.highlight);
+  // The one marked "main" is drawn big, across the whole width, and the rest are smaller under it.
+  const main = highlighted.find((post) => post.highlight === "main") ?? highlighted[0];
+  const others = highlighted.filter((post) => post !== main);
 
   return (
     <div className={`${PAGE_CONTAINER} pt-6 pb-20`}>
@@ -56,10 +60,10 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {recent.length > 0 ? (
+      {highlighted.length > 0 ? (
         <section className="mt-16 border-t border-border pt-10">
           <div className="flex items-baseline justify-between gap-4">
-            <h2 className="text-sm font-semibold text-faint">Latest entries</h2>
+            <h2 className="text-sm font-semibold text-faint">Highlighted entries</h2>
             <Link
               href="/blog"
               className="inline-flex items-center gap-1 text-sm text-muted transition-colors hover:text-accent"
@@ -69,45 +73,18 @@ export default async function HomePage() {
             </Link>
           </div>
 
-          <ol className="mt-4 space-y-4">
-            {recent.map((post) => (
-              <li key={post.slug}>
-                <Link
-                  href={`/blog/${post.slug}`}
-                  className="group block rounded-xl border border-border bg-surface p-6 transition-colors hover:border-accent"
-                >
-                  <div className="flex flex-row-reverse items-start justify-between gap-4">
-                    {post.image ? (
-                      <Image
-                        src={post.image}
-                        alt={post.imageAlt ?? ""}
-                        width={320}
-                        height={200}
-                        sizes="320px"
-                        className="h-[92px] w-[140px] shrink-0 rounded-lg border border-border object-cover object-top sm:h-[208px] sm:w-[320px]"
-                      />
-                    ) : null}
-                    <div className="min-w-0 flex-1">
-                      <time
-                        dateTime={post.date}
-                        className="text-xs tracking-wide text-faint"
-                      >
-                        {formatDate(post.date)}
-                      </time>
-                      <h3 className="mt-1.5 font-medium tracking-tight text-foreground group-hover:text-accent">
-                        {post.title}
-                      </h3>
-                      <p
-                        className={`mt-1 text-[0.95rem] leading-7 text-muted ${PROSE_WIDTH}`}
-                      >
-                        {post.summary}
-                      </p>
-                    </div>
-                  </div>
-                </Link>
-              </li>
-            ))}
-          </ol>
+          <div className="mt-4 space-y-4">
+            <PostCard post={main} wide />
+            {others.length > 0 ? (
+              <ol className="grid gap-4 sm:grid-cols-2">
+                {others.map((post) => (
+                  <li key={post.slug}>
+                    <PostCard post={post} compact />
+                  </li>
+                ))}
+              </ol>
+            ) : null}
+          </div>
         </section>
       ) : null}
     </div>

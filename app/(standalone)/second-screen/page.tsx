@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { SecondScreenStage } from "@/components/prototype/second-screen/second-screen-stage";
+import { SecondScreenAppStage } from "@/components/prototype/second-screen/app/second-screen-app-stage";
 
 export const metadata: Metadata = {
   title: "Second screen",
@@ -14,14 +14,14 @@ export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false,
   viewportFit: "cover",
-  themeColor: "#e2f2f3",
+  themeColor: "#004346",
 };
 
 /**
- * The second-screen prototype alone, at the size of a phone. The pitch, roll
- * and heave instrument follows the motion of the phone, or a drag on the screen
- * where the phone has no sensors.
+ * The second screen as an app for a phone: the home page, the systems to learn,
+ * the notifications and the profile. The vessel motion instrument is at
+ * /second-screen/gyro, and is to be connected to the app.
  */
 export default function SecondScreenPage() {
-  return <SecondScreenStage />;
+  return <SecondScreenAppStage />;
 }

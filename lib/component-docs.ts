@@ -11,20 +11,13 @@ export type DocStatus = "documented" | "draft" | "planned";
 /** Shape every component page declares via `export const metadata` in its MDX file. */
 export type ComponentFrontmatter = {
   title: string;
-  /** One sentence for the index card and the top of the page. */
+  /** One sentence for the card on the index. */
   summary: string;
   /** One of CATEGORIES, which decides the group it sits in. */
   category: string;
   status: DocStatus;
-  /** The training modes it appears in. */
-  usedIn?: string[];
-  /** What it is made from: an OpenBridge component, or custom. */
-  builtFrom?: string;
-  /** The file it lives in, relative to the project. */
-  source?: string;
-  /** A picture for the top of the page and the index card, from `public/`. */
+  /** A picture for the card on the index, from `public/`. */
   preview?: string;
-  previewAlt?: string;
   /** The place within its category; lower comes first. */
   order?: number;
 };
@@ -38,19 +31,13 @@ export const CATEGORIES = [
   "Navigation",
 ] as const;
 
-/** What each section of a component page holds, in the order the page has them. */
+/** What each section of a component page holds, in the order the page has them. Under the title comes a live preview. */
 export const SECTIONS = [
-  ["Overview", "What it is, what it is for and where it is used."],
-  ["Anatomy", "The parts it is made of, numbered on a picture."],
+  ["Overview", "What it is, and what it is for in the training pattern."],
+  ["Features", "What it does, as a short list."],
   ["Variants", "The different forms it comes in."],
-  ["States", "How it looks as it is used: resting, hovered, open and so on."],
-  ["Behaviour", "What it does, step by step, including timing and motion."],
   ["Specs", "Sizes, positions and timings, as numbers."],
   ["Guidelines", "What to do and what not to do, side by side."],
-  ["Accessibility", "How it can be used without a pointer or a screen."],
-  ["Theory", "Why it is built this way: the research and feedback behind it."],
-  ["Implementation", "What it is built from, and what it takes as input."],
-  ["Open questions", "What is still undecided."],
 ] as const;
 
 const DOCS_DIR = path.join(process.cwd(), "content/components");

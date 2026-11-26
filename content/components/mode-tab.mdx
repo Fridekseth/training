@@ -4,53 +4,21 @@ export const metadata = {
     "The small tab a training mode keeps in the corner of the screen. It says which mode is open, and it is the way into the mode's menu.",
   category: "Navigation",
   status: "draft",
-  usedIn: ["Learn", "Explore", "Collaborate", "Practice", "Test"],
-  builtFrom: "Custom",
-  source: "components/prototype/wavefoil/training-tab.tsx",
-  preview: "/components/mode-tab/preview.png",
-  previewAlt:
-    "The Overview page of the Wavefoil prototype in Explore mode, inside the teal frame, with the Explore tab in the top left corner",
+  preview: "/components/mode-tab/card.png",
   order: 1,
 };
 
 ## Overview
 
-The mode tab sits in a corner of the screen for as long as a training mode is open. It names the mode, and when the mode is about something, such as a chapter or a scenario, it names that too. Pressing it opens the mode's menu, and a handle on it moves it to another corner.
+The mode tab sits in a corner of the screen for as long as a training mode is open. It names the mode, and when the mode is about something, such as a chapter or a scenario, it names that too. It is the same component in every mode. Only the icon and the words change.
 
-It is the same component in every mode. Only the icon and the words change.
+## Features
 
-## Anatomy
-
-<Anatomy
-  src="/components/mode-tab/expanded.png"
-  alt="The mode tab for Learn operating the foils, with a book icon, the words, a divider and a handle of six dots"
-  parts={[
-    {
-      name: "Container",
-      text: "The tab itself. The corner that faces the middle of the screen is the most rounded.",
-      x: 47.3,
-      y: 81.7,
-    },
-    {
-      name: "Mode icon",
-      text: "The icon of the mode.",
-      x: 7.1,
-      y: 46.2,
-    },
-    {
-      name: "Label",
-      text: "The mode in bold, followed by what it is about. A mode that is only its name leaves the second part out.",
-      x: 72.6,
-      y: 46.2,
-    },
-    {
-      name: "Handle",
-      text: "Six dots. Dragging it moves the tab to another corner.",
-      x: 89.3,
-      y: 46.2,
-    },
-  ]}
-/>
+- Names the mode with an icon and a bold label, followed by what it is about.
+- Keeps its words for four seconds after it has docked, and then folds to the icon and the handle.
+- Unfolds again while the pointer is over the icon.
+- Opens the mode's menu when it is pressed, and closes it when it is pressed again. It is a darker teal while the menu is open.
+- Moves to another corner by its handle, and snaps to the nearest one when it is let go. The arrow keys on the handle do the same without a pointer.
 
 ## Variants
 
@@ -63,39 +31,12 @@ It is the same component in every mode. Only the icon and the words change.
   </State>
 </States>
 
-A longer name gets a wider tab through the `width` input.
-
-## States
-
-<States>
-  <State name="Expanded" src="/components/mode-tab/expanded.png" alt="The tab with its words">
-    The icon, the words and the handle. It is shown like this when the mode has opened, and for four seconds after.
-  </State>
-  <State name="Folded" src="/components/mode-tab/folded.png" alt="The tab folded to the icon and the handle">
-    Only the icon and the handle, so the tab takes less of the screen.
-  </State>
-  <State name="Hovered" src="/components/mode-tab/hover.png" alt="The tab unfolded under the pointer">
-    While the pointer is over the icon the words come back, and the tab is slightly lighter.
-  </State>
-  <State name="Menu open" src="/components/mode-tab/menu-open.png" alt="The tab with the label part in a darker teal">
-    The label part is a darker teal while the mode's menu is open.
-  </State>
-</States>
-
-## Behaviour
-
-1. When a mode opens, the [mode intro](/documentation/components/mode-intro) is shown in the middle of the screen and then settles into the tab, so the tab is already in place when it arrives.
-2. The tab keeps its words for four seconds, and then folds to the icon and the handle.
-3. A pointer over the icon unfolds it again. The handle does not unfold it, so the handle can always be grabbed without the tab moving. A finger has no hover, so touch does not unfold it.
-4. Pressing the tab opens the mode's menu, and pressing it again closes it.
-5. Dragging the handle moves the tab. When it is let go it snaps to the nearest corner.
-
 ## Specs
 
 <SpecTable
   rows={[
     ["Height", "48 px"],
-    ["Width, with words", "320 px", "Wider when the name needs it."],
+    ["Width, with words", "320 px", "220 px when it is only the name of the mode."],
     ["Width, folded", "85 px"],
     ["Handle", "41 px wide"],
     ["Icon", "24 px"],
@@ -111,41 +52,3 @@ A longer name gets a wider tab through the `width` input.
   <Do>To write.</Do>
   <Dont>To write.</Dont>
 </DoDont>
-
-## Accessibility
-
-- The tab is a button that reports whether the menu is open, and is called "Training menu" for a screen reader.
-- Without a pointer, the arrow keys on the handle step the tab between the corners.
-- Unfolding on hover is left out for touch, where it would unfold on every press.
-
-<Todo>Contrast of the words on the teal, and a test with a screen reader.</Todo>
-
-## Theory
-
-The tab, together with the teal frame, is there so the learner always knows they are in training and not in the live system. [The theory post](/blog/connecting-prototype-to-learning-theory) points at Figma's dev mode as an example of showing the user that they are in a different mode: <SourcePill href="/research#figma-onboarding">Figma</SourcePill>.
-
-At the [OpenBridge seminar](/blog/openbridge-seminar-feedback), a participant compared it to their own training mode, which is only a red bar along the top, and found it easier to tell which mode they were in.
-
-## Implementation
-
-Built from custom parts, not from an OpenBridge component: a button, a mask icon and the handle in `CornerTools`, which also holds the dragging and the snapping to corners.
-
-<PropTable
-  rows={[
-    ["corner", "Corner", "Which corner it sits in. The caller keeps it, so the tab can step aside for something else."],
-    ["onCorner", "(corner) => void", "Called with the new corner when the handle is let go."],
-    ["layer", "RefObject<HTMLElement>", "The layer the tab sits in, measured for the screen's scale while it is dragged."],
-    ["icon", "string", "The name of the mode's icon."],
-    ["label", "string", "The mode, in bold."],
-    ["rest", "string", "What it is about, after the mode. Left out for a mode that is only its name."],
-    ["open", "boolean", "Whether the mode's menu is open."],
-    ["compact", "boolean", "Folded to the icon and the handle, whatever the time."],
-    ["width", "number", "Wider than the usual 320 px, for a longer name."],
-    ["onFold", "() => void", "Called when the tab folds by itself after its words have been up a few seconds."],
-    ["onToggle", "() => void", "Called when the tab is pressed."],
-  ]}
-/>
-
-## Open questions
-
-<Todo for="questions" />

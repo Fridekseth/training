@@ -1,0 +1,44 @@
+export const metadata = {
+  title: "Cursors",
+  summary:
+    "The pointers that show which tool or mode the learner is in.",
+  category: "Action",
+  status: "draft",
+  preview: "/components/cursors/card.png",
+  order: 2,
+};
+
+## Overview
+
+The cursors say what the pointer does while the learner is in training. They are drawn in the teal of the training pattern, so the mode can be seen in the pointer itself, and not only on the screen.
+
+## Features
+
+- Shows a teal pointer over a chapter of Learn, so the learner can see that the screen is not the live system.
+- Shows a hand when the tool Look around is on in Explore. It covers the whole screen, and the controls keep their own pointer.
+- Shows a comment cursor when the tool Comments is on, over the whole screen, so a press goes to a part of the screen and not to the control under it.
+- Falls back to the system's own cursor if a picture does not load: the standard pointer, a grabbing hand or a cross.
+
+## Variants
+
+- **Pointer.** In Learn.
+- **Hand.** In Explore, with Look around.
+- **Comment.** When a comment is to be placed.
+
+## Specs
+
+<SpecTable
+  rows={[
+    ["Size", "24 × 24 px", "All three are drawn on a square of this size."],
+    ["Hot spot, pointer", "2, 2 px", "Fallback: the standard pointer."],
+    ["Hot spot, hand", "8, 3 px", "Fallback: grab."],
+    ["Hot spot, comment", "2, 22 px", "Fallback: crosshair."],
+  ]}
+/>
+
+## Guidelines
+
+<DoDont>
+  <Do>To write.</Do>
+  <Dont>To write.</Dont>
+</DoDont>

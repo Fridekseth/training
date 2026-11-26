@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowBack } from "@/components/icons";
 import { PageHeader } from "@/components/page-header";
 import { Pill } from "@/components/pill";
 import {
@@ -23,15 +22,19 @@ function Card({ doc }: { doc: ComponentDoc }) {
   return (
     <Link
       href={`/documentation/components/${doc.slug}`}
-      className="group flex flex-col overflow-hidden rounded-xl border border-border bg-surface transition-colors hover:border-accent"
+      className="group flex flex-col overflow-hidden rounded-xl border border-border bg-surface transition-colors hover:border-accent/40"
     >
-      <div className="grid aspect-[16/9] place-items-center overflow-hidden border-b border-border bg-accent-soft">
+      {/* The same grey as the box the component is tried in on its page, so the picture has no edge. */}
+      <div
+        className="flex aspect-[16/9] items-center justify-center overflow-hidden border-b border-border"
+        style={{ background: "#f1f1f1" }}
+      >
         {doc.preview ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={doc.preview}
             alt=""
-            className="size-full object-cover object-top-left transition-transform duration-300 group-hover:scale-[1.02]"
+            className="size-full object-contain transition-transform duration-300 group-hover:scale-[1.03]"
           />
         ) : (
           <span className="text-sm text-faint">No preview yet</span>
@@ -61,7 +64,6 @@ export default async function ComponentsPage() {
         href="/documentation"
         className="mb-6 inline-flex items-center gap-1.5 text-sm text-muted transition-colors hover:text-accent"
       >
-        <ArrowBack className="size-3.5" />
         Documentation
       </Link>
       <PageHeader
@@ -74,10 +76,14 @@ export default async function ComponentsPage() {
         <h2 id="structure" className="text-xl font-semibold tracking-tight text-foreground">
           How a component page is built
         </h2>
+        <p className="mt-3 max-w-xl text-[0.9rem] leading-7 text-muted">
+          Every page starts with the title and a live preview, where the component can be tried.
+          Below it come five sections, always in the same order.
+        </p>
         <ol className="mt-5 grid gap-x-10 gap-y-3 sm:grid-cols-2">
           {SECTIONS.map(([name, text], at) => (
             <li key={name} className="flex gap-3 text-[0.9rem] leading-6 text-muted">
-              <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-accent-soft text-[0.7rem] font-semibold text-accent">
+              <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-accent-soft text-[0.7rem] leading-none font-semibold text-accent">
                 {at + 1}
               </span>
               <span>

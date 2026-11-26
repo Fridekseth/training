@@ -23,7 +23,7 @@ export default function DocumentationPage() {
           <Link
             key={section.slug}
             href={`/documentation/${section.slug}`}
-            className="group overflow-hidden rounded-xl border border-border bg-surface transition-colors hover:border-accent"
+            className="group overflow-hidden rounded-xl border border-border bg-surface transition-colors hover:border-accent/40"
           >
             <div
               className={`aspect-[16/9] overflow-hidden border-b border-border ${

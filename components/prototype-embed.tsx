@@ -105,7 +105,7 @@ export function PrototypeEmbed({
               sizes="(min-width: 768px) 700px, 100vw"
               className="object-cover object-top"
             />
-            <span className="relative rounded-full border border-border bg-background/95 px-4 py-2 text-sm font-medium text-foreground shadow-sm transition-colors group-hover:border-accent group-hover:text-accent">
+            <span className="relative rounded-full border border-border bg-background/95 px-4 py-2 text-sm font-medium text-foreground shadow-sm transition-colors group-hover:border-accent/40 group-hover:text-accent">
               Start the prototype
             </span>
           </button>

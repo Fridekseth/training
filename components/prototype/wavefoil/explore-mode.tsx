@@ -90,7 +90,7 @@ function Avatar({ initials, self = false }: { initials: string; self?: boolean }
  * read ones light. While one comment is open the others are disabled, and the
  * open one grows into the people who have written in it.
  */
-function Indicator({
+export function Indicator({
   thread,
   state,
   onClick,
@@ -161,7 +161,7 @@ function Bubble({ message }: { message: Message }) {
   );
 }
 
-function ThreadPanel({
+export function ThreadPanel({
   thread,
   messages,
   side,

@@ -3,51 +3,43 @@ export const metadata = {
   summary:
     "An explanation box that points at one component, with the rest of the screen washed, and a way to go back and on.",
   category: "Communication",
-  status: "planned",
+  status: "draft",
+  preview: "/components/guided-step/card.png",
   order: 3,
-  source: "components/prototype/wavefoil/guided-mode.tsx",
 };
 
 ## Overview
 
-<Todo for="overview" />
+The guided step is an explanation box that points at one part of the screen, and it is how Learn explains a screen. The rest of the screen is washed, so the part that is explained stands out, and there is a way to go back and on.
 
-## Anatomy
+## Features
 
-<Todo for="anatomy" />
+- Has a teal header with the icon of training and the name of the step, and a body with the explanation.
+- Has Previous and Next. Previous is disabled on the first step, and the last step says Finish instead of Next.
+- Points at the part it explains, with a pointer on the side of the box that faces it, centred on that part.
+- Glides from one step to the next, since every box moves on the same properties.
+- Can lead on to a test, when the label of the button that goes on says so.
 
 ## Variants
 
-<Todo for="variants" />
-
-## States
-
-<Todo for="states" />
-
-## Behaviour
-
-<Todo for="behaviour" />
+- **Pointer side.** The pointer is on the left, right, top or bottom of the box, or the box has none when it explains the screen as a whole.
+- **Placed from the top or the bottom.** A step that explains something above the box hangs the box from the bottom of the screen.
+- **Narrow.** A box narrower than 300 px has less space between the icon and the words on its buttons.
 
 ## Specs
 
-<Todo for="specs" />
+<SpecTable
+  rows={[
+    ["Width", "379 px", "Set by each step. The examples in the first chapter are this wide."],
+    ["Pointer", "20 × 12 px", "Long and short side."],
+    ["Narrow below", "300 px"],
+    ["Buttons", "Previous and Next", "Next is the raised button, in Teal 500."],
+  ]}
+/>
 
 ## Guidelines
 
-<Todo for="guidelines" />
-
-## Accessibility
-
-<Todo for="accessibility" />
-
-## Theory
-
-<Todo for="theory" />
-
-## Implementation
-
-<Todo for="implementation" />
-
-## Open questions
-
-<Todo for="questions" />
+<DoDont>
+  <Do>To write.</Do>
+  <Dont>To write.</Dont>
+</DoDont>

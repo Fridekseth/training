@@ -62,13 +62,21 @@ function Hull() {
   );
 }
 
-export function SecondScreen() {
+export function SecondScreen({
+  embedded = false,
+  onClose,
+}: {
+  /** Shown inside the app, which has the phone around it, instead of on a page of its own. */
+  embedded?: boolean;
+  /** What the close button does; without one it goes back a page. */
+  onClose?: () => void;
+} = {}) {
   const { motion, source, needsPermission, secure, enable, level, drag, release, lifted } = useVesselMotion();
   const grab = useRef<{ x: number; y: number } | null>(null);
   const dragging = source !== "sensors";
 
   return (
-    <div className={styles.page}>
+    <div className={`${styles.page} ${embedded ? styles.embedded : ""}`}>
       <div
         className={styles.phone}
         onPointerDown={(event) => {
@@ -96,7 +104,7 @@ export function SecondScreen() {
           className={styles.close}
           variant={IconButtonVariant.flat}
           aria-label="Close"
-          onClick={() => window.history.back()}
+          onClick={() => (onClose ? onClose() : window.history.back())}
           onPointerDown={(event) => event.stopPropagation()}
         >
           <ObiCloseGoogle />

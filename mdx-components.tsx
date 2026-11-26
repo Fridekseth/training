@@ -1,16 +1,17 @@
 import type { MDXComponents } from "mdx/types";
 import Link from "next/link";
 import { Carousel } from "@/components/carousel";
+import { ImageRow } from "@/components/image-row";
 import {
-  Anatomy,
   Do,
   DoDont,
   Dont,
   Figure,
-  PropTable,
+  Gallery,
   SpecTable,
   State,
   States,
+  Swatches,
   Todo,
 } from "@/components/docs/doc-parts";
 import { PromptBox } from "@/components/prompt-box";
@@ -32,6 +33,7 @@ const slugify = (text: string) =>
 */
 const components: MDXComponents = {
   Carousel,
+  ImageRow,
   SourcePill,
   PromptBox,
   PrototypeEmbed,
@@ -40,15 +42,15 @@ const components: MDXComponents = {
   Td,
   Shot,
   // The parts a component page is written with.
-  Anatomy,
   Do,
   DoDont,
   Dont,
   Figure,
-  PropTable,
+  Gallery,
   SpecTable,
   State,
   States,
+  Swatches,
   Todo,
   h1: (props) => (
     <h1

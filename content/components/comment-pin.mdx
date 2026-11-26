@@ -3,51 +3,40 @@ export const metadata = {
   summary:
     "A pin on a component that opens the comments written about it.",
   category: "Communication",
-  status: "planned",
+  status: "draft",
+  preview: "/components/comment-pin/card.png",
   order: 4,
-  source: "components/prototype/wavefoil/explore-mode.tsx",
 };
 
 ## Overview
 
-<Todo for="overview" />
+The comment pin marks a comment on the screen. Pressing it opens the thread that belongs to it. It is used in Explore and Collaborate.
 
-## Anatomy
+## Features
 
-<Todo for="anatomy" />
+- Is drawn dark when the comment is unread, and light when it has been read.
+- Opens into the initials of the people who have written in it when its comment is open.
+- Disables the other pins while one comment is open.
+- Is pushed back inside the screen when it is near an edge, so the open pin is never cut off.
 
 ## Variants
 
-<Todo for="variants" />
-
-## States
-
-<Todo for="states" />
-
-## Behaviour
-
-<Todo for="behaviour" />
+- **Unread and read.** Dark and light.
+- **Enabled, checked and disabled.** Enabled is a pin that can be pressed, checked is the one that is open, and disabled is the others while that one is open.
 
 ## Specs
 
-<Todo for="specs" />
+<SpecTable
+  rows={[
+    ["Icon", "24 px"],
+    ["Width, open", "28 px per person + 16 px", "So two people make a pin of 72 px."],
+    ["Distance to the edge", "4 px at least", "Where it is pushed back from."],
+  ]}
+/>
 
 ## Guidelines
 
-<Todo for="guidelines" />
-
-## Accessibility
-
-<Todo for="accessibility" />
-
-## Theory
-
-<Todo for="theory" />
-
-## Implementation
-
-<Todo for="implementation" />
-
-## Open questions
-
-<Todo for="questions" />
+<DoDont>
+  <Do>To write.</Do>
+  <Dont>To write.</Dont>
+</DoDont>

@@ -3,51 +3,43 @@ export const metadata = {
   summary:
     "The teal frame around the screen that says it is in training mode and not the live system.",
   category: "Communication",
-  status: "planned",
+  status: "draft",
+  preview: "/components/training-frame/card.png",
   order: 1,
-  source: "components/prototype/wavefoil/training-frame.tsx",
 };
 
 ## Overview
 
-<Todo for="overview" />
+The training frame is the teal frame around the screen. It says that the screen is in training mode, and not the live system. It is there in every mode, from the moment training mode starts until it is left.
 
-## Anatomy
+## Features
 
-<Todo for="anatomy" />
+- Is drawn once around the screen when training mode starts, from the bottom right corner, where the row of tools starts.
+- Is a plain line once it has been drawn, with no seam where the drawing ended.
+- Lies just outside the screen, so it takes no room from what is on it.
+- Is above the row of tools, so the shadow of that row does not darken the frame beside it.
+- Lets every press through to the screen, so it is never in the way.
+- Is not animated when the user has asked for less motion.
 
 ## Variants
 
-<Todo for="variants" />
-
-## States
-
-<Todo for="states" />
-
-## Behaviour
-
-<Todo for="behaviour" />
+The frame has one form. It is the same in every mode.
 
 ## Specs
 
-<Todo for="specs" />
+<SpecTable
+  rows={[
+    ["Thickness", "6 px"],
+    ["Colour", "Teal 300", "The teal of the training pattern."],
+    ["Rounded corners", "9 px"],
+    ["Drawing time", "1.1 s", "Once, when it appears."],
+    ["Placed on", "786 × 590 px", "The size of the prototype's screen. The line runs along its edge, on the outside."],
+  ]}
+/>
 
 ## Guidelines
 
-<Todo for="guidelines" />
-
-## Accessibility
-
-<Todo for="accessibility" />
-
-## Theory
-
-<Todo for="theory" />
-
-## Implementation
-
-<Todo for="implementation" />
-
-## Open questions
-
-<Todo for="questions" />
+<DoDont>
+  <Do>To write.</Do>
+  <Dont>To write.</Dont>
+</DoDont>

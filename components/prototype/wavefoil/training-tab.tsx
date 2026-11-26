@@ -120,6 +120,7 @@ export function ModeIntro({
   label,
   rest,
   width = TAB_WIDTH,
+  phase,
   onSettled,
 }: {
   /** The corner it settles into. */
@@ -132,20 +133,24 @@ export function ModeIntro({
   rest?: string;
   /** The width of the tab it settles into. */
   width?: number;
+  /** Holds it in the middle or in the corner, instead of letting it settle by itself, as the documentation shows it. */
+  phase?: "hold" | "settled";
   onSettled: () => void;
 }) {
-  const [settling, setSettling] = useState(false);
+  const [settlingByTime, setSettlingByTime] = useState(false);
+  const settling = phase ? phase === "settled" : settlingByTime;
 
   useEffect(() => {
-    const move = window.setTimeout(() => setSettling(true), HOLD_MS);
+    if (phase) return;
+    const move = window.setTimeout(() => setSettlingByTime(true), HOLD_MS);
     return () => window.clearTimeout(move);
-  }, []);
+  }, [phase]);
 
   useEffect(() => {
-    if (!settling) return;
+    if (phase || !settling) return;
     const done = window.setTimeout(onSettled, SETTLE_MS);
     return () => window.clearTimeout(done);
-  }, [settling, onSettled]);
+  }, [phase, settling, onSettled]);
 
   const target = cornerPosition(corner, width);
   const right = corner.endsWith("right");

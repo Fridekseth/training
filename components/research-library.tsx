@@ -127,7 +127,7 @@ function VisualLibrary({
                 sizes="(min-width: 640px) 330px, 100vw"
                 // Phone screenshots would otherwise run very tall in a column.
                 style={portrait ? { maxHeight: 440 } : undefined}
-                className={`rounded-lg border border-border transition-colors group-hover:border-accent ${
+                className={`rounded-lg border border-border transition-colors group-hover:border-accent/40 ${
                   portrait ? "mx-auto h-auto w-auto max-w-full" : "h-auto w-full"
                 }`}
               />
@@ -238,7 +238,7 @@ function PaperCard({
                     width={image.width}
                     height={image.height}
                     sizes={`${thumbWidth}px`}
-                    className="h-auto w-full rounded-lg border border-border transition-colors group-hover:border-accent"
+                    className="h-auto w-full rounded-lg border border-border transition-colors group-hover:border-accent/40"
                   />
                 </a>
                 <ImageCaption image={image} />

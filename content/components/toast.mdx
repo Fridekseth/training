@@ -1,0 +1,49 @@
+export const metadata = {
+  title: "Toast",
+  summary:
+    "The bar at the top of the screen that says what the task is while a scenario runs, with a way to give it up.",
+  category: "Communication",
+  status: "draft",
+  preview: "/components/toast/card.png",
+  order: 6,
+};
+
+## Overview
+
+The toast is the bar that says what the learner is to do while a scenario runs, such as Deploy the foils. It has a button to cancel the scenario, with a ring round it that shows how the scenario is going.
+
+## Features
+
+- Names the task in bold, with a second line under it when there is more to say.
+- Has a cancel button with a ring round it. The ring turns while the sequence starts, and runs down while the time to do the task goes.
+- Has a handle at the front, with a line after it, to move the bar off whatever it covers. The arrow keys move it too.
+- Stays inside the screen when it is moved.
+- Can have an icon in front of the title in place of the handle, for a toast that is not moved.
+
+## Variants
+
+- **Ring.** Turning while the sequence starts, or running down with the time that is left.
+- **Movable.** With a handle, or with an icon.
+- **Title only, or title and subtitle.** A scenario has only a title.
+
+## Specs
+
+<SpecTable
+  rows={[
+    ["Width", "480 px", "At least 64 px high."],
+    ["Place to begin with", "162 px / 8 px", "From the left and from the top."],
+    ["Padding", "8 px / 16 px", "8 px, and 16 px at the front."],
+    ["Rounded corners", "6 px"],
+    ["Cancel button", "48 px", "With the ring on top. The ring running down is 3 px thick."],
+    ["Handle", "24 × 48 px", "A divider of 1 × 24 px after it."],
+    ["Icon", "32 px", "In place of the handle."],
+    ["Step of the arrow keys", "16 px"],
+  ]}
+/>
+
+## Guidelines
+
+<DoDont>
+  <Do>To write.</Do>
+  <Dont>To write.</Dont>
+</DoDont>

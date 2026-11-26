@@ -3,51 +3,44 @@ export const metadata = {
   summary:
     "The list of the steps in a chapter, opened from the mode tab, with a way out of training mode.",
   category: "Navigation",
-  status: "planned",
+  status: "draft",
+  preview: "/components/step-menu/card.png",
   order: 2,
-  source: "components/prototype/wavefoil/guided-mode.tsx",
 };
 
 ## Overview
 
-<Todo for="overview" />
+The step menu is the list of the steps in a chapter. It is opened from the [mode tab](/documentation/components/mode-tab), and it has a way out of training mode at the bottom.
 
-## Anatomy
+## Features
 
-<Todo for="anatomy" />
+- Has the title and icon of the chapter on top, and a card for each step, with its number and a dot on a line.
+- Marks how far the learner has come: the line and the dots are teal up to the current step and grey after it.
+- Goes to a step when its card is pressed.
+- Lists every step from the current one on. When the chapter is longer than the menu has room for, the steps nearest the end are packed into a stack in front of the last one, with a dotted line where they were.
+- Leaves off the oldest steps at the top only when there is nothing left to pack.
+- Sits at the side of the corner the tab is in, clear of the tab.
+- Ends with the button Exit training mode.
 
 ## Variants
 
-<Todo for="variants" />
-
-## States
-
-<Todo for="states" />
-
-## Behaviour
-
-<Todo for="behaviour" />
+- **Whole chapter.** Every step has its own card, when the chapter fits.
+- **Packed.** The last steps are a stack, when it does not fit.
+- **Corner.** The menu sits on the left or the right, and at the top or the bottom, with the tab.
 
 ## Specs
 
-<Todo for="specs" />
+<SpecTable
+  rows={[
+    ["Rows", "7", "How many steps the menu has room for under its heading."],
+    ["Exit button", "Full width", "The raised button, with the closing cross."],
+    ["Distance to the edge", "8 px / 56 px", "8 px from the side, and 56 px from the top or the bottom, so it clears the 48 px tab."],
+  ]}
+/>
 
 ## Guidelines
 
-<Todo for="guidelines" />
-
-## Accessibility
-
-<Todo for="accessibility" />
-
-## Theory
-
-<Todo for="theory" />
-
-## Implementation
-
-<Todo for="implementation" />
-
-## Open questions
-
-<Todo for="questions" />
+<DoDont>
+  <Do>To write.</Do>
+  <Dont>To write.</Dont>
+</DoDont>

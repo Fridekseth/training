@@ -11,6 +11,12 @@
   background: #1f1f1f;
 }
 
+/* Inside the app, which has the phone around it, the screen takes the room it is given. */
+.embedded {
+  height: 100%;
+  background: transparent;
+}
+
 .phone {
   position: relative;
   display: flex;

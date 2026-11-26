@@ -1,0 +1,19 @@
+## What
+
+Learn is the onboarding of the training. It is a course in chapters that gives an introduction to the system and all its features. The whole course takes about 30 minutes. It can be done in one go or with breaks, it can be left at any time, and the progress is saved.
+
+## How it works
+
+1. The learner chooses a chapter from the Learn page, which lists them with a result, a status and a button to start or open them.
+2. The mode opens with the [mode intro](/documentation/components/mode-intro), the [training frame](/documentation/components/training-frame) is drawn around the screen, and the [mode tab](/documentation/components/mode-tab) settles in the corner.
+3. The chapter goes through the interface one part at a time. Each [guided step](/documentation/components/guided-step) lights up one part, washes the rest of the screen, and explains it next to it.
+4. The [step menu](/documentation/components/step-menu) opens from the mode tab, to go to a step or to leave training mode.
+5. The last step leads to a test of the chapter. The results list every question with a score, and the chapter can be taken again.
+
+The prototype has five chapters: Operating the foils, Decision support, Debriefing, Alarms and Application patterns.
+
+## Why
+
+One component at a time, with the text right next to it, avoids the split-attention effect. Related information that is shown apart has to be pieced together, which is extraneous load <SourcePill href="/research#sweller-cognitive-load">Sweller (1994)</SourcePill>.
+
+One step at a time is progressive disclosure <SourcePill href="/research#duolingo-onboarding">Duolingo</SourcePill> <SourcePill href="/research#figma-onboarding">Figma</SourcePill> <SourcePill href="/research#forsey-et-al-designing-for-learnability">Forsey et al. (2024)</SourcePill> <SourcePill href="/research#liu-sra-tasklens">Liu & Sra (2026)</SourcePill>. Beginners gain from it, and experienced users can feel boxed in, so the step menu is an easy way out <SourcePill href="/research#carroll-rosson-active-user">Carroll & Rosson (1987)</SourcePill>.

@@ -50,12 +50,15 @@ export function WavefoilApp({
   conditions = "ideal",
   onDim,
   onExploring,
+  shortcut,
 }: {
   palette: string;
   /** The state of the sea, which the decision support page reads. */
   conditions?: Conditions;
   onDim: () => void;
   onExploring?: (exploring: boolean) => void;
+  /** Opens a page of the training from outside the screen, as the shortcuts on the demo page do. A new `id` opens it again. */
+  shortcut?: { page: WfPageId; id: number } | null;
 }) {
   const [page, setPage] = useState<AppPage>("overview");
   /** The pages, or the training section the menu leads to. */
@@ -74,6 +77,8 @@ export function WavefoilApp({
   const [bellPresses, setBellPresses] = useState(0);
   /** Which training page to open on, so explore mode returns to where it began. */
   const [trainingStart, setTrainingStart] = useState<WfPageId>("home");
+  /** Counts the shortcuts, so the same page opens afresh when it is asked for again. */
+  const [trainingRound, setTrainingRound] = useState(0);
   /** The comments left on the screen, shared by explore mode and the Explore page's list. */
   const [threads, setThreads] = useState<Thread[]>(THREADS);
   /** The comment explore mode opens on, when it was reached from the list. */
@@ -138,6 +143,20 @@ export function WavefoilApp({
     setLayer(next);
     setAdviceOpen(false);
   };
+
+  // A shortcut from outside the screen takes it to a page of the training, from wherever it is.
+  // The screen is moved by what it was told, which is the point of the effect.
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    if (!shortcut) return;
+    setTrainingStart(shortcut.page);
+    setTrainingRound(shortcut.id);
+    setMenuOpen(false);
+    goTo("training");
+    // Only a new shortcut moves the screen, and where it goes to is read when it is asked for.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shortcut]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   /** Runs a guided sequence on the page and with the foils as it describes them. */
   const startGuided = (next: GuidedSequence) => {
@@ -206,7 +225,7 @@ export function WavefoilApp({
 
       {layer === "training" ? (
         <TrainingSection
-          key={trainingStart}
+          key={`${trainingStart}-${trainingRound}`}
           start={trainingStart}
           threads={threads}
           onExplore={() => goTo("explore")}

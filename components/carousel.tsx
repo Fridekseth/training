@@ -105,7 +105,7 @@ export function Carousel({
               onClick={() => goTo(index + step)}
               disabled={disabled}
               aria-label={`${name} slide`}
-              className={`absolute top-1/2 ${side} flex size-9 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-background/95 text-foreground shadow-sm transition-colors hover:border-accent hover:text-accent disabled:pointer-events-none disabled:opacity-0`}
+              className={`absolute top-1/2 ${side} flex size-9 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-background/95 text-foreground shadow-sm transition-colors hover:border-accent/40 hover:text-accent disabled:pointer-events-none disabled:opacity-0`}
             >
               <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d={path} />

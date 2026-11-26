@@ -1,3 +1,7 @@
+import fs from "node:fs";
+import path from "node:path";
+import type { ComponentType } from "react";
+
 /** The three sections of the documentation, in the order they are shown. */
 export const DOCUMENTATION_SECTIONS = [
   {
@@ -39,7 +43,14 @@ export function getDocumentationSection(slug: DocumentationSection["slug"]) {
 
 export type SectionKey = "visual-language" | "patterns";
 
-export type SectionItem = { slug: string; title: string };
+export type SectionItem = {
+  slug: string;
+  title: string;
+  /** Planned until its page is written in `content/<section>/<slug>.mdx`, and a draft from then on. */
+  status: "planned" | "draft";
+};
+
+export const ITEM_STATUS_LABEL = { planned: "Planned", draft: "Draft" } as const;
 
 const slugify = (title: string) => title.toLowerCase().replace(/\s+/g, "-");
 
@@ -52,11 +63,26 @@ const ITEM_TITLES: Record<SectionKey, string[]> = {
     "Elevation",
     "Animation",
     "Tone of voice",
-    "Cursors",
   ],
   patterns: ["Overview", "Learn", "Explore", "Collaborate", "Practice", "Test", "Second screen"],
 };
 
+const pagePath = (section: SectionKey, slug: string) =>
+  path.join(process.cwd(), "content", section, `${slug}.mdx`);
+
 export function getSectionItems(section: SectionKey): SectionItem[] {
-  return ITEM_TITLES[section].map((title) => ({ title, slug: slugify(title) }));
+  return ITEM_TITLES[section].map((title) => {
+    const slug = slugify(title);
+    return { title, slug, status: fs.existsSync(pagePath(section, slug)) ? "draft" : "planned" };
+  });
+}
+
+/** The written page of an item, or null while it is only planned. */
+export async function getSectionItemContent(
+  section: SectionKey,
+  slug: string,
+): Promise<ComponentType | null> {
+  if (!fs.existsSync(pagePath(section, slug))) return null;
+  const mod = await import(`@/content/${section}/${slug}.mdx`);
+  return mod.default as ComponentType;
 }

@@ -1,0 +1,72 @@
+.status {
+  display: flex;
+  height: 48px;
+  flex-shrink: 0;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0 32px 6px 40px;
+  background: var(--base-teal-600, #004346);
+  color: #fff;
+}
+
+.time {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 22px;
+}
+
+.icons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-bottom: 5px;
+}
+
+.home {
+  display: flex;
+  height: 34px;
+  flex-shrink: 0;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 8px;
+  background: var(--container-background-color, #f7f7f7);
+}
+
+.pill {
+  display: block;
+  width: 134px;
+  height: 5px;
+  border-radius: 100px;
+  background: #1f1f1f;
+}
+
+.tone_white {
+  background: var(--container-global-color, #fcfcfc);
+  color: #1f1f1f;
+}
+
+.tone_tint {
+  background: var(--base-teal-050, #e2f2f3);
+  color: #1f1f1f;
+}
+
+/* Over the top of a page that fills the screen, as it is drawn in the design. */
+.overlay {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 5;
+  background: transparent;
+  pointer-events: none;
+}
+
+.homeOverlay {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 5;
+  background: transparent;
+  pointer-events: none;
+}

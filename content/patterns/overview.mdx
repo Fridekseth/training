@@ -1,0 +1,16 @@
+## What
+
+The overview is the home of the training. It is the page the learner meets first, and it says what to do next: the course that is due, a practice that is recommended, and a log of what has been done.
+
+## How it works
+
+- The training is reached from the menu in the top bar of the interface.
+- The page greets the learner, and has two cards that lead on: the recurrent training, to be completed before a date, and a recommended practice, which says how long it has been since the last critical alarm.
+- Under the cards is the training log: a list of finished chapters, tests and scenarios, with the date, the result and the progress.
+- Both cards are the [rich button](/documentation/components/rich-button).
+
+## Why
+
+The system nudges the learner to practice based on the time since the last practice. That is supported by the spacing effect <SourcePill href="/research#ebbinghaus-memory">Ebbinghaus (1885)</SourcePill>, and the right gap depends on how long the knowledge has to last <SourcePill href="/research#carpenter-spacing">Carpenter et al. (2012)</SourcePill>.
+
+The log shows a result for each entry and not hours, because the amount of practice is a weak predictor of expert performance <SourcePill href="/research#macnamara-maitra-deliberate-practice">Macnamara & Maitra (2019)</SourcePill>. The status is still about finishing, which is something to look at again.

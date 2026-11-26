@@ -8,8 +8,8 @@ export type PostFrontmatter = {
   /** ISO date, e.g. "2026-02-14". */
   date: string;
   summary: string;
-  /** Where this entry sits in the course: research, sketching, prototype... */
-  stage?: string;
+  /** Where this entry sits in the course: research, sketching, prototype... A list when it is more than one. */
+  stage?: string | string[];
   /** Thumbnail for the listings, from `public/`. Omit when the entry has none. */
   image?: string;
   /** What the thumbnail shows, for anyone who cannot see it. */
@@ -17,6 +17,8 @@ export type PostFrontmatter = {
   tags?: string[];
   /** Drafts are listed while developing and hidden from production builds. */
   draft?: boolean;
+  /** Shown under Highlighted entries on the front page. "main" is the one drawn big, across the whole width. */
+  highlight?: boolean | "main";
 };
 
 export type Post = PostFrontmatter & { slug: string };
@@ -61,6 +63,12 @@ export async function getPosts(): Promise<Post[]> {
 export async function getPostParams(): Promise<{ slug: string }[]> {
   const slugs = await readSlugs();
   return slugs.map((slug) => ({ slug }));
+}
+
+/** The stage labels of a post as a list, whether it has none, one or several. */
+export function getStages(post: Pick<PostFrontmatter, "stage">): string[] {
+  if (!post.stage) return [];
+  return Array.isArray(post.stage) ? post.stage : [post.stage];
 }
 
 export function formatDate(iso: string): string {

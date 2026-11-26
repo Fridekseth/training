@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowBack } from "@/components/icons";
 import { Pill } from "@/components/pill";
-import { formatDate, getPost, getPostParams } from "@/lib/posts";
+import { formatDate, getPost, getPostParams, getStages } from "@/lib/posts";
 import { PAGE_CONTAINER, PROSE_WIDTH } from "@/lib/layout";
 
 export async function generateStaticParams() {
@@ -31,14 +30,17 @@ export default async function BlogPostPage(props: PageProps<"/blog/[slug]">) {
           href="/blog"
           className="inline-flex items-center gap-1.5 text-sm text-muted transition-colors hover:text-accent"
         >
-          <ArrowBack className="size-3.5" />
           Process
         </Link>
 
         <header className="mt-8 border-b border-border pb-8">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-faint">
             <time dateTime={meta.date}>{formatDate(meta.date)}</time>
-            {meta.stage ? <Pill tone="solid">{meta.stage}</Pill> : null}
+            {getStages(meta).map((stage) => (
+              <Pill key={stage} tone="solid">
+                {stage}
+              </Pill>
+            ))}
             {meta.draft ? <Pill>draft</Pill> : null}
           </div>
 
