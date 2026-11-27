@@ -3,21 +3,20 @@ export const metadata = {
   summary:
     "A box in the middle of the screen that says which mode has been opened, and then settles into the mode tab in the corner.",
   category: "Communication",
-  status: "draft",
+  status: "documented",
   preview: "/components/mode-intro/card.png",
   order: 2,
 };
 
 ## Overview
 
-The mode intro is a box in the middle of the screen that says which mode has been opened. After a moment it settles into the corner as the [mode tab](/documentation/components/mode-tab). It is the tab by the time it gets there, so the real one can take its place without anything moving.
+The mode intro shows up in the middle of the screen as a mode is started, informing of the mode that has been opened. After a moment it settles into the corner and turns into the [mode tab](/documentation/components/mode-tab).
 
 ## Features
 
 - Names the mode with a large icon and a title, and a second line under it when there is something more to say.
 - Stays in the middle for about two seconds, and then moves to the corner the tab is in.
 - Shrinks its icon and its words as it moves, and ends up as the tab, with the words the tab has.
-- Ends with the handle on the inner edge of the tab, which is the right side of a tab in a left corner.
 
 ## Variants
 

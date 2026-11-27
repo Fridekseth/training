@@ -3,23 +3,20 @@ export const metadata = {
   summary:
     "The teal frame around the screen that says it is in training mode and not the live system.",
   category: "Communication",
-  status: "draft",
+  status: "documented",
   preview: "/components/training-frame/card.png",
   order: 1,
 };
 
 ## Overview
 
-The training frame is the teal frame around the screen. It says that the screen is in training mode, and not the live system. It is there in every mode, from the moment training mode starts until it is left.
+The training frame is the teal frame around the screen, that shows up whenever the system is in learning mode. It is there in every mode, from the moment training mode starts until it is left.
 
 ## Features
 
-- Is drawn once around the screen when training mode starts, from the bottom right corner, where the row of tools starts.
+- Is drawn once around the screen when training mode starts, from the bottom right corner.
 - Is a plain line once it has been drawn, with no seam where the drawing ended.
-- Lies just outside the screen, so it takes no room from what is on it.
-- Is above the row of tools, so the shadow of that row does not darken the frame beside it.
-- Lets every press through to the screen, so it is never in the way.
-- Is not animated when the user has asked for less motion.
+- Always shows up together with the mode tab.
 
 ## Variants
 

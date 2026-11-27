@@ -1,31 +1,29 @@
 export const metadata = {
-  title: "Rich button",
+  title: "Rich button with image",
   summary:
     "A card that leads to a page of the training, with a drawing, a label and a line of text.",
   category: "Navigation",
-  status: "draft",
+  status: "documented",
   preview: "/components/rich-button/card.png",
   order: 3,
 };
 
 ## Overview
 
-The rich button is a custom version of the OpenBridge rich button. It is a card that leads to a page of the training, such as the recommended practice on the overview page. It has a drawing on a teal plate in place of the icon, and a badge for something that needs attention.
+The rich button with image is a custom version of the OpenBridge rich button, but with the added possibility to add an image or illustration instead of a leading icon.
 
 ## Features
 
-- Has a label in bold, a line of text under it, and a chevron on the right.
-- Has a drawing on a teal plate in front. The plate is left out when there is no drawing.
+- Has a label in bold, a line of text under it, and a trailing icon, that could be a chevron for example.
+- Has a slot for an image or illustration.
 - Can have a badge in the top right corner, for something that needs attention.
-- Changes colour when the pointer is over it, and again when it is pressed.
-- Gets an outline when it is reached with the keyboard.
-- Can be disabled.
+- Has enabled, hover, active, focused and disabled states.
 
 ## Variants
 
-- **With or without a drawing.** The plate is only there when there is a drawing.
-- **With or without a badge.**
-- **Enabled or disabled.**
+- With or without an image.
+- With or without a badge.
+- Enabled, hover, active, focused and disabled states.
 
 ## Specs
 

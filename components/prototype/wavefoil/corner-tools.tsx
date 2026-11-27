@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { createContext, useContext, useRef, useState } from "react";
 import type { ReactNode, RefObject } from "react";
 import { MaskIcon } from "../pieces";
 import styles from "./corner-tools.module.css";
@@ -11,18 +11,25 @@ export type Corner = "top-left" | "top-right" | "bottom-left" | "bottom-right";
 export const SCREEN = { width: 786, height: 590 };
 const HEIGHT = 48;
 
+/**
+ * The size of the screen the tools and the toast are placed on: the prototype's, unless a
+ * smaller one is given, as the documentation does to show a component at its own size.
+ */
+export const ScreenSize = createContext(SCREEN);
+export const useScreen = () => useContext(ScreenSize);
+
 /** The row's width is the sum of the handle and its tools. */
 export const GRIP_WIDTH = 41;
 
-export const cornerPosition = (corner: Corner, width: number) => ({
-  left: corner.endsWith("left") ? 0 : SCREEN.width - width,
-  top: corner.startsWith("top") ? 0 : SCREEN.height - HEIGHT,
+export const cornerPosition = (corner: Corner, width: number, screen = SCREEN) => ({
+  left: corner.endsWith("left") ? 0 : screen.width - width,
+  top: corner.startsWith("top") ? 0 : screen.height - HEIGHT,
 });
 
 /** The corner nearest the middle of the row, for where it was let go. */
-const nearest = (left: number, top: number, width: number): Corner => {
-  const x = left + width / 2 < SCREEN.width / 2 ? "left" : "right";
-  const y = top + HEIGHT / 2 < SCREEN.height / 2 ? "top" : "bottom";
+const nearest = (left: number, top: number, width: number, screen = SCREEN): Corner => {
+  const x = left + width / 2 < screen.width / 2 ? "left" : "right";
+  const y = top + HEIGHT / 2 < screen.height / 2 ? "top" : "bottom";
   return `${y}-${x}`;
 };
 
@@ -61,22 +68,23 @@ export function CornerTools({
   onCornerChange?: (corner: Corner | null) => void;
   children: ReactNode;
 }) {
+  const screen = useScreen();
   const [dragAt, setDragAt] = useState<{ left: number; top: number } | null>(null);
   const grab = useRef<{ x: number; y: number; left: number; top: number; scale: number } | null>(null);
 
-  const at = dragAt ?? cornerPosition(corner, width);
-  const shown = dragAt ? nearest(dragAt.left, dragAt.top, width) : corner;
+  const at = dragAt ?? cornerPosition(corner, width, screen);
+  const shown = dragAt ? nearest(dragAt.left, dragAt.top, width, screen) : corner;
 
   const start = (event: React.PointerEvent<HTMLButtonElement>) => {
     const frame = layer.current?.getBoundingClientRect();
     if (!frame) return;
-    const from = cornerPosition(corner, width);
+    const from = cornerPosition(corner, width, screen);
     grab.current = {
       x: event.clientX,
       y: event.clientY,
       left: from.left,
       top: from.top,
-      scale: frame.width / SCREEN.width,
+      scale: frame.width / screen.width,
     };
     event.currentTarget.setPointerCapture(event.pointerId);
     setDragAt(from);
@@ -88,17 +96,17 @@ export function CornerTools({
     if (!from) return;
     const clamp = (value: number, max: number) => Math.min(max, Math.max(0, value));
     const next = {
-      left: clamp(from.left + (event.clientX - from.x) / from.scale, SCREEN.width - width),
-      top: clamp(from.top + (event.clientY - from.y) / from.scale, SCREEN.height - HEIGHT),
+      left: clamp(from.left + (event.clientX - from.x) / from.scale, screen.width - width),
+      top: clamp(from.top + (event.clientY - from.y) / from.scale, screen.height - HEIGHT),
     };
     setDragAt(next);
-    onCornerChange?.(nearest(next.left, next.top, width));
+    onCornerChange?.(nearest(next.left, next.top, width, screen));
   };
 
   /** Letting go snaps the row to the nearest corner. */
   const end = () => {
     grab.current = null;
-    if (dragAt) onCorner(nearest(dragAt.left, dragAt.top, width));
+    if (dragAt) onCorner(nearest(dragAt.left, dragAt.top, width, screen));
     setDragAt(null);
     onCornerChange?.(null);
   };

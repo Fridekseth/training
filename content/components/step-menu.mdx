@@ -3,22 +3,21 @@ export const metadata = {
   summary:
     "The list of the steps in a chapter, opened from the mode tab, with a way out of training mode.",
   category: "Navigation",
-  status: "draft",
+  status: "documented",
   preview: "/components/step-menu/card.png",
   order: 2,
 };
 
 ## Overview
 
-The step menu is the list of the steps in a chapter. It is opened from the [mode tab](/documentation/components/mode-tab), and it has a way out of training mode at the bottom.
+The step menu is used to navigate in a sequence with several steps. It is opened from the [mode tab](/documentation/components/mode-tab), and it has a way out of training mode at the bottom. It is built using patterns from the sequence components in OpenBridge.
 
 ## Features
 
-- Has the title and icon of the chapter on top, and a card for each step, with its number and a dot on a line.
-- Marks how far the learner has come: the line and the dots are teal up to the current step and grey after it.
-- Goes to a step when its card is pressed.
-- Lists every step from the current one on. When the chapter is longer than the menu has room for, the steps nearest the end are packed into a stack in front of the last one, with a dotted line where they were.
-- Leaves off the oldest steps at the top only when there is nothing left to pack.
+- Has the title and icon of the chapter or sequence you are in on top, and a card for each step, with its number and a progress line.
+- Marks how far the learner has come: the line and the dots are filled up to the current step and grey after it.
+- Navigates to a step when its card is pressed.
+- Lists every step from the current one on. When the chapter is longer than the menu has room for, the steps nearest the end are packed into a stack.
 - Sits at the side of the corner the tab is in, clear of the tab.
 - Ends with the button Exit training mode.
 

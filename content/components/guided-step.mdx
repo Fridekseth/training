@@ -3,28 +3,26 @@ export const metadata = {
   summary:
     "An explanation box that points at one component, with the rest of the screen washed, and a way to go back and on.",
   category: "Communication",
-  status: "draft",
+  status: "documented",
   preview: "/components/guided-step/card.png",
   order: 3,
 };
 
 ## Overview
 
-The guided step is an explanation box that points at one part of the screen, and it is how Learn explains a screen. The rest of the screen is washed, so the part that is explained stands out, and there is a way to go back and on.
+The guided step is an explanation box that points at one part of the screen. It can have both text, image and interactions. It is based on the OpenBridge Toggletip, so it follows familiar styling, but used in a new context.
 
 ## Features
 
-- Has a teal header with the icon of training and the name of the step, and a body with the explanation.
-- Has Previous and Next. Previous is disabled on the first step, and the last step says Finish instead of Next.
-- Points at the part it explains, with a pointer on the side of the box that faces it, centred on that part.
-- Glides from one step to the next, since every box moves on the same properties.
-- Can lead on to a test, when the label of the button that goes on says so.
+- Has a teal header with an icon and title.
+- Has a content box for text, images or other content.
+- Has action buttons on the bottom.
+- Points at what it explains, with a pointer on the side of the box.
+- Gliding animation from one step to the next, when multiple boxes are used in a row.
 
 ## Variants
 
 - **Pointer side.** The pointer is on the left, right, top or bottom of the box, or the box has none when it explains the screen as a whole.
-- **Placed from the top or the bottom.** A step that explains something above the box hangs the box from the bottom of the screen.
-- **Narrow.** A box narrower than 300 px has less space between the icon and the words on its buttons.
 
 ## Specs
 

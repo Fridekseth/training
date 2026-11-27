@@ -30,8 +30,6 @@ export function ModeIntroPreview() {
   const [icon, setIcon] = useState<(typeof ICONS)[number][0]>("nav-getting-started");
   const [title, setTitle] = useState("Learn");
   const [subtitle, setSubtitle] = useState("Operating the foils");
-  const [label, setLabel] = useState("Learn");
-  const [rest, setRest] = useState("operating the foils");
   const [settled, setSettled] = useState(false);
 
   return (
@@ -42,17 +40,13 @@ export function ModeIntroPreview() {
           icon={icon}
           title={title}
           subtitle={subtitle || undefined}
-          label={label}
-          rest={rest || undefined}
+          // The tab it settles into reads the same as the announcement: the mode, then what it is about.
+          label={title}
+          rest={subtitle ? subtitle.charAt(0).toLowerCase() + subtitle.slice(1) : undefined}
           phase={settled ? "settled" : "hold"}
           onSettled={() => {}}
         />
       </ComponentStage>
-
-      <p className="mt-3 text-sm text-faint">
-        Switch on settled to see it as the mode tab it becomes. In the prototype it does that by
-        itself after about two seconds.
-      </p>
 
       <Controls>
         <ControlRow name="title" text="The big line in the middle.">
@@ -63,12 +57,6 @@ export function ModeIntroPreview() {
         </ControlRow>
         <ControlRow name="icon" text="The icon of the mode.">
           <SelectControl name="icon" value={icon} options={ICONS} onChange={setIcon} />
-        </ControlRow>
-        <ControlRow name="label" text="The mode, in bold, as it reads in the tab.">
-          <TextControl name="label" value={label} onChange={setLabel} />
-        </ControlRow>
-        <ControlRow name="rest" text="What it is about, after the mode, in the tab.">
-          <TextControl name="rest" value={rest} onChange={setRest} placeholder="Nothing" />
         </ControlRow>
         <ControlRow name="settled" text="Whether it has settled into the corner, as the tab.">
           <SwitchControl name="settled" value={settled} onChange={setSettled} />

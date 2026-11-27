@@ -9,15 +9,33 @@ type Item = { id: string; title: string };
  * the one being read marked. It reads the headings off the page itself, so a
  * page that has fewer sections simply has fewer links.
  */
-export function SectionNav({ target }: { target: string }) {
+export function SectionNav({
+  target,
+  lead,
+}: {
+  target: string;
+  /** A part of the page before the target that gets the first link, like the live demo. */
+  lead?: Item;
+}) {
   const [items, setItems] = useState<Item[]>([]);
   const [active, setActive] = useState<string | null>(null);
+  const leadId = lead?.id;
+  const leadTitle = lead?.title;
 
   useEffect(() => {
-    const headings = [...document.querySelectorAll<HTMLElement>(`#${target} h2[id]`)];
+    const first = leadId ? document.getElementById(leadId) : null;
+    const headings = [
+      ...(first ? [first] : []),
+      ...document.querySelectorAll<HTMLElement>(`#${target} h2[id]`),
+    ];
     // The headings are in the document only once the page is on screen, so they are read here.
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setItems(headings.map((heading) => ({ id: heading.id, title: heading.textContent ?? "" })));
+    setItems(
+      headings.map((heading) => ({
+        id: heading.id,
+        title: heading === first && leadTitle ? leadTitle : (heading.textContent ?? ""),
+      })),
+    );
 
     // The section being read is the last heading that has passed the line just under the sticky bars.
     const mark = () => {
@@ -33,14 +51,14 @@ export function SectionNav({ target }: { target: string }) {
       cancelAnimationFrame(frame);
       window.removeEventListener("scroll", mark);
     };
-  }, [target]);
+  }, [target, leadId, leadTitle]);
 
   if (!items.length) return <div className="h-11" aria-hidden="true" />;
 
   return (
     <nav
       aria-label="On this page"
-      className="sticky top-[3.9rem] z-[9] -mx-6 border-b border-border bg-background/90 px-6 backdrop-blur-sm"
+      className="sticky top-[3.9rem] z-[9] -mx-6 bg-background/90 px-6 backdrop-blur-sm"
     >
       <ul className="flex gap-1 overflow-x-auto py-2 text-sm whitespace-nowrap">
         {items.map((item) => (

@@ -3,6 +3,9 @@ export const metadata = {
   date: "2026-11-02",
   summary:
     "After the talks with industry professionals at the OpenBridge Seminar, and the feedback from the Wavefoil operator, I have decided to further explore the potential in second screens.",
+  image: "/posts/exploring-second-screens/gyro-phone.webp",
+  imageAlt:
+    "A hand holding a phone with the second screen prototype: a pitch, roll and heave instrument inside the outline of a hull",
   stage: "sketching",
   tags: ["second screen", "learning", "process"],
   draft: true,
@@ -14,7 +17,16 @@ I've created a few concepts to test out, designed for mobile. I wanted to utiliz
 
 ### Component documentation gyro
 
-{/* Add photos or a video of the gyro concept here. */}
+<video
+  src="/posts/exploring-second-screens/gyro.mp4"
+  autoPlay
+  muted
+  loop
+  playsInline
+  controls
+  aria-label="A hand tipping a phone with the second screen prototype, while the pitch, roll and heave values on the instrument change"
+  className="my-6 w-full rounded-lg border border-border"
+/>
 
 One of the concepts in the maritime field that I've had the most trouble learning is the motion of the vessel in the water. This inspired me to use the gyro sensors in the phone to make a more tactile experience. The idea is that the phone represents the vessel, and that you can tip it in different directions and see how the movements register in the instruments.
 

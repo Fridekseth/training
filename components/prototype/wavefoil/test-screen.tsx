@@ -23,7 +23,7 @@ import {
   SequenceType,
   SequenceValue,
 } from "@oicl/openbridge-webcomponents/dist/components/sequence-step/sequence-step";
-import { SCREEN, type Corner } from "./corner-tools";
+import { useScreen, type Corner } from "./corner-tools";
 import type { TestQuestion } from "./guided-data";
 import { adopt } from "./test-modal";
 import styles from "./test-screen.module.css";
@@ -129,7 +129,6 @@ export function TestScreenQuestion({
   onFinish: () => void;
 }) {
   const question = questions[index];
-  const last = index === questions.length - 1;
   const answering = question.kind === "ask" || (question.kind === "watch" && passed[index]);
 
   return (
@@ -191,18 +190,40 @@ export function TestScreenQuestion({
         )}
       </div>
 
-      <div className={styles.bar} style={{ width: barWidth(questions.length, false) }}>
-        <ObcSequenceToolbar
-          ref={fitToolbar}
-          type={SequenceToolbarType.sequential}
-          onPrevClick={() => (index > 0 ? onGo(index - 1) : onBack())}
-          onNextClick={() => (last ? onFinish() : onGo(index + 1))}
-        >
-          <span slot="start">{index > 0 ? "Previous" : "Back"}</span>
-          <Steps count={questions.length} index={index} onGo={onGo} />
-          {last ? <span slot="end">Finish</span> : null}
-        </ObcSequenceToolbar>
-      </div>
+      <QuestionToolbar count={questions.length} index={index} onGo={onGo} onBack={onBack} onFinish={onFinish} />
+    </div>
+  );
+}
+
+/** The toolbar on the question page: along the bottom of the screen, where it stays, with no handle. */
+export function QuestionToolbar({
+  count,
+  index,
+  onGo,
+  onBack,
+  onFinish,
+}: {
+  count: number;
+  index: number;
+  onGo: (index: number) => void;
+  /** Before the first question, Previous is Back, out of the test. */
+  onBack: () => void;
+  onFinish: () => void;
+}) {
+  const last = index === count - 1;
+  return (
+    // The teal of training is set on the toolbar itself too, so it keeps it outside the question page.
+    <div className={`${styles.theme} ${styles.bar}`} style={{ width: barWidth(count, false) }}>
+      <ObcSequenceToolbar
+        ref={fitToolbar}
+        type={SequenceToolbarType.sequential}
+        onPrevClick={() => (index > 0 ? onGo(index - 1) : onBack())}
+        onNextClick={() => (last ? onFinish() : onGo(index + 1))}
+      >
+        <span slot="start">{index > 0 ? "Previous" : "Back"}</span>
+        <Steps count={count} index={index} onGo={onGo} />
+        {last ? <span slot="end">Finish</span> : null}
+      </ObcSequenceToolbar>
     </div>
   );
 }
@@ -232,20 +253,23 @@ export function ScenarioChrome({
   onLeave: () => void;
 }) {
   const width = barWidth(count, true);
-  const [at, setAt] = useState({ left: Math.round((SCREEN.width - width) / 2), top: SCREEN.height - BAR_HEIGHT - 15 });
+  const screen = useScreen();
+  // Where the bar has been dragged to; until then it is centred near the bottom of the screen.
+  const [moved, setAt] = useState<{ left: number; top: number } | null>(null);
+  const at = moved ?? { left: Math.round((screen.width - width) / 2), top: screen.height - BAR_HEIGHT - 15 };
   const grab = useRef<{ x: number; y: number; left: number; top: number; scale: number } | null>(null);
   const last = index === count - 1;
 
   const place = (left: number, top: number) =>
     setAt({
-      left: Math.min(SCREEN.width - width, Math.max(0, left)),
-      top: Math.min(SCREEN.height - BAR_HEIGHT, Math.max(0, top)),
+      left: Math.min(screen.width - width, Math.max(0, left)),
+      top: Math.min(screen.height - BAR_HEIGHT, Math.max(0, top)),
     });
 
   const start = (event: React.PointerEvent<HTMLButtonElement>) => {
     const frame = layer.current?.getBoundingClientRect();
     if (!frame) return;
-    grab.current = { x: event.clientX, y: event.clientY, left: at.left, top: at.top, scale: frame.width / SCREEN.width };
+    grab.current = { x: event.clientX, y: event.clientY, left: at.left, top: at.top, scale: frame.width / screen.width };
     event.currentTarget.setPointerCapture(event.pointerId);
   };
 

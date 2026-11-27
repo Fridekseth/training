@@ -29,7 +29,7 @@ const PREVIEWS: Record<string, ComponentType> = {
   "comment-pin": browserOnly(() => import("./comment-pin-preview").then((mod) => mod.CommentPinPreview)),
   thread: browserOnly(() => import("./thread-preview").then((mod) => mod.ThreadPreview)),
   toast: browserOnly(() => import("./toast-preview").then((mod) => mod.ToastPreview)),
-  "rich-button": browserOnly(() => import("./rich-button-preview").then((mod) => mod.RichButtonPreview)),
+  "rich-button-with-image": browserOnly(() => import("./rich-button-preview").then((mod) => mod.RichButtonPreview)),
   cursors: browserOnly(() => import("./cursors-preview").then((mod) => mod.CursorsPreview)),
   "test-toolbar": browserOnly(() =>
     import("./test-toolbar-preview").then((mod) => mod.TestToolbarPreview),

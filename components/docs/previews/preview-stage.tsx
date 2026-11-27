@@ -3,26 +3,30 @@
 import { useEffect, useRef, useState } from "react";
 import type { ReactNode, RefObject } from "react";
 import "@oicl/openbridge-webcomponents/dist/openbridge.css";
-import { SCREEN } from "@/components/prototype/wavefoil/corner-tools";
+import { SCREEN, ScreenSize } from "@/components/prototype/wavefoil/corner-tools";
 import tealStyles from "@/components/prototype/wavefoil/teal-scope.module.css";
 
 /**
- * A screen of the Wavefoil prototype, at its own size and scaled down to fit the
- * page, for a component to be tried on. The scale is applied to the layer itself,
- * which is what the components measure to follow a pointer as it drags.
+ * A screen for a component to be tried on, as wide as the text of the page. Without a height it
+ * is a screen of the Wavefoil prototype, scaled down to fit; with one it is a strip of that height
+ * at full size, the width of the text, for a component that is moved around on it. The scale is
+ * applied to the layer itself, which is what the components measure to follow a pointer as it drags.
  */
 export function PreviewStage({
   layer,
-  maxWidth = 560,
   ring = false,
+  height,
+  className = "",
   children,
 }: {
   layer: RefObject<HTMLDivElement | null>;
-  /** The widest the screen is shown, in pixels. */
-  maxWidth?: number;
-  /** Leaves room around the screen for something drawn just outside it, such as the training frame. */
+  /** For a part of the component that should not be shown. */
+  className?: string;
+  /** Leaves room around the screen for something drawn just outside it, such as the training frame, which then is the demo's edge. */
   ring?: boolean;
-  children: ReactNode;
+  /** A strip of this height at full size, in place of the prototype's whole screen scaled down. */
+  height?: number;
+  children: ReactNode | ((screen: { width: number; height: number }) => ReactNode);
 }) {
   // The library draws its colours from a palette set on the document, so the day palette is set
   // while a screen is on the page, and taken off again when it goes.
@@ -37,46 +41,52 @@ export function PreviewStage({
   }, []);
 
   const frame = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState<number | null>(null);
+  const [width, setWidth] = useState<number | null>(null);
 
   useEffect(() => {
     const element = frame.current;
     if (!element) return;
-    const measure = () => setScale(Math.min(1, element.clientWidth / SCREEN.width));
+    const measure = () => setWidth(element.clientWidth);
     measure();
     const watch = new ResizeObserver(measure);
     watch.observe(element);
     return () => watch.disconnect();
   }, []);
 
+  const screen = height ? { width: width ?? SCREEN.width, height } : SCREEN;
+  const scale = height || width === null ? 1 : Math.min(1, width / SCREEN.width);
+
   return (
     <div
       ref={frame}
-      className={`relative mx-auto rounded-lg border border-border ${
-        ring ? "my-2 w-[calc(100%-1.5rem)]" : "w-full overflow-hidden"
+      className={`relative ${
+        // With a ring, the screen is inset by the frame's 6px band, so the frame drawn round it is
+        // the edge of the demo, as wide as the text.
+        ring ? "m-1.5 w-[calc(100%-0.75rem)] rounded-md" : "w-full overflow-hidden rounded-lg border border-border"
       }`}
       style={{
-        maxWidth: ring ? maxWidth - 24 : maxWidth,
-        height: SCREEN.height * (scale ?? 1),
+        height: screen.height * scale,
         // Until the width is known the screen is left out, so it does not show at the wrong size.
-        visibility: scale === null ? "hidden" : "visible",
+        visibility: width === null ? "hidden" : "visible",
         background: "#f1f1f1",
       }}
     >
       <div
         ref={layer}
-        className={tealStyles.teal}
+        className={`${tealStyles.teal} ${className}`}
         style={{
           position: "absolute",
           left: 0,
           top: 0,
-          width: SCREEN.width,
-          height: SCREEN.height,
-          transform: `scale(${scale ?? 1})`,
+          width: screen.width,
+          height: screen.height,
+          transform: `scale(${scale})`,
           transformOrigin: "0 0",
         }}
       >
-        {children}
+        <ScreenSize.Provider value={screen}>
+          {typeof children === "function" ? children(screen) : children}
+        </ScreenSize.Provider>
       </div>
     </div>
   );
@@ -90,11 +100,14 @@ export function PreviewStage({
 export function ComponentStage({
   layer,
   className = "",
+  minHeight,
   children,
 }: {
   layer?: RefObject<HTMLDivElement | null>;
   /** For a part of the component that should not be shown. */
   className?: string;
+  /** Keeps the box this high, for a component that changes size, so the box does not jump with it. */
+  minHeight?: number;
   children: ReactNode;
 }) {
   // The library draws its colours from a palette set on the document, so the day palette is set
@@ -111,8 +124,8 @@ export function ComponentStage({
 
   return (
     <div
-      className="flex min-h-56 overflow-x-auto rounded-lg border border-border p-8 sm:p-12"
-      style={{ background: "#f1f1f1" }}
+      className="flex overflow-x-auto rounded-lg border border-border p-8 sm:p-12"
+      style={{ background: "#f1f1f1", minHeight }}
     >
       <div
         ref={layer}
@@ -225,8 +238,8 @@ export function Controls({ children }: { children: ReactNode }) {
   return (
     <div className="mt-4 overflow-hidden rounded-lg border border-border">
       <div className="hidden gap-x-6 border-b border-border bg-surface px-4 py-2.5 text-sm font-medium text-foreground sm:grid sm:grid-cols-[8rem_1fr_13rem]">
-        <span>Input</span>
-        <span>What it does</span>
+        <span>Property</span>
+        <span>Description</span>
         <span>Try it</span>
       </div>
       {children}

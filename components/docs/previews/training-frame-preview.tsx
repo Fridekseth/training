@@ -14,13 +14,10 @@ export function TrainingFramePreview() {
 
   return (
     <div className={notoSans.className}>
-      <PreviewStage layer={layer} ring>
+      <PreviewStage layer={layer} ring height={300}>
         <TrainingFrame key={round} />
       </PreviewStage>
-      <div className="mt-3 flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
-        <p className="m-0 text-sm text-faint">
-          The frame draws itself once, from the bottom right corner.
-        </p>
+      <div className="mt-3 flex flex-wrap items-center justify-end gap-x-6 gap-y-2">
         <button
           type="button"
           onClick={() => setRound((now) => now + 1)}

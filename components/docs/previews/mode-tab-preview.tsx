@@ -2,9 +2,10 @@
 
 import { Noto_Sans } from "next/font/google";
 import { useRef, useState } from "react";
+import type { Corner } from "@/components/prototype/wavefoil/corner-tools";
 import { ModeTab, TAB_WIDTH } from "@/components/prototype/wavefoil/training-tab";
 import {
-  ComponentStage,
+  PreviewStage,
   ControlRow,
   Controls,
   SelectControl,
@@ -24,7 +25,7 @@ const ICONS = [
 /** A tab that is only the name of a mode is narrower, as it is in explore mode. */
 const NAME_ONLY_WIDTH = 220;
 
-/** The mode tab itself, with a control for each input, so it can be tried as it is used. */
+/** The mode tab on a screen, where it can be dragged by its handle to the other corners, with a control for each input. */
 export function ModeTabPreview() {
   const layer = useRef<HTMLDivElement>(null);
   const [icon, setIcon] = useState<(typeof ICONS)[number][0]>("nav-getting-started");
@@ -32,16 +33,18 @@ export function ModeTabPreview() {
   const [rest, setRest] = useState("operating the foils");
   const [compact, setCompact] = useState(false);
   const [open, setOpen] = useState(false);
+  const [corner, setCorner] = useState<Corner>("top-left");
   // A new key puts the tab back as it is when a mode opens, with its words out.
   const [round, setRound] = useState(0);
 
   return (
     <div className={notoSans.className}>
-      <ComponentStage layer={layer}>
+      {/* As high as the tab with room to drag it between the corners. */}
+      <PreviewStage layer={layer} height={200}>
         <ModeTab
           key={round}
-          corner="top-left"
-          onCorner={() => {}}
+          corner={corner}
+          onCorner={setCorner}
           layer={layer}
           icon={icon}
           label={label || "Mode"}
@@ -51,12 +54,9 @@ export function ModeTabPreview() {
           open={open}
           onToggle={() => setOpen((now) => !now)}
         />
-      </ComponentStage>
+      </PreviewStage>
 
-      <div className="mt-3 flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
-        <p className="m-0 text-sm text-faint">
-          Press the tab, or hover its icon. It folds after 4 seconds, as it does in the prototype.
-        </p>
+      <div className="mt-3 flex flex-wrap items-center justify-end gap-x-6 gap-y-2">
         <button
           type="button"
           onClick={() => setRound((now) => now + 1)}
@@ -67,14 +67,14 @@ export function ModeTabPreview() {
       </div>
 
       <Controls>
-        <ControlRow name="label" text="The mode, in bold.">
-          <TextControl name="label" value={label} onChange={setLabel} />
+        <ControlRow name="title" text="The mode, in bold.">
+          <TextControl name="title" value={label} onChange={setLabel} />
         </ControlRow>
         <ControlRow
-          name="rest"
+          name="label"
           text="What it is about, after the mode. Empty for a mode that is only its name."
         >
-          <TextControl name="rest" value={rest} onChange={setRest} placeholder="Nothing" />
+          <TextControl name="label" value={rest} onChange={setRest} placeholder="Nothing" />
         </ControlRow>
         <ControlRow name="icon" text="The icon of the mode.">
           <SelectControl name="icon" value={icon} options={ICONS} onChange={setIcon} />

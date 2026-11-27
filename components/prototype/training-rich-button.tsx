@@ -5,10 +5,14 @@ import { ObiChevronRightGoogle } from "@oicl/openbridge-webcomponents-react/icon
 import { ObiExclamationMark } from "@oicl/openbridge-webcomponents-react/icons/icon-exclamation-mark";
 import styles from "./training-rich-button.module.css";
 
+/** The states of the OpenBridge rich button, which this one has too. */
+export type RichButtonState = "enabled" | "hover" | "active" | "focused" | "disabled";
+
 /**
  * A custom version of the OpenBridge rich button, from the training design:
  * an illustration on a teal plate, a label and description, a chevron, and an
- * optional badge for something that needs attention.
+ * optional badge for something that needs attention. It has the same states as
+ * the library's rich button: enabled, hover, active, focused and disabled.
  */
 export function TrainingRichButton({
   label,
@@ -16,6 +20,7 @@ export function TrainingRichButton({
   illustration,
   badge = false,
   disabled = false,
+  state,
   descriptionSize,
   onClick,
 }: {
@@ -26,6 +31,8 @@ export function TrainingRichButton({
   /** Shows the exclamation badge in the top right corner. */
   badge?: boolean;
   disabled?: boolean;
+  /** Shows a state without the pointer or keyboard, as the documentation does. */
+  state?: RichButtonState;
   /** Overrides the description's size, in px, for a smaller screen. */
   descriptionSize?: number;
   onClick?: () => void;
@@ -34,7 +41,8 @@ export function TrainingRichButton({
     <button
       type="button"
       className={styles.button}
-      disabled={disabled}
+      data-state={state}
+      disabled={disabled || state === "disabled"}
       onClick={onClick}
     >
       {illustration ? (

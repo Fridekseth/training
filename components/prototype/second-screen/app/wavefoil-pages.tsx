@@ -6,7 +6,7 @@
  * conditions of the interface with the wave height to set.
  */
 
-import { useState } from "react";
+import { useRef, useState, type PointerEvent } from "react";
 import { ObcIconButton } from "@oicl/openbridge-webcomponents-react/components/icon-button/icon-button";
 import { ObcSlider } from "@oicl/openbridge-webcomponents-react/components/slider/slider";
 import { ObiCloseGoogle } from "@oicl/openbridge-webcomponents-react/icons/icon-close-google";
@@ -86,8 +86,29 @@ const readings = (height: number) =>
 /** The state of the waves for a height: below the window the foils slow the ship down, in it they suit, and above it they are too heavy. */
 const toneOf = (height: number) => (height < WINDOW_LOW ? "poor" : height > WINDOW_HIGH ? "harmful" : "optimal");
 
+/** The ends of the slider, and how fine a step it moves in. */
+const HEIGHT_MIN = 0;
+const HEIGHT_MAX = 15;
+const HEIGHT_STEP = 0.1;
+
 export function WavefoilWindowPage({ onClose }: { onClose: () => void }) {
   const [height, setHeight] = useState(3.8);
+  const slider = useRef<HTMLDivElement>(null);
+  const dragging = useRef(false);
+
+  /**
+   * On a touch screen the slider is moved by a layer over it, not by the slider itself: when the
+   * handle is touched, the library leaves the touch to the range input inside it, and Safari on the
+   * iPhone then draws a white square around the handle. The layer works out the height from where
+   * the finger is, along the track the library draws (24px in from each end).
+   */
+  const heightAt = (event: PointerEvent<HTMLDivElement>) => {
+    const box = slider.current?.getBoundingClientRect();
+    if (!box) return;
+    const share = Math.min(1, Math.max(0, (event.clientX - box.left - 24) / (box.width - 48)));
+    const raw = HEIGHT_MIN + share * (HEIGHT_MAX - HEIGHT_MIN);
+    setHeight(Math.round(raw / HEIGHT_STEP) * HEIGHT_STEP);
+  };
   const tone = toneOf(height);
   const advice = WAVE_ADVICE[tone];
 
@@ -140,16 +161,33 @@ export function WavefoilWindowPage({ onClose }: { onClose: () => void }) {
         </p>
         <div className={styles.setRow}>
           <span>0</span>
-          <ObcSlider
-            ref={(element) => adopt(element, NO_TOUCH_RING)}
-            className={styles.slider}
-            min={0}
-            max={15}
-            step={0.1}
-            value={height}
-            onValue={(event) => setHeight(Number(event.detail))}
-            aria-label="Wave height in metres"
-          />
+          <div ref={slider} className={styles.sliderHolder}>
+            <ObcSlider
+              ref={(element) => adopt(element, NO_TOUCH_RING)}
+              className={styles.slider}
+              min={HEIGHT_MIN}
+              max={HEIGHT_MAX}
+              step={HEIGHT_STEP}
+              value={height}
+              onValue={(event) => setHeight(Number(event.detail))}
+              aria-label="Wave height in metres"
+            />
+            <div
+              aria-hidden="true"
+              className={styles.sliderTouch}
+              onPointerDown={(event) => {
+                if (event.pointerType === "mouse") return;
+                dragging.current = true;
+                event.currentTarget.setPointerCapture(event.pointerId);
+                heightAt(event);
+              }}
+              onPointerMove={(event) => {
+                if (dragging.current) heightAt(event);
+              }}
+              onPointerUp={() => (dragging.current = false)}
+              onPointerCancel={() => (dragging.current = false)}
+            />
+          </div>
           <span>15</span>
         </div>
         <p className={styles.setValue}>{height.toFixed(1)} m</p>

@@ -3,31 +3,34 @@ export const metadata = {
   summary:
     "The small tab a training mode keeps in the corner of the screen. It says which mode is open, and it is the way into the mode's menu.",
   category: "Navigation",
-  status: "draft",
+  status: "documented",
   preview: "/components/mode-tab/card.png",
   order: 1,
 };
 
 ## Overview
 
-The mode tab sits in a corner of the screen for as long as a training mode is open. It names the mode, and when the mode is about something, such as a chapter or a scenario, it names that too. It is the same component in every mode. Only the icon and the words change.
+The mode tab sits in a corner of the screen for as long as a training mode is open. It names the mode you're in, and any relevant info, like for example the current chapter or scenario. It can be dragged between the different corners by the user, if it covers parts of the screen you wish to see.
 
 ## Features
 
 - Names the mode with an icon and a bold label, followed by what it is about.
-- Keeps its words for four seconds after it has docked, and then folds to the icon and the handle.
-- Unfolds again while the pointer is over the icon.
-- Opens the mode's menu when it is pressed, and closes it when it is pressed again. It is a darker teal while the menu is open.
+- Keeps the text for four seconds after it has docked, and then folds to only show the icon and handle.
+- Unfolds again on hover.
+- Opens the mode's menu when it is pressed, and closes it when it is pressed again.
 - Moves to another corner by its handle, and snaps to the nearest one when it is let go. The arrow keys on the handle do the same without a pointer.
 
 ## Variants
 
-<States>
+<States columns={3}>
   <State name="Mode and subject" src="/components/mode-tab/expanded.png" alt="The tab reading Learn operating the foils">
     The mode in bold and what it is about after it. Used in Learn, where it names the chapter, and in Practice, where it names the scenario.
   </State>
   <State name="Mode only" src="/components/mode-tab/mode-only.png" alt="The tab reading Explore">
     Only the name of the mode. Used in Explore and Collaborate.
+  </State>
+  <State name="Icon only" src="/components/mode-tab/folded.png" alt="The folded tab, with only the book icon of Learn and the handle">
+    Only the icon and the handle. The tab folds to this four seconds after it has docked.
   </State>
 </States>
 

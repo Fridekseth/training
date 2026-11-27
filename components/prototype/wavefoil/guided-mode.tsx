@@ -32,7 +32,7 @@ import {
 } from "@oicl/openbridge-webcomponents/dist/components/sequence-step/sequence-step";
 import { MaskIcon } from "../pieces";
 import { WavefoilMenu } from "./app-menu";
-import { SCREEN, type Corner } from "./corner-tools";
+import { SCREEN, useScreen, type Corner } from "./corner-tools";
 import { ModeIntro, ModeTab } from "./training-tab";
 import { ScreenPreview } from "./screen-preview";
 import { ScenarioChrome, TestScreenIntro, TestScreenQuestion } from "./test-screen";
@@ -79,13 +79,14 @@ export function Toast({
 }) {
   const box = useRef<HTMLDivElement>(null);
   const grab = useRef<{ x: number; y: number; left: number; top: number; scale: number } | null>(null);
+  const screen = useScreen();
 
   const place = (left: number, top: number) => {
     const width = box.current?.offsetWidth ?? 480;
     const height = box.current?.offsetHeight ?? 64;
     onMove?.({
-      left: Math.min(SCREEN.width - width, Math.max(0, left)),
-      top: Math.min(SCREEN.height - height, Math.max(0, top)),
+      left: Math.min(screen.width - width, Math.max(0, left)),
+      top: Math.min(screen.height - height, Math.max(0, top)),
     });
   };
 
@@ -97,7 +98,7 @@ export function Toast({
       y: event.clientY,
       left: at.left,
       top: at.top,
-      scale: frame.width / SCREEN.width,
+      scale: frame.width / screen.width,
     };
     event.currentTarget.setPointerCapture(event.pointerId);
   };
@@ -286,12 +287,15 @@ export function StepMenu({
   sequence,
   step,
   corner,
+  variant = "light",
   onStep,
   onExit,
 }: {
   sequence: GuidedSequence;
   step: number;
   corner: Corner;
+  /** Light by default; dark is a teal panel with lighter cards, for a light background behind it. */
+  variant?: "light" | "dark";
   onStep: (index: number) => void;
   onExit: () => void;
 }) {
@@ -326,7 +330,9 @@ export function StepMenu({
       <div className={`${styles.stepCardWrap} ${stacked ? styles.stack : ""}`}>
         <button
           type="button"
-          className={`${styles.stepCard} ${index > step ? styles.stepCardAhead : ""}`}
+          className={`${styles.stepCard} ${index > step ? styles.stepCardAhead : ""} ${
+            index === step ? styles.stepCardCurrent : ""
+          }`}
           onClick={() => onStep(index)}
         >
           {sequence.steps[index].label}
@@ -356,9 +362,9 @@ export function StepMenu({
 
   return (
     <div
-      className={`${styles.menu} ${corner.endsWith("left") ? styles.menuLeft : styles.menuRight} ${
-        corner.startsWith("top") ? styles.menuTop : styles.menuBottom
-      }`}
+      className={`${styles.menu} ${variant === "dark" ? styles.menuDark : ""} ${
+        corner.endsWith("left") ? styles.menuLeft : styles.menuRight
+      } ${corner.startsWith("top") ? styles.menuTop : styles.menuBottom}`}
     >
       <ObcNavigationItem label={sequence.title} hasIcon>
         <MaskIcon slot="icon" name={sequence.icon} style={{ color: "var(--teal-400)" }} />

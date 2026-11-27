@@ -22,7 +22,7 @@ export const DOCUMENTATION_SECTIONS = [
     imagePosition: "object-center -translate-y-[10%]",
     imageBg: "bg-white",
     title: "Components",
-    text: "Components for learning are interactive building blocks that are made specifically to support the OpenBridge learning patterns. They are either customized versions of existing OpenBridge UI components, or new components that follow the OpenBridge guidelines. They are organized into categories based on their purpose: Action, communication, navigation.",
+    text: "Components for learning are interactive building blocks that are made specifically to support the OpenBridge learning patterns. They are either customized versions of existing OpenBridge UI components, or new components that follow the OpenBridge guidelines.",
   },
   {
     slug: "patterns",

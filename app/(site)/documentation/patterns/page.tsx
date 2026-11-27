@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { PlannedItems } from "@/components/docs/planned-items";
 import { PageHeader } from "@/components/page-header";
 import { getDocumentationSection, getSectionItems } from "@/lib/documentation";
@@ -15,12 +14,6 @@ export const metadata: Metadata = {
 export default function PatternsPage() {
   return (
     <div className={`${PAGE_CONTAINER} py-16`}>
-      <Link
-        href="/documentation"
-        className="mb-6 inline-flex items-center gap-1.5 text-sm text-muted transition-colors hover:text-accent"
-      >
-        Documentation
-      </Link>
       <PageHeader title={section.title} lead={section.text} />
       <div className="mt-10">
         <PlannedItems section="patterns" items={getSectionItems("patterns")} />

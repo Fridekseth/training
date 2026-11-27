@@ -3,7 +3,6 @@ import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { Pill } from "@/components/pill";
 import {
-  CATEGORIES,
   SECTIONS,
   STATUS_LABEL,
   getComponentDocs,
@@ -47,9 +46,8 @@ function Card({ doc }: { doc: ComponentDoc }) {
           </h3>
           <span className="flex items-center gap-1.5">
             {doc.beta ? <Pill tone="beta">Beta</Pill> : null}
-            <Pill tone={doc.status === "documented" ? "solid" : "quiet"}>
-              {STATUS_LABEL[doc.status]}
-            </Pill>
+            {/* A documented component needs no tag; only the ones still being written are marked. */}
+            {doc.status === "documented" ? null : <Pill>{STATUS_LABEL[doc.status]}</Pill>}
           </span>
         </div>
         <p className="mt-1.5 text-sm leading-6 text-muted">{doc.summary}</p>
@@ -63,25 +61,20 @@ export default async function ComponentsPage() {
 
   return (
     <div className={`${PAGE_CONTAINER} py-16`}>
-      <Link
-        href="/documentation"
-        className="mb-6 inline-flex items-center gap-1.5 text-sm text-muted transition-colors hover:text-accent"
-      >
-        Documentation
-      </Link>
       <PageHeader
         title="Components"
-        lead="Components for learning are interactive building blocks that are made specifically to support the OpenBridge learning patterns. They are either customized versions of existing OpenBridge UI components, or new components that follow the OpenBridge guidelines. They are organized into categories based on their purpose: Action, communication, navigation."
+        lead="Components for learning are interactive building blocks that are made specifically to support the OpenBridge learning patterns. They are either customized versions of existing OpenBridge UI components, or new components that follow the OpenBridge guidelines."
       />
 
       {/* The structure every page follows, shown once here so each page does not have to explain it. */}
       <section aria-labelledby="structure" className="mt-10">
         <h2 id="structure" className="text-xl font-semibold tracking-tight text-foreground">
-          How a component page is built
+          Structure
         </h2>
         <p className="mt-3 max-w-xl text-[0.9rem] leading-7 text-muted">
-          Every page starts with the title and a live preview, where the component can be tried.
-          Below it come five sections, always in the same order.
+          Every component page starts with the title and a live demo, where the component can be
+          tried. Below it come five sections, always in the same order, showing how it works and how
+          to use it.
         </p>
         <ol className="mt-5 grid gap-x-10 gap-y-3 sm:grid-cols-2">
           {SECTIONS.map(([name, text], at) => (
@@ -97,25 +90,13 @@ export default async function ComponentsPage() {
         </ol>
       </section>
 
-      {CATEGORIES.map((category) => {
-        const inGroup = docs.filter((doc) => doc.category === category);
-        if (!inGroup.length) return null;
-        return (
-          <section key={category} aria-labelledby={category} className="mt-14">
-            <h2
-              id={category}
-              className="mb-5 border-b border-border pb-3 text-xl font-semibold tracking-tight text-foreground"
-            >
-              {category}
-            </h2>
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {inGroup.map((doc) => (
-                <Card key={doc.slug} doc={doc} />
-              ))}
-            </div>
-          </section>
-        );
-      })}
+      <hr className="mt-12 border-border" />
+
+      <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {docs.map((doc) => (
+          <Card key={doc.slug} doc={doc} />
+        ))}
+      </div>
     </div>
   );
 }

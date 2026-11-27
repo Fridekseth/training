@@ -163,9 +163,11 @@ export function Gallery({
 
 /* ---- states ---- */
 
-/** The states laid out as a grid of cards, one picture and a line each. */
-export function States({ children }: { children: ReactNode }) {
-  return <div className="my-6 grid gap-4 sm:grid-cols-2">{children}</div>;
+/** The states laid out as a grid of cards, one picture and a line each. Two to a row, or three when asked. */
+export function States({ children, columns = 2 }: { children: ReactNode; columns?: 2 | 3 }) {
+  return (
+    <div className={`my-6 grid gap-4 ${columns === 3 ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}>{children}</div>
+  );
 }
 
 export function State({

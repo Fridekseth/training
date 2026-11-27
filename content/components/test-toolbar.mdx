@@ -3,28 +3,25 @@ export const metadata = {
   summary:
     "The toolbar along the bottom of a test, with a step for each question.",
   category: "Action",
-  status: "draft",
+  status: "documented",
   preview: "/components/test-toolbar/card.png",
   order: 1,
 };
 
 ## Overview
 
-The test toolbar is the toolbar along the bottom of a test. It has a step for each question, and it moves between them.
+The test toolbar is the toolbar allowing users to see their progression in a test and navigate between tasks. It is based on the OpenBridge sequence toolbar, but with the added drag icon, allowing it to be moved on the screen.
 
 ## Features
 
 - Has Previous on the left, a step for each question, and Next on the right.
 - Marks the steps: completed for the questions before the one being answered, active for that one, and not started for those after it.
-- Goes to a question when its step is pressed.
-- Says Back instead of Previous on the first question, which leads to the page that introduces the test.
-- Says Finish instead of Next on the last question.
-- Grows when there are more questions than fit.
+- Navigates to a question when its step is pressed.
 
 ## Variants
 
 - **On the question page.** Along the bottom of the screen, where it stays.
-- **Over a scenario.** Floats over the screen while a task is carried out, with a handle to move it off whatever it covers. The arrow keys move it too. A button in the corner takes the screen back to the question without finishing the scenario.
+- **Over a scenario.** Floats over the screen while a task is carried out, with a handle to move it if necessary. The arrow keys move it too.
 
 ## Specs
 

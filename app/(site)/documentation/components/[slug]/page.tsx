@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { ComponentPreview } from "@/components/docs/previews";
 import { DocNav } from "@/components/docs/doc-nav";
 import { SectionNav } from "@/components/docs/section-nav";
@@ -30,9 +29,6 @@ export async function generateMetadata(
 export default async function ComponentPage(props: PageProps<"/documentation/components/[slug]">) {
   const { slug } = await props.params;
   const [{ Content, meta }, docs] = await Promise.all([getComponentDoc(slug), getComponentDocs()]);
-  const at = docs.findIndex((doc) => doc.slug === slug);
-  const previous = docs[at - 1];
-  const next = docs[at + 1];
 
   return (
     <div className={`${PAGE_CONTAINER} py-10`}>
@@ -55,74 +51,27 @@ export default async function ComponentPage(props: PageProps<"/documentation/com
             </div>
           </details>
 
-          <header>
-            <nav
-              aria-label="Breadcrumb"
-              className="flex flex-wrap items-center gap-1.5 text-sm text-muted"
-            >
-              <Link href="/documentation" className="transition-colors hover:text-accent">
-                Documentation
-              </Link>
-              <span aria-hidden="true" className="text-faint">
-                /
-              </span>
-              <Link
-                href="/documentation/components"
-                className="transition-colors hover:text-accent"
-              >
-                Components
-              </Link>
-              <span aria-hidden="true" className="text-faint">
-                /
-              </span>
-              {meta.category}
-            </nav>
-
-            <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2">
+          <header className="mb-4">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
               <h1 className="text-3xl font-semibold tracking-tight text-foreground">
                 {meta.title}
               </h1>
-              <Pill tone={meta.status === "documented" ? "solid" : "quiet"}>
-                {STATUS_LABEL[meta.status]}
-              </Pill>
+              {meta.status === "documented" ? null : <Pill>{STATUS_LABEL[meta.status]}</Pill>}
               {meta.beta ? <Pill tone="beta">Beta</Pill> : null}
-            </div>
-
-            {/* The component itself, to try before reading about it. */}
-            <div className="mt-8">
-              <ComponentPreview slug={slug} />
             </div>
           </header>
 
-          <SectionNav target="doc-content" />
+          {/* The tabs right under the title, so the sections can be reached before the preview. */}
+          <SectionNav target="doc-content" lead={{ id: "demo", title: "Demo" }} />
+
+          {/* The component itself, to try before reading about it. */}
+          <div id="demo" className="mt-8 max-w-[46rem] scroll-mt-32">
+            <ComponentPreview slug={slug} />
+          </div>
 
           <article id="doc-content" className="max-w-[46rem]">
             <Content />
           </article>
-
-          {/* Previous and next in the order of the index, so the whole set can be read through. */}
-          <div className="mt-16 grid gap-4 border-t border-border pt-6 sm:grid-cols-2">
-            {previous ? (
-              <Link
-                href={`/documentation/components/${previous.slug}`}
-                className="rounded-lg border border-border px-4 py-3 transition-colors hover:border-accent/40"
-              >
-                <span className="block text-xs text-faint">Previous</span>
-                <span className="text-sm font-medium text-foreground">{previous.title}</span>
-              </Link>
-            ) : (
-              <span />
-            )}
-            {next ? (
-              <Link
-                href={`/documentation/components/${next.slug}`}
-                className="rounded-lg border border-border px-4 py-3 text-right transition-colors hover:border-accent/40 sm:col-start-2"
-              >
-                <span className="block text-xs text-faint">Next</span>
-                <span className="text-sm font-medium text-foreground">{next.title}</span>
-              </Link>
-            ) : null}
-          </div>
         </div>
       </div>
     </div>

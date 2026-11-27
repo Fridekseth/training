@@ -56,8 +56,6 @@ export function CursorsPreview() {
           ))}
         </div>
       </ComponentStage>
-
-      <p className="mt-3 text-sm text-faint">Move the pointer over each square to see the cursor.</p>
     </div>
   );
 }

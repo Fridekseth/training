@@ -3,28 +3,25 @@ export const metadata = {
   summary:
     "The bar at the top of the screen that says what the task is while a scenario runs, with a way to give it up.",
   category: "Communication",
-  status: "draft",
+  status: "documented",
   preview: "/components/toast/card.png",
   order: 6,
 };
 
 ## Overview
 
-The toast is the bar that says what the learner is to do while a scenario runs, such as Deploy the foils. It has a button to cancel the scenario, with a ring round it that shows how the scenario is going.
+The toast in learning is a version of the original OpenBridge toast, that tells the user what to do when in a scenario where there is limited space to give instructions. It has a drag icon, so that it can be moved freely on the screen.
 
 ## Features
 
 - Names the task in bold, with a second line under it when there is more to say.
 - Has a cancel button with a ring round it. The ring turns while the sequence starts, and runs down while the time to do the task goes.
-- Has a handle at the front, with a line after it, to move the bar off whatever it covers. The arrow keys move it too.
+- Has a handle, to move the bar when needed. The arrow keys move it too.
 - Stays inside the screen when it is moved.
-- Can have an icon in front of the title in place of the handle, for a toast that is not moved.
 
 ## Variants
 
-- **Ring.** Turning while the sequence starts, or running down with the time that is left.
-- **Movable.** With a handle, or with an icon.
-- **Title only, or title and subtitle.** A scenario has only a title.
+- Title only, or title and subtitle.
 
 ## Specs
 

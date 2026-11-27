@@ -700,11 +700,38 @@
   color: var(--on-normal-neutral-color, #535353);
 }
 
-.slider {
+.sliderHolder {
+  position: relative;
   flex: 1;
   min-width: 0;
+}
+
+.slider {
+  display: flex;
+  width: 100%;
   outline: none;
   -webkit-tap-highlight-color: transparent;
+}
+
+/*
+  The layer that takes the touch on a phone, so the range input inside the
+  slider never gets it. A mouse goes through to the slider itself, which keeps
+  its hover states.
+*/
+.sliderTouch {
+  position: absolute;
+  inset: 0;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sliderTouch {
+    pointer-events: none;
+  }
 }
 
 .setValue {

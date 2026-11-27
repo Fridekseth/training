@@ -39,16 +39,14 @@ export function CommentPinPreview() {
         />
       </ComponentStage>
 
-      <p className="mt-3 text-sm text-faint">Press the pin to open and close the comment.</p>
-
       <Controls>
-        <ControlRow name="state" text="While one comment is open, the others are disabled.">
-          <SelectControl name="state" value={state} options={STATES} onChange={setState} />
-        </ControlRow>
         <ControlRow name="unread" text="Unread comments are drawn dark, and read ones light.">
           <SwitchControl name="unread" value={unread} onChange={setUnread} />
         </ControlRow>
-        <ControlRow name="authors" text="How many people have written in it. The open pin grows into their initials.">
+        <ControlRow name="state" text="While one comment is open, the others are disabled.">
+          <SelectControl name="state" value={state} options={STATES} onChange={setState} />
+        </ControlRow>
+        <ControlRow name="authors" text="How many people have written in it. The open pin grows into their initials, so the pin opens when this is changed.">
           <SelectControl
             name="authors"
             value={people}
@@ -57,7 +55,11 @@ export function CommentPinPreview() {
               ["2", "2 people"],
               ["3", "3 people"],
             ]}
-            onChange={setPeople}
+            onChange={(value) => {
+              setPeople(value);
+              // The initials are only on the open pin, so it is opened to show them.
+              setState("checked");
+            }}
           />
         </ControlRow>
       </Controls>

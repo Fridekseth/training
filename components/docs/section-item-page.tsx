@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { SectionMenu } from "@/components/docs/section-menu";
 import { Todo } from "@/components/docs/doc-parts";
 import { Pill } from "@/components/pill";
@@ -38,25 +37,7 @@ export async function SectionItemPage({ section: key, slug }: { section: Section
           </details>
 
           <header>
-            <nav
-              aria-label="Breadcrumb"
-              className="flex flex-wrap items-center gap-1.5 text-sm text-muted"
-            >
-              <Link href="/documentation" className="transition-colors hover:text-accent">
-                Documentation
-              </Link>
-              <span aria-hidden="true" className="text-faint">
-                /
-              </span>
-              <Link
-                href={`/documentation/${key}`}
-                className="transition-colors hover:text-accent"
-              >
-                {section.title}
-              </Link>
-            </nav>
-
-            <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
               <h1 className="text-3xl font-semibold tracking-tight text-foreground">
                 {item.title}
               </h1>

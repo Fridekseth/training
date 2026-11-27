@@ -13,7 +13,7 @@ export type ComponentFrontmatter = {
   title: string;
   /** One sentence for the card on the index. */
   summary: string;
-  /** One of CATEGORIES, which decides the group it sits in. */
+  /** One of CATEGORIES. It is not shown; it only keeps related components next to each other in the list. */
   category: string;
   status: DocStatus;
   /** True for a component that is not fully done, which then carries a Beta tag. */
@@ -26,20 +26,21 @@ export type ComponentFrontmatter = {
 
 export type ComponentDoc = ComponentFrontmatter & { slug: string };
 
-/** The groups on the index and in the side menu, in the order they are shown. */
+/** The order related components are listed in, on the index and in the side menu. */
 export const CATEGORIES = [
   "Action",
   "Communication",
   "Navigation",
 ] as const;
 
-/** What each section of a component page holds, in the order the page has them. Under the title comes a live preview. */
+/** What each section of a component page holds, in the order the page has them. */
 export const SECTIONS = [
-  ["Overview", "What it is, and what it is for in the training pattern."],
-  ["Features", "What it does, as a short list."],
+  ["Demo", "An interactive demo with properties panel."],
+  ["Overview", "What it is."],
+  ["Features", "What it does."],
   ["Variants", "The different forms it comes in."],
   ["Specs", "Sizes, positions and timings, as numbers."],
-  ["Guidelines", "What to do and what not to do, side by side."],
+  ["Guidelines", "How to use and how not to use it."],
 ] as const;
 
 const DOCS_DIR = path.join(process.cwd(), "content/components");
@@ -65,22 +66,35 @@ export async function getComponentDoc(
   };
 }
 
-/** Every page, grouped as the index shows them: by category, then by `order`. */
+/**
+ * The order the components are listed in, on the index and in the side menu: roughly the order
+ * the learner meets them in. A page that is not listed here comes last.
+ */
+const ORDER = [
+  "cursors",
+  "training-frame",
+  "mode-tab",
+  "step-menu",
+  "mode-intro",
+  "guided-step",
+  "rich-button-with-image",
+  "comment-pin",
+  "thread",
+  "test-toolbar",
+  "toast",
+];
+
+/** Every page, in the order of ORDER. */
 export async function getComponentDocs(): Promise<ComponentDoc[]> {
   const slugs = await readSlugs();
   const docs = await Promise.all(
     slugs.map(async (slug) => (await getComponentDoc(slug)).meta),
   );
-  const rank = (category: string) => {
-    const at = (CATEGORIES as readonly string[]).indexOf(category);
-    return at === -1 ? CATEGORIES.length : at;
+  const rank = (slug: string) => {
+    const at = ORDER.indexOf(slug);
+    return at === -1 ? ORDER.length : at;
   };
-  return docs.sort(
-    (a, b) =>
-      rank(a.category) - rank(b.category) ||
-      (a.order ?? 99) - (b.order ?? 99) ||
-      a.title.localeCompare(b.title),
-  );
+  return docs.sort((a, b) => rank(a.slug) - rank(b.slug) || a.title.localeCompare(b.title));
 }
 
 export async function getComponentDocParams() {

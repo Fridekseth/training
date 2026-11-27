@@ -161,14 +161,17 @@
   background: var(--teal-400);
 }
 
+/* Centred on its side, unless the step places it at the part it explains. */
 .arrow_left,
 .arrow_right {
+  top: calc(50% - 10px);
   width: 12px;
   height: 20px;
 }
 
 .arrow_top,
 .arrow_bottom {
+  left: calc(50% - 10px);
   width: 20px;
   height: 12px;
 }
@@ -467,6 +470,36 @@
 .gap {
   display: flex;
   height: 24px;
+}
+
+/*
+  The dark variant, for a light background: the panel is light teal and the
+  cards are lighter than it, with an outline, and the current step stands out
+  in white and bold. Measured off the Fire drill menu in the Figma file.
+*/
+.menuDark {
+  border-radius: 12px;
+  background: var(--teal-050);
+}
+
+.menuDark .stepRow {
+  --amplified-enabled-background-color: var(--teal-050);
+}
+
+.menuDark .stepDot {
+  background: var(--teal-050);
+}
+
+.menuDark .stepCard,
+.menuDark .stack::before,
+.menuDark .stack::after {
+  border: 1px solid var(--border-outline-color, #ddd);
+  background: var(--container-background-color, #f7f7f7);
+}
+
+.menuDark .stepCardCurrent {
+  background: var(--container-global-color, #fcfcfc);
+  font-weight: 600;
 }
 
 /* The dotted line for the steps in the stack, down the middle of the same column as the dots. */

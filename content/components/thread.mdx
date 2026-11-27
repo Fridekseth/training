@@ -3,29 +3,26 @@ export const metadata = {
   summary:
     "The panel at the side of the screen where a comment is read and answered.",
   category: "Communication",
-  status: "draft",
+  status: "documented",
   preview: "/components/thread/card.png",
   order: 5,
 };
 
 ## Overview
 
-The thread is the panel that opens at the side of the screen when a [comment pin](/documentation/components/comment-pin) is pressed. It holds the conversation about one part of the screen, and a field to write an answer in. It is used in Explore and Collaborate.
+The thread is a panel that opens at the side of the screen when a [comment pin](/documentation/components/comment-pin) is pressed. It holds the conversation, and a field to write an answer in. The message and text area field is based on existing OpenBridge components.
 
 ## Features
 
-- Has a header with a comment icon, what the thread is about, and a button to close it.
-- Pins the first message at the top of the thread, with a badge that says so.
+- Has a header with a comment icon, title and close button.
+- Message area, with all sent messages. The area scrolls if messages do not fit.
 - Shows the learner's own messages on the right, with filled initials, and everyone else's on the left, with outlined ones.
-- Scrolls to the newest message when one is added or another thread is opened.
-- Has a field at the bottom with a toolbar, voice recording and a send button. Pressing the field opens the on-screen keyboard, so the system keyboard never covers the screen.
+- Has a text area field at the bottom. Pressing the field opens the on-screen keyboard, so the system keyboard never covers the screen.
 - Stands on the left or the right of the screen, and can start below the top bar.
 
 ## Variants
 
 - **Side.** On the left or the right of the screen.
-- **Below the top bar.** It starts 48 px from the top instead of at the top.
-- **Subject.** The header has what the thread is about, or the title of the thread when it has no subject.
 
 ## Specs
 
