@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { CopySvgButton } from "./copy-svg-button";
+import { GuidelineMark } from "./guideline-mark";
 
 /*
   The building blocks a component page is written with. They are registered in
@@ -206,6 +207,25 @@ export function DoDont({ children }: { children: ReactNode }) {
   return <div className="my-6 grid gap-4 sm:grid-cols-2">{children}</div>;
 }
 
+/** The colours of the two boxes, kept with the site's other colours in `globals.css`. */
+const GUIDELINE = {
+  do: {
+    background: "var(--do-background)",
+    border: "var(--do-border)",
+    label: "var(--do-label)",
+    text: "var(--do-text)",
+  },
+  dont: {
+    background: "var(--dont-background)",
+    border: "var(--dont-border)",
+    label: "var(--dont-label)",
+    text: "var(--dont-text)",
+  },
+} as const;
+
+/** The rounded corners of a do or a don't, set on the box itself. */
+const RADIUS = 12;
+
 function Guideline({
   kind,
   src,
@@ -220,23 +240,54 @@ function Guideline({
   text?: boolean;
   children: ReactNode;
 }) {
-  const bar = kind === "do" ? "bg-accent" : "bg-red-600 dark:bg-red-400";
+  const colour = GUIDELINE[kind];
   const label = kind === "do" ? "Do" : "Don't";
+  const box = (
+    <div
+      className="flex gap-3 border border-solid px-4 py-3"
+      style={{
+        backgroundColor: colour.background,
+        borderColor: colour.border,
+        color: colour.label,
+        borderRadius: src || !text ? `0 0 ${RADIUS}px ${RADIUS}px` : RADIUS,
+      }}
+    >
+      <GuidelineMark kind={kind} color={colour.label} />
+      <div className="min-w-0">
+        <p className="m-0 text-xs leading-6 font-medium" style={{ color: colour.label }}>
+          {label}
+        </p>
+        <div
+          className="text-[0.95rem] leading-6 [&_p]:m-0 [&_p+p]:mt-2"
+          style={{ color: colour.text }}
+        >
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+
+  // A text example is the box alone; a picture stands on top of it, in one card.
+  if (text && !src) return box;
   return (
-    <div className="overflow-hidden rounded-lg border border-border bg-surface">
+    <div>
       {src ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={src} alt={alt ?? ""} className="block w-full border-b border-border" />
-      ) : text ? null : (
-        <div className="grid h-28 place-items-center border-b border-dashed border-border text-sm text-faint">
+        <img
+          src={src}
+          alt={alt ?? ""}
+          className="block w-full border border-b-0 border-border"
+          style={{ borderRadius: `${RADIUS}px ${RADIUS}px 0 0` }}
+        />
+      ) : (
+        <div
+          className="grid h-28 place-items-center border border-b-0 border-dashed border-border text-sm text-faint"
+          style={{ borderRadius: `${RADIUS}px ${RADIUS}px 0 0` }}
+        >
           Picture
         </div>
       )}
-      <div className={`h-1 ${bar}`} />
-      <div className="px-4 py-3">
-        <p className="text-sm font-semibold text-foreground">{label}</p>
-        <div className={`mt-1 ${BODY}`}>{children}</div>
-      </div>
+      {box}
     </div>
   );
 }

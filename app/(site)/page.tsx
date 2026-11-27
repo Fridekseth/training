@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowForward } from "@/components/icons";
 import { PostCard } from "@/components/post-card";
+import { DOCUMENTATION_SECTIONS } from "@/lib/documentation";
 import { getPosts } from "@/lib/posts";
 import { papers } from "@/content/papers";
 import { PAGE_CONTAINER } from "@/lib/layout";
@@ -57,6 +58,46 @@ export default async function HomePage() {
               <ArrowForward className="size-4" />
             </Link>
           </div>
+        </div>
+      </section>
+
+      {/* The outcome of the project: the three parts of the documentation, as on its own page. */}
+      <section className="mt-16 border-t border-border pt-10">
+        <div className="flex items-baseline justify-between gap-4">
+          <h2 className="text-sm font-semibold text-faint">Documentation</h2>
+          <Link
+            href="/documentation"
+            className="inline-flex items-center gap-1 text-sm text-muted transition-colors hover:text-accent"
+          >
+            All documentation
+            <ArrowForward className="size-3.5" />
+          </Link>
+        </div>
+
+        <div className="mt-4 grid gap-4 sm:grid-cols-3">
+          {DOCUMENTATION_SECTIONS.map((section) => (
+            <Link
+              key={section.slug}
+              href={`/documentation/${section.slug}`}
+              className="group overflow-hidden rounded-xl border border-border bg-surface transition-colors hover:border-accent/40"
+            >
+              <div
+                className={`aspect-[16/9] overflow-hidden border-b border-border ${
+                  "imageBg" in section ? section.imageBg : "bg-accent-soft"
+                }`}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={section.image}
+                  alt={section.imageAlt}
+                  className={`size-full object-cover ${section.imagePosition} transition-transform duration-300 group-hover:scale-[1.03]`}
+                />
+              </div>
+              <h3 className="px-5 py-4 text-lg font-semibold tracking-tight text-foreground transition-colors group-hover:text-accent">
+                {section.title}
+              </h3>
+            </Link>
+          ))}
         </div>
       </section>
 

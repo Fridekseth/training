@@ -20,6 +20,18 @@
   /* The teal the training layer is drawn in, from the OpenBridge ramp. */
   --accent: light-dark(#007d81, #51c0c0);
   --accent-soft: light-dark(#e2f2f3, #193131);
+  /*
+    The do and don't boxes, in the OpenBridge base colours: mint and red, the
+    day palette's by day and the dusk palette's at night.
+  */
+  --do-background: light-dark(rgb(226, 243, 235), rgb(26, 44, 37)); /* mint 050 */
+  --do-border: light-dark(rgb(133, 205, 176), rgb(47, 85, 69)); /* mint 200 */
+  --do-label: light-dark(rgb(0, 128, 94), rgb(101, 188, 153)); /* mint 400 / 500 */
+  --do-text: light-dark(rgb(0, 69, 47), rgb(148, 220, 189)); /* mint 600 */
+  --dont-background: light-dark(rgb(253, 233, 232), rgb(55, 37, 35)); /* red 050 */
+  --dont-border: light-dark(rgb(242, 168, 165), rgb(105, 68, 64)); /* red 200 */
+  --dont-label: light-dark(rgb(175, 86, 85), rgb(233, 150, 143)); /* red 400 / 500 */
+  --dont-text: light-dark(rgb(98, 41, 41), rgb(255, 190, 183)); /* red 600 */
 }
 
 /* Follow the system until the reader makes an explicit choice. */
