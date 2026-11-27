@@ -18,12 +18,20 @@ import { Card, Mask } from "./app-parts";
 import styles from "./second-screen-app.module.css";
 
 /**
- * On a phone, Safari draws its focus ring as a square around the slider's range input when it is
- * touched, and can flash a tap highlight on it. Neither is part of the design, so both go.
+ * The library hides the range input's own thumb and draws its handle as a separate element. Safari on
+ * the iPhone still paints that hidden thumb as a white square with a shadow, 48px across, around the
+ * handle, so it is made invisible here; the input itself still takes the touch. The focus ring and
+ * tap highlight go too.
  */
 const NO_TOUCH_RING = `
   :host, * { -webkit-tap-highlight-color: transparent; }
   input, input:focus, input:focus-visible { outline: none; box-shadow: none; }
+  input::-webkit-slider-thumb {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    opacity: 0;
+  }
 `;
 
 /** Where the second screen can be taken from the lists on these pages. */
