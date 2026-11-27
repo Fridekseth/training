@@ -60,7 +60,8 @@ export async function SectionItemPage({ section: key, slug }: { section: Section
               <h1 className="text-3xl font-semibold tracking-tight text-foreground">
                 {item.title}
               </h1>
-              <Pill>{ITEM_STATUS_LABEL[item.status]}</Pill>
+              {ITEM_STATUS_LABEL[item.status] ? <Pill>{ITEM_STATUS_LABEL[item.status]}</Pill> : null}
+              {item.beta ? <Pill tone="beta">Beta</Pill> : null}
             </div>
           </header>
 

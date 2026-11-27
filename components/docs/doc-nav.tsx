@@ -22,7 +22,7 @@ export function DocNav({ docs, current }: { docs: ComponentDoc[]; current?: stri
         if (!inGroup.length) return null;
         return (
           <div key={category} className="mb-5">
-            <p className="mb-1.5 text-xs font-medium tracking-wide text-faint uppercase">
+            <p className="mb-1.5 text-sm font-medium text-foreground">
               {category}
             </p>
             <ul className="space-y-0.5 border-l border-border">

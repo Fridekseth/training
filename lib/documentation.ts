@@ -46,11 +46,16 @@ export type SectionKey = "visual-language" | "patterns";
 export type SectionItem = {
   slug: string;
   title: string;
-  /** Planned until its page is written in `content/<section>/<slug>.mdx`, and a draft from then on. */
-  status: "planned" | "draft";
+  /**
+   * Planned until its page is written in `content/<section>/<slug>.mdx`, a draft from then on,
+   * and finished once it is listed in FINISHED. A finished page shows no status.
+   */
+  status: "planned" | "draft" | "finished";
+  /** Written, but not fully done, so it carries a Beta tag. */
+  beta: boolean;
 };
 
-export const ITEM_STATUS_LABEL = { planned: "Planned", draft: "Draft" } as const;
+export const ITEM_STATUS_LABEL = { planned: "Planned", draft: "Draft", finished: null } as const;
 
 const slugify = (title: string) => title.toLowerCase().replace(/\s+/g, "-");
 
@@ -60,12 +65,33 @@ const ITEM_TITLES: Record<SectionKey, string[]> = {
     "Color",
     "Illustration",
     "Icons",
-    "Elevation",
-    "Animation",
+    "Elevation and hierarchy",
     "Tone of voice",
+    // Last, as it is still in beta.
+    "Motion",
   ],
   patterns: ["Overview", "Learn", "Explore", "Collaborate", "Practice", "Test", "Second screen"],
 };
+
+/** The pages that are not fully done, as `<section>/<slug>`. */
+const BETA = new Set(["visual-language/motion", "patterns/second-screen"]);
+
+/** The pages that are finished, as `<section>/<slug>`. */
+const FINISHED = new Set([
+  "visual-language/color",
+  "visual-language/illustration",
+  "visual-language/icons",
+  "visual-language/elevation-and-hierarchy",
+  "visual-language/tone-of-voice",
+  "visual-language/motion",
+  "patterns/overview",
+  "patterns/learn",
+  "patterns/explore",
+  "patterns/collaborate",
+  "patterns/practice",
+  "patterns/test",
+  "patterns/second-screen",
+]);
 
 const pagePath = (section: SectionKey, slug: string) =>
   path.join(process.cwd(), "content", section, `${slug}.mdx`);
@@ -73,7 +99,16 @@ const pagePath = (section: SectionKey, slug: string) =>
 export function getSectionItems(section: SectionKey): SectionItem[] {
   return ITEM_TITLES[section].map((title) => {
     const slug = slugify(title);
-    return { title, slug, status: fs.existsSync(pagePath(section, slug)) ? "draft" : "planned" };
+    return {
+      title,
+      slug,
+      status: !fs.existsSync(pagePath(section, slug))
+        ? "planned"
+        : FINISHED.has(`${section}/${slug}`)
+          ? "finished"
+          : "draft",
+      beta: BETA.has(`${section}/${slug}`),
+    };
   });
 }
 

@@ -16,6 +16,8 @@ export type ComponentFrontmatter = {
   /** One of CATEGORIES, which decides the group it sits in. */
   category: string;
   status: DocStatus;
+  /** True for a component that is not fully done, which then carries a Beta tag. */
+  beta?: boolean;
   /** A picture for the card on the index, from `public/`. */
   preview?: string;
   /** The place within its category; lower comes first. */

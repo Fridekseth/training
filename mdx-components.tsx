@@ -2,6 +2,7 @@ import type { MDXComponents } from "mdx/types";
 import Link from "next/link";
 import { Carousel } from "@/components/carousel";
 import { ImageRow } from "@/components/image-row";
+import { ComponentPreview } from "@/components/docs/previews";
 import {
   Do,
   DoDont,
@@ -42,6 +43,7 @@ const components: MDXComponents = {
   Td,
   Shot,
   // The parts a component page is written with.
+  ComponentPreview,
   Do,
   DoDont,
   Dont,

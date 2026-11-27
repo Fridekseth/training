@@ -2,15 +2,17 @@ import type { ReactNode } from "react";
 
 type PillProps = {
   children: ReactNode;
-  /** `solid` marks the primary label (stage, category); `quiet` marks keywords. */
-  tone?: "solid" | "quiet";
+  /** `solid` marks the primary label (stage, category); `quiet` marks keywords; `beta` marks work that is not fully done. */
+  tone?: "solid" | "quiet" | "beta";
 };
 
 export function Pill({ children, tone = "quiet" }: PillProps) {
   const styles =
     tone === "solid"
       ? "bg-accent-soft text-accent"
-      : "border border-border text-faint";
+      : tone === "beta"
+        ? "border border-accent/40 text-accent"
+        : "border border-border text-faint";
 
   return (
     <span

@@ -11,10 +11,20 @@ import { ObcIconButton } from "@oicl/openbridge-webcomponents-react/components/i
 import { ObcSlider } from "@oicl/openbridge-webcomponents-react/components/slider/slider";
 import { ObiCloseGoogle } from "@oicl/openbridge-webcomponents-react/icons/icon-close-google";
 import { IconButtonVariant } from "@oicl/openbridge-webcomponents/dist/components/icon-button/icon-button";
+import { adopt } from "../../wavefoil/test-modal";
 import { MEASURED, WINDOW_HIGH, WINDOW_LOW, WaveChart } from "../../wavefoil/wave-chart";
 import { WAVEFOIL_COMPONENTS, WAVEFOIL_PAGES, WAVE_ADVICE } from "./app-data";
 import { Card, Mask } from "./app-parts";
 import styles from "./second-screen-app.module.css";
+
+/**
+ * On a phone, Safari draws its focus ring as a square around the slider's range input when it is
+ * touched, and can flash a tap highlight on it. Neither is part of the design, so both go.
+ */
+const NO_TOUCH_RING = `
+  :host, * { -webkit-tap-highlight-color: transparent; }
+  input, input:focus, input:focus-visible { outline: none; box-shadow: none; }
+`;
 
 /** Where the second screen can be taken from the lists on these pages. */
 export type WavefoilTarget = "components" | "window" | "gyro";
@@ -87,7 +97,7 @@ export function WavefoilWindowPage({ onClose }: { onClose: () => void }) {
       <section className={styles.windowCard} aria-label="Wave conditions">
         <p className={styles.windowTitle}>Wave conditions</p>
         <div className={styles.chartHolder}>
-          <WaveChart palette="day" measured={height === 3.8 ? MEASURED : readings(height)} harmful={tone === "harmful"} />
+          <WaveChart palette="day" measured={height === 3.8 ? MEASURED : readings(height)} harmful={tone === "harmful"} calm={tone === "poor"} />
           {/* The part of the plot the state is about: the window of the foils in blue, or the calm below it in yellow. */}
           {tone === "optimal" ? (
             <span className={`${styles.band} ${styles.bandWindow}`} style={{ top: PLOT_AT(WINDOW_HIGH), height: PLOT_AT(WINDOW_LOW) - PLOT_AT(WINDOW_HIGH) }} />
@@ -123,6 +133,7 @@ export function WavefoilWindowPage({ onClose }: { onClose: () => void }) {
         <div className={styles.setRow}>
           <span>0</span>
           <ObcSlider
+            ref={(element) => adopt(element, NO_TOUCH_RING)}
             className={styles.slider}
             min={0}
             max={15}

@@ -5,17 +5,6 @@ import { ITEM_STATUS_LABEL, type SectionItem, type SectionKey } from "@/lib/docu
 
 const TEAL_RAMP = ["#e2f2f3", "#bee4e5", "#80cacd", "#1d9da1", "#007d81", "#005d61", "#004346"];
 
-const ICONS = [
-  "nav-getting-started",
-  "wf-nav-explore",
-  "wf-nav-collaborate",
-  "wf-nav-test",
-  "nav-scenarios",
-  "nav-overview",
-  "wf-menu-training",
-  "idea",
-];
-
 /** A spot illustration on the teal plate, as the picture of a pattern. */
 const illustration = (name: string) => ({
   background: "#e2f2f3",
@@ -25,6 +14,19 @@ const illustration = (name: string) => ({
       src={`/documentation/illustrations/${name}.svg`}
       alt=""
       className="size-full object-contain p-5 transition-transform duration-300 group-hover:scale-[1.03]"
+    />
+  ),
+});
+
+/** A drawn card picture from `public/documentation/previews/`, on the same light grey as the picture. */
+const picture = (name: string) => ({
+  background: "#fcfcfc",
+  node: (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={`/documentation/previews/${name}.png`}
+      alt=""
+      className="size-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
     />
   ),
 });
@@ -41,17 +43,11 @@ const PREVIEWS: Record<string, { background: string; node: ReactNode }> = {
       </div>
     ),
   },
-  "visual-language/illustration": {
-    background: "#e2f2f3",
-    node: (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
-        src="/hero/application-layers.svg"
-        alt=""
-        className="size-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-      />
-    ),
-  },
+  "visual-language/illustration": picture("illustration"),
+  "visual-language/icons": picture("icons"),
+  "visual-language/elevation-and-hierarchy": picture("elevation-and-hierarchy"),
+  "visual-language/motion": picture("motion"),
+  "visual-language/tone-of-voice": picture("tone-of-voice"),
   "patterns/overview": illustration("statistics"),
   "patterns/learn": illustration("learn"),
   "patterns/explore": illustration("explore"),
@@ -59,28 +55,6 @@ const PREVIEWS: Record<string, { background: string; node: ReactNode }> = {
   "patterns/practice": illustration("practice"),
   "patterns/test": illustration("puzzle"),
   "patterns/second-screen": illustration("compass"),
-  "visual-language/icons": {
-    background: "#f1f1f1",
-    node: (
-      <div className="grid grid-cols-4 gap-x-8 gap-y-6" aria-hidden="true">
-        {ICONS.map((name) => (
-          <span
-            key={name}
-            className="block size-8"
-            style={{
-              backgroundColor: "#535353",
-              maskImage: `url(/prototype/icons/${name}.svg)`,
-              WebkitMaskImage: `url(/prototype/icons/${name}.svg)`,
-              maskSize: "contain",
-              WebkitMaskSize: "contain",
-              maskRepeat: "no-repeat",
-              WebkitMaskRepeat: "no-repeat",
-            }}
-          />
-        ))}
-      </div>
-    ),
-  },
 };
 
 /**
@@ -109,7 +83,10 @@ export function PlannedItems({ section, items }: { section: SectionKey; items: S
                 <h3 className="text-base font-semibold tracking-tight text-foreground group-hover:text-accent">
                   {item.title}
                 </h3>
-                <Pill>{ITEM_STATUS_LABEL[item.status]}</Pill>
+                <span className="flex items-center gap-1.5">
+                  {item.beta ? <Pill tone="beta">Beta</Pill> : null}
+                  {ITEM_STATUS_LABEL[item.status] ? <Pill>{ITEM_STATUS_LABEL[item.status]}</Pill> : null}
+                </span>
               </div>
             </Link>
           </li>

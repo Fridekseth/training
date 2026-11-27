@@ -45,9 +45,12 @@ function Card({ doc }: { doc: ComponentDoc }) {
           <h3 className="text-base font-semibold tracking-tight text-foreground group-hover:text-accent">
             {doc.title}
           </h3>
-          <Pill tone={doc.status === "documented" ? "solid" : "quiet"}>
-            {STATUS_LABEL[doc.status]}
-          </Pill>
+          <span className="flex items-center gap-1.5">
+            {doc.beta ? <Pill tone="beta">Beta</Pill> : null}
+            <Pill tone={doc.status === "documented" ? "solid" : "quiet"}>
+              {STATUS_LABEL[doc.status]}
+            </Pill>
+          </span>
         </div>
         <p className="mt-1.5 text-sm leading-6 text-muted">{doc.summary}</p>
       </div>

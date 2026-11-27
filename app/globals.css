@@ -38,6 +38,17 @@
   color-scheme: light;
 }
 
+/* Black line drawings on a transparent ground: flip them at night, keeping the teal teal. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .invert-at-night {
+    filter: invert(1) hue-rotate(180deg);
+  }
+}
+
+:root[data-theme="dark"] .invert-at-night {
+  filter: invert(1) hue-rotate(180deg);
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-surface: var(--surface);

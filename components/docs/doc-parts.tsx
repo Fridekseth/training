@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { CopySvgButton } from "./copy-svg-button";
 
 /*
   The building blocks a component page is written with. They are registered in
@@ -19,24 +20,49 @@ export function Figure({
   alt,
   caption,
   plain = false,
+  bare = false,
+  zoom,
 }: {
   src: string;
   alt: string;
   caption?: string;
   plain?: boolean;
+  /** A transparent picture straight on the page, with no plate or border. Its black lines turn light at night. */
+  bare?: boolean;
+  /** Fills the plate edge to edge and scales the picture up by this much, cropping the margins. */
+  zoom?: number;
 }) {
+  if (bare) {
+    return (
+      <figure className="my-6">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={src} alt={alt} className="invert-at-night mx-auto block w-full" />
+        {caption ? (
+          <figcaption className="mt-2 text-sm leading-6 text-faint">{caption}</figcaption>
+        ) : null}
+      </figure>
+    );
+  }
+
   return (
     <figure className="my-6">
       <div
         className={
-          plain ? "overflow-hidden rounded-lg border border-border bg-white" : `${STAGE} p-4`
+          plain
+            ? "overflow-hidden rounded-lg border border-border bg-white"
+            : zoom
+              ? `${STAGE} overflow-hidden`
+              : `${STAGE} p-4`
         }
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={src}
           alt={alt}
-          className={plain ? "block w-full" : "mx-auto block max-w-full rounded-md"}
+          style={zoom ? { transform: `scale(${zoom})` } : undefined}
+          className={
+            plain || zoom ? "block w-full" : "mx-auto block max-w-full rounded-md"
+          }
         />
       </div>
       {caption ? (
@@ -125,7 +151,10 @@ export function Gallery({
               />
             )}
           </div>
-          <p className="m-0 mt-2 text-sm leading-5 text-muted">{name}</p>
+          <div className="mt-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
+            <p className="m-0 text-sm leading-5 text-muted">{name}</p>
+            {src.endsWith(".svg") ? <CopySvgButton src={src} name={name} /> : null}
+          </div>
         </li>
       ))}
     </ul>
@@ -179,11 +208,14 @@ function Guideline({
   kind,
   src,
   alt,
+  text = false,
   children,
 }: {
   kind: "do" | "dont";
   src?: string;
   alt?: string;
+  /** An example of wording, which has no picture. */
+  text?: boolean;
   children: ReactNode;
 }) {
   const bar = kind === "do" ? "bg-accent" : "bg-red-600 dark:bg-red-400";
@@ -193,7 +225,7 @@ function Guideline({
       {src ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={src} alt={alt ?? ""} className="block w-full border-b border-border" />
-      ) : (
+      ) : text ? null : (
         <div className="grid h-28 place-items-center border-b border-dashed border-border text-sm text-faint">
           Picture
         </div>
@@ -207,10 +239,10 @@ function Guideline({
   );
 }
 
-export const Do = (props: { src?: string; alt?: string; children: ReactNode }) => (
+export const Do = (props: { src?: string; alt?: string; text?: boolean; children: ReactNode }) => (
   <Guideline kind="do" {...props} />
 );
-export const Dont = (props: { src?: string; alt?: string; children: ReactNode }) => (
+export const Dont = (props: { src?: string; alt?: string; text?: boolean; children: ReactNode }) => (
   <Guideline kind="dont" {...props} />
 );
 
@@ -262,7 +294,7 @@ export function Todo({ for: section, children }: { for?: keyof typeof HINTS; chi
   const text = children ?? (section ? HINTS[section] : undefined);
   return (
     <div className="my-6 rounded-lg border border-dashed border-border px-4 py-3">
-      <p className="text-xs font-medium tracking-wide text-faint uppercase">To write</p>
+      <p className="text-sm font-medium text-faint">To write</p>
       {text ? <div className={`mt-1 ${BODY}`}>{text}</div> : null}
     </div>
   );

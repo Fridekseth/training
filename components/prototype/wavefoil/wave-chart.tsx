@@ -142,6 +142,7 @@ export function WaveChart({
   palette,
   measured = MEASURED,
   harmful = false,
+  calm = false,
 }: {
   /** Only to re-read the colours when the screen is dimmed. */
   palette: string;
@@ -149,6 +150,8 @@ export function WaveChart({
   measured?: number[];
   /** The sea is above the window: that part of the plot and its marker are drawn as a warning. */
   harmful?: boolean;
+  /** The sea is below the window: the marker under it is drawn as a warning, as the one above is for harmful waves. */
+  calm?: boolean;
 }) {
   const colour = useWavePalette(false, palette);
   const nowAt = (NOW / (POINTS - 1)) * 100;
@@ -226,7 +229,10 @@ export function WaveChart({
         className={`${styles.hatch} ${harmful ? styles.hatchWarn : ""}`}
         style={{ top: 1, height: high - 3 }}
       />
-      <span className={styles.hatch} style={{ top: low + 4, height: PLOT_HEIGHT - low - 3 }} />
+      <span
+        className={`${styles.hatch} ${calm ? styles.hatchWarn : ""}`}
+        style={{ top: low + 4, height: PLOT_HEIGHT - low - 3 }}
+      />
 
       <div className={styles.xLabels}>
         <span style={{ left: 0 }}>-2h</span>

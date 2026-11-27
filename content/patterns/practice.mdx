@@ -1,17 +1,21 @@
+<Figure
+  plain
+  src="/documentation/patterns/practice.png"
+  alt="The Heavy seas scenario in Practice: the screen framed in teal, with the list of steps to take and the Practice Heavy seas mode tab"
+/>
+
 ## What
 
-Practice is for critical situations, in simulated scenarios. It is recommended to practice scenarios regularly, in order to keep the routines for when a critical situation happens.
+Practice lets the user get familiar with critical situations and edge cases through simulated scenarios. The idea is that if scenarios are practiced regularly, users will keep the routines for when a critical situation happens.
 
 ## How it works
 
 1. The learner chooses a scenario from the Practice page, which lists them with a result, a status and a button to start or open them.
-2. The ship screen is framed in teal like the other modes, and then something happens on it that the learner has to deal with.
-3. The [toast](/documentation/components/toast) at the top says what the task is.
-4. The steps the learner should take are listed in the menu from the [mode tab](/documentation/components/mode-tab).
-5. Nothing the learner does reaches the real system.
+2. The screen is framed in teal like the other modes. Once the scenario starts, the interface will simulate it by for example triggering an alarm.
+3. The learner has to deal with the scenario in the correct way. The steps the learner should take are listed in the menu from the [mode tab](/documentation/components/mode-tab).
+4. Nothing the learner does reaches the real system.
+5. When the scenario is completed, the learner receives a score based on how they handled the scenario.
 
 ## Why
 
-The recommended practice on the [overview](/documentation/patterns/overview) comes when there has not been a critical alarm for a long time, so the routines are kept in use.
-
-Carrying out an action yourself lasts longer than being shown it <SourcePill href="/research#roediger-karpicke-testing">Roediger & Karpicke (2006)</SourcePill> <SourcePill href="/research#bjork-bjork-desirable-difficulties">Bjork & Bjork (2011)</SourcePill>.
+Carrying out an action yourself lasts longer than being shown it <SourcePill href="/research#roediger-karpicke-testing">Roediger & Karpicke (2006)</SourcePill> <SourcePill href="/research#bjork-bjork-desirable-difficulties">Bjork & Bjork (2011)</SourcePill>, and with the recommended practice on the [overview](/documentation/patterns/overview) the routines are kept in use.

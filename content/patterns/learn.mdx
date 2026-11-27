@@ -1,16 +1,20 @@
+<Figure
+  plain
+  src="/posts/connecting-prototype-to-learning-theory/guided-step-deploy.png"
+  alt="A guided step in Learn: the screen is washed in teal, the Deploy foils button is outlined, and an explanation box points at it"
+/>
+
 ## What
 
-Learn is the onboarding of the training. It is a course in chapters that gives an introduction to the system and all its features. The whole course takes about 30 minutes. It can be done in one go or with breaks, it can be left at any time, and the progress is saved.
+Learn is a rather straightforward run-through of all the systems in an interface, separated into chapters. It is an interactive manual, that lets you click through each component and test interactions as you go. It is meant as an introduction or onboarding, primarily for new users or experienced users that need a refresh. The navigation menu allows the user to choose whether to follow the run-through step by step, or navigate freely between steps.
 
 ## How it works
 
 1. The learner chooses a chapter from the Learn page, which lists them with a result, a status and a button to start or open them.
 2. The mode opens with the [mode intro](/documentation/components/mode-intro), the [training frame](/documentation/components/training-frame) is drawn around the screen, and the [mode tab](/documentation/components/mode-tab) settles in the corner.
-3. The chapter goes through the interface one part at a time. Each [guided step](/documentation/components/guided-step) lights up one part, washes the rest of the screen, and explains it next to it.
-4. The [step menu](/documentation/components/step-menu) opens from the mode tab, to go to a step or to leave training mode.
+3. The chapter goes through the interface one part at a time, controlled by the user. Each [guided step](/documentation/components/guided-step) highlights the part of the interface it talks about, and washes the rest of the screen. The description sits right next to the focus area.
+4. The [step menu](/documentation/components/step-menu) opens from the mode tab, and allows for navigation between steps, or leaving the mode.
 5. The last step leads to a test of the chapter. The results list every question with a score, and the chapter can be taken again.
-
-The prototype has five chapters: Operating the foils, Decision support, Debriefing, Alarms and Application patterns.
 
 ## Why
 

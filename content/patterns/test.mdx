@@ -1,17 +1,20 @@
+<Figure
+  plain
+  src="/documentation/patterns/test.png"
+  alt="A question in the mixed test: Where do you go to see the alarms?, with four answers to choose from and the test toolbar along the bottom"
+/>
+
 ## What
 
-The test is a test of all the chapters at once. The questions are mixed, and more of them come from the chapters where the learner's results are lowest. Each chapter also ends in a test of its own.
+In test, users are tested on all the information of the system at once. The questions are mixed, tailored to the individual learner: If you have been struggling with a specific chapter, it will ask more about that.
 
 ## How it works
 
-1. The learner starts the test from the Test page, which says which chapters most of the questions will come from, and shows the training log and the last test.
-2. The test has six questions by default. A question is a task to carry out on the screen, a scenario to watch and describe, or a question to answer.
-3. A chapter gets more questions the further its score is from full. A chapter that has not been taken counts as a middling one, and two questions in a row do not come from the same chapter while others have some left.
-4. The [test toolbar](/documentation/components/test-toolbar) along the bottom moves between the questions. In a scenario, it floats over the screen and the [toast](/documentation/components/toast) says the task.
-5. The results list every question with a score, and end with the total. The test is added to the training log.
+1. The learner starts the test from the Test page, which also shows the test log with previous tests.
+2. The test has six questions by default. A question can be a task to carry out in the interface, a scenario to watch and describe, or a question to answer.
+3. The [test toolbar](/documentation/components/test-toolbar) along the bottom moves between the questions. In a scenario, it floats over the screen and the [toast](/documentation/components/toast) says the task.
+4. The results list every question with a score, and end with the total. The test is added to the training log.
 
 ## Why
 
-Testing boosts retention, and retrieving an answer, or producing an action yourself, lasts longer than being shown it <SourcePill href="/research#roediger-karpicke-testing">Roediger & Karpicke (2006)</SourcePill>.
-
-Mixing questions from several chapters is the harder and more effective interleaved version <SourcePill href="/research#bjork-bjork-desirable-difficulties">Bjork & Bjork (2011)</SourcePill>. The test of a chapter right after the walkthrough only tests once, and the value shows up when it is repeated later, which is what the mixed test is for.
+Testing boosts retention, and retrieving an answer, or producing an action yourself, lasts longer than being shown it <SourcePill href="/research#roediger-karpicke-testing">Roediger & Karpicke (2006)</SourcePill>. Mixing questions from several chapters is a harder and more effective interleaved practice <SourcePill href="/research#bjork-bjork-desirable-difficulties">Bjork & Bjork (2011)</SourcePill>, than just testing at the end of every chapter, like in "learn". The test of a chapter right after the walkthrough only tests once, and the value shows up when it is repeated later, which is what the mixed test is for.

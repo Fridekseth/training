@@ -85,6 +85,7 @@ export default async function ComponentPage(props: PageProps<"/documentation/com
               <Pill tone={meta.status === "documented" ? "solid" : "quiet"}>
                 {STATUS_LABEL[meta.status]}
               </Pill>
+              {meta.beta ? <Pill tone="beta">Beta</Pill> : null}
             </div>
 
             {/* The component itself, to try before reading about it. */}

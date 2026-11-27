@@ -703,6 +703,8 @@
 .slider {
   flex: 1;
   min-width: 0;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .setValue {

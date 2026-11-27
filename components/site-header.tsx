@@ -6,9 +6,9 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { PAGE_CONTAINER } from "@/lib/layout";
 
 const NAV = [
-  { href: "/prototype", label: "Demo" },
-  { href: "/blog", label: "Process" },
   { href: "/research", label: "Research" },
+  { href: "/blog", label: "Process" },
+  { href: "/prototype", label: "Demo" },
   { href: "/documentation", label: "Documentation" },
   { href: "/about", label: "About" },
 ] as const;
